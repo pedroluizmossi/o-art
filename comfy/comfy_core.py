@@ -8,7 +8,11 @@ import json
 import urllib.request
 from urllib.parse import urlencode
 
-server_address = "127.0.0.1:8188"
+from utils.config_core import Config
+
+config_instance = Config()
+comfyui_instance = config_instance.Comfyui(config_instance)
+server_address = comfyui_instance.get_server_address()
 
 async def ws_connect(user_id):
     uri = f"ws://{server_address}/ws?clientId={user_id}"
@@ -302,9 +306,3 @@ prompt_text = """
   }
 }
 """
-
-async def main():
-    print(await get_queue(user_id=client_id))
-
-if __name__ == "__main__":
-    asyncio.run(main())

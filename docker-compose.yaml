@@ -41,6 +41,18 @@ services:
       - C:\Users\pedro\PycharmProjects\FastAPIProject\files:/data
     command: server /data --console-address ":9001"
 
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    environment:
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: admin123
+      INFLUXDB_DB: mydb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+
 volumes:
   postgres_data:
-
+  influxdb_data:

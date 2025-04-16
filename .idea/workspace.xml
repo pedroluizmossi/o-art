@@ -4,21 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/art.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requeriments.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_main.http" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
+      <change afterPath="$PROJECT_DIR$/api/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/auth_api.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/webhook_api.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/user_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/config_core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/env_core.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/influx_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +51,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Docker.docker-compose.yaml: Compose Deployment.executor": "Run",
     "FastAPI.art.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -68,8 +69,11 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\pedro\PycharmProjects\art" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\pedro\PycharmProjects\art\api" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="FastAPI.art">
     <configuration name="art" type="Python.FastAPI">
       <option name="file" value="$PROJECT_DIR$/main.py" />
       <module name="art" />
@@ -85,6 +89,19 @@
       <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
+    <configuration name="docker-compose.yaml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="docker-compose.yaml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -102,8 +119,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1744770839874</updated>
-      <workItem from="1744770840914" duration="436000" />
+      <workItem from="1744770840914" duration="6125000" />
     </task>
+    <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
+      <option name="closed" value="true" />
+      <created>1744771299702</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744771299702</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -120,7 +146,11 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations." />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1744770957839" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1744777125742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
