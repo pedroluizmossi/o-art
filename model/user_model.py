@@ -17,9 +17,20 @@ class User(SQLModel, table=True):
     tenant_id: Optional[UUID] = Field(default=None)
     updated_at: Optional[str] = Field(default_factory=lambda: str(datetime.now()))
 
+    def __repr__(self):
+        return f"User(id={self.id}, email={self.email}, username={self.username}, email_verified={self.email_verified}, is_active={self.is_active}, created_at={self.created_at}, tenant_id={self.tenant_id}, updated_at={self.updated_at})"
 
+    def __str__(self):
+        return f"User: {self.username} (ID: {self.id})"
 
-
+    def insert(self, session):
+        """
+        Insert a new user into the database.
+        """
+        session.add(self)
+        session.commit()
+        session.refresh(self)
+        return self
 
 
 

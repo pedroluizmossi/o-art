@@ -1,4 +1,4 @@
-from sqlmodel import Field, SQLModel, create_engine
+from sqlmodel import Field, SQLModel, create_engine, Session
 from core.env_core import get_env_variable, Envs, load_env_file
 
 from core.logging_core import setup_logger
@@ -28,3 +28,7 @@ def create_db():
     finally:
         engine.dispose()
         logger.info("Database connection closed.")
+
+def get_session():
+    with Session(engine) as session:
+        yield session
