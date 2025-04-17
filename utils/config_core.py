@@ -46,7 +46,7 @@ class Config:
     class Comfyui:
         def __init__(self, config_instance):
             self.config_instance = config_instance
-            self.server_address = self.config_instance.get("ComfyUI", "server", "127.0.0.1:8188")
+            self.server_address = self.config_instance.get("ComfyUI", "server")
 
         def get_server_address(self):
             return self.server_address
@@ -54,8 +54,24 @@ class Config:
     class Fief:
         def __init__(self, config_instance):
             self.config_instance = config_instance
-            self.domain = self.config_instance.get("Fief", "domain", "http://127.0.0.1:8001")
+            self.domain = self.config_instance.get("Fief", "domain")
 
         def get_domain(self):
             return self.domain
 
+    class Logs:
+        def __init__(self, config_instance):
+            self.config_instance = config_instance
+            self.level = self.config_instance.get("Logs", "level")
+            self.path = self.config_instance.get("Logs", "path")
+            self.max_files = int(self.config_instance.get("Logs", "max_files"))
+            self.max_backups = int(self.config_instance.get("Logs", "max_backups"))
+
+        def get_level(self):
+            return self.level
+        def get_path(self):
+            return self.path
+        def get_max_files(self):
+            return self.max_files
+        def get_max_backups(self):
+            return self.max_backups

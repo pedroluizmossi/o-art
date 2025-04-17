@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Response, HTTPException
 from comfy.comfy_core import generate_image, get_queue
 from utils.env_core import load_env_file
-from utils.influx_core import write_data
+from utils.metric_core import write_data
 from utils.config_core import Config
 
 ###Routes

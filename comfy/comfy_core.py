@@ -1,109 +1,376 @@
-#This is an example that uses the websockets api to know when a prompt execution is done
-#Once the prompt execution is done it downloads the images using the /history endpoint
+"""
+This module provides functions to interact with ComfyUI server for image generation.
+It uses websockets API to monitor prompt execution and downloads images using the /history endpoint.
+"""
 
 import asyncio
-import websockets #NOTE: websocket-client (https://github.com/websocket-client/websocket-client)
+import logging
+
+import websockets
 import uuid
 import json
 import urllib.request
-from urllib.parse import urlencode
-
+import urllib.error
+from urllib.parse import urlencode, quote
+from typing import Dict, List, Any, Optional, Union, Tuple
+from utils.logging_core import setup_logger
 from utils.config_core import Config
 
+logger = setup_logger(__name__)
+# Initialize configuration
 config_instance = Config()
 comfyui_instance = config_instance.Comfyui(config_instance)
 server_address = comfyui_instance.get_server_address()
 
-async def ws_connect(user_id):
-    uri = f"ws://{server_address}/ws?clientId={user_id}"
-    print(f"Connecting to {uri}")
-    websocket = await websockets.connect(uri)
-    await asyncio.sleep(0.1)  # Allow some time for the WebSocket connection to stabilize
-    return websocket
+async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
+    """
+    Establish a WebSocket connection to the ComfyUI server.
 
-def queue_prompt(prompt, client_id):
+    Args:
+        user_id (str): The client ID for the WebSocket connection
+
+    Returns:
+        websockets.WebSocketClientProtocol: The established WebSocket connection
+
+    Raises:
+        websockets.exceptions.WebSocketException: If connection fails
+    """
+    if not user_id:
+        raise ValueError("user_id cannot be empty")
+
+    uri = f"ws://{server_address}/ws?clientId={quote(user_id)}"
+    logger.info(f"Connecting to {uri}")
+
+    try:
+        websocket = await websockets.connect(uri)
+        await asyncio.sleep(0.1)  # Allow some time for the WebSocket connection to stabilize
+        return websocket
+    except websockets.exceptions.WebSocketException as e:
+        logger.error(f"Failed to connect to WebSocket: {e}")
+        raise
+
+async def queue_prompt(prompt: Dict[str, Any], client_id: str) -> Dict[str, Any]:
+    """
+    Queue a prompt for processing by the ComfyUI server.
+
+    Args:
+        prompt (Dict[str, Any]): The prompt data to be processed
+        client_id (str): The client ID for the prompt
+
+    Returns:
+        Dict[str, Any]: The server response containing the prompt_id
+
+    Raises:
+        urllib.error.URLError: If the HTTP request fails
+        json.JSONDecodeError: If the response is not valid JSON
+    """
+    if not prompt or not client_id:
+        raise ValueError("prompt and client_id cannot be empty")
+
     p = {"prompt": prompt, "client_id": client_id}
     data = json.dumps(p).encode('utf-8')
-    req =  urllib.request.Request("http://{}/prompt".format(server_address), data=data)
-    return json.loads(urllib.request.urlopen(req).read())
 
-def get_image(filename, subfolder, folder_type):
+    try:
+        url = f"http://{server_address}/prompt"
+        req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(req) as response:
+            return json.loads(response.read())
+    except urllib.error.URLError as e:
+        logger.error(f"Failed to queue prompt: {e}")
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse response: {e}")
+        raise
+
+async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
+    """
+    Retrieve an image from the ComfyUI server.
+
+    Args:
+        filename (str): The name of the image file
+        subfolder (str): The subfolder containing the image
+        folder_type (str): The type of folder
+
+    Returns:
+        bytes: The image data
+
+    Raises:
+        urllib.error.URLError: If the HTTP request fails
+    """
+    if not filename:
+        raise ValueError("filename cannot be empty")
+
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
     url_values = urlencode(data)
-    with urllib.request.urlopen("http://{}/view?{}".format(server_address, url_values)) as response:
-        return response.read()
 
-def get_history(prompt_id):
-    with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
-        return json.loads(response.read())
+    try:
+        url = f"http://{server_address}/view?{url_values}"
+        with urllib.request.urlopen(url) as response:
+            return response.read()
+    except urllib.error.URLError as e:
+        logger.error(f"Failed to get image {filename}: {e}")
+        raise
 
-async def get_images(ws, client_id, prompt):
-    prompt_id = queue_prompt(prompt, client_id)['prompt_id']
-    output_images = {}
-    while True:
-        out = await ws.recv()
-        if isinstance(out, str):
-            message = json.loads(out)
+async def get_history(prompt_id: str) -> Dict[str, Any]:
+    """
+    Retrieve the history of a prompt execution from the ComfyUI server.
 
-            if message['type'] == 'executing':
-                data = message['data']
-                if data['node'] is None and data['prompt_id'] == prompt_id:
-                    break #Execution is done
-        else:
-            # If you want to be able to decode the binary stream for latent previews, here is how you can do it:
-            # bytesIO = BytesIO(out[8:])
-            # preview_image = Image.open(bytesIO) # This is your preview in PIL image format, store it in a global
-            continue #previews are binary data
+    Args:
+        prompt_id (str): The ID of the prompt
 
-    history = get_history(prompt_id)[prompt_id]
-    for node_id in history['outputs']:
-        node_output = history['outputs'][node_id]
-        images_output = []
-        if 'images' in node_output:
-            for image in node_output['images']:
-                image_data = get_image(image['filename'], image['subfolder'], image['type'])
-                images_output.append(image_data)
-        output_images[node_id] = images_output
+    Returns:
+        Dict[str, Any]: The history data for the prompt
 
-    return output_images
+    Raises:
+        urllib.error.URLError: If the HTTP request fails
+        json.JSONDecodeError: If the response is not valid JSON
+    """
+    if not prompt_id:
+        raise ValueError("prompt_id cannot be empty")
 
-async def get_queue(user_id=None):
-    with urllib.request.urlopen(f"http://{server_address}/queue") as response:
-        queue_data = json.loads(response.read())
+    try:
+        url = f"http://{server_address}/history/{prompt_id}"
+        with urllib.request.urlopen(url) as response:
+            return json.loads(response.read())
+    except urllib.error.URLError as e:
+        logger.error(f"Failed to get history for prompt {prompt_id}: {e}")
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse history response: {e}")
+        raise
+
+async def get_images(ws: websockets.WebSocketClientProtocol, client_id: str, prompt: Dict[str, Any]) -> Dict[str, List[bytes]]:
+    """
+    Process a prompt and retrieve the generated images.
+
+    Args:
+        ws (websockets.WebSocketClientProtocol): WebSocket connection to the ComfyUI server
+        client_id (str): The client ID for the prompt
+        prompt (Dict[str, Any]): The prompt data to be processed
+
+    Returns:
+        Dict[str, List[bytes]]: Dictionary mapping node IDs to lists of image data
+
+    Raises:
+        ValueError: If input parameters are invalid
+        websockets.exceptions.WebSocketException: If WebSocket communication fails
+        json.JSONDecodeError: If response parsing fails
+    """
+    if not ws or not client_id or not prompt:
+        raise ValueError("WebSocket, client_id, and prompt cannot be empty")
+
+    try:
+        # Queue the prompt and get the prompt ID
+        prompt_response = await queue_prompt(prompt, client_id)
+        prompt_id = prompt_response['prompt_id']
+        output_images = {}
+
+        # Wait for execution to complete
+        logger.info(f"Waiting for prompt {prompt_id} execution to complete")
+        while True:
+            try:
+                out = await ws.recv()
+                if isinstance(out, str):
+                    try:
+                        message = json.loads(out)
+
+                        if message.get('type') == 'executing':
+                            data = message.get('data', {})
+                            if data.get('node') is None and data.get('prompt_id') == prompt_id:
+                                logger.info(f"Prompt {prompt_id} execution completed")
+                                break  # Execution is done
+                    except json.JSONDecodeError as e:
+                        logger.warning(f"Failed to parse WebSocket message: {e}")
+                else:
+                    # Binary data (previews)
+                    # If you need to decode binary stream for latent previews:
+                    # from io import BytesIO
+                    # from PIL import Image
+                    # bytesIO = BytesIO(out[8:])
+                    # preview_image = Image.open(bytesIO)
+                    continue
+            except websockets.exceptions.WebSocketException as e:
+                logger.error(f"WebSocket error while waiting for execution: {e}")
+                raise
+
+        # Get history and extract images
+        history_data = await get_history(prompt_id)
+        if prompt_id not in history_data:
+            logger.warning(f"Prompt ID {prompt_id} not found in history data")
+            return {}
+
+        history = history_data[prompt_id]
+
+        # Process each output node
+        for node_id in history.get('outputs', {}):
+            node_output = history['outputs'][node_id]
+            images_output = []
+
+            if 'images' in node_output:
+                for image in node_output['images']:
+                    try:
+                        image_data = await get_image(
+                            image.get('filename', ''),
+                            image.get('subfolder', ''),
+                            image.get('type', '')
+                        )
+                        images_output.append(image_data)
+                    except Exception as e:
+                        logger.error(f"Failed to get image {image.get('filename', '')}: {e}")
+                        # Continue with other images instead of failing completely
+
+            output_images[node_id] = images_output
+
+        return output_images
+    except Exception as e:
+        logger.error(f"Error in get_images: {e}")
+        raise
+
+async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
+    """
+    Get information about the current queue status from the ComfyUI server.
+
+    Args:
+        user_id (Optional[str]): If provided, filter queue information for this specific user
+
+    Returns:
+        Dict[str, int]: Dictionary containing queue information:
+            - queue_running: Number of running items
+            - queue_pending: Number of pending items
+            - queue_position: Position in queue for the specified user (0 if not in queue)
+
+    Raises:
+        urllib.error.URLError: If the HTTP request fails
+        json.JSONDecodeError: If the response is not valid JSON
+    """
+    try:
+        url = f"http://{server_address}/queue"
+        logger.info(f"Fetching queue information from {url}")
+
+        with urllib.request.urlopen(url) as response:
+            queue_data = json.loads(response.read())
+
+        # Extract queue data with defaults
         queue_running = queue_data.get("queue_running", [])
         queue_pending = queue_data.get("queue_pending", [])
-        queue_position = queue_data.get("queue_pending", [])
-        queue_position_size = []
-        if user_id is not None:
-            try:
-                queue_running = [item for item in queue_running if item[3]["client_id"] == user_id]
-            except:
-                queue_running = []
-            try:
-                queue_pending_user = [item for item in queue_pending if item[3]["client_id"] == user_id]
-                queue_position_size = sorted([item[0] for item in queue_pending], reverse=False)
-                queue_position = [item[0] for item in queue_pending_user]
 
-            except:
+        # Initialize variables
+        queue_position_size = []
+        queue_position = []
+
+        # Filter by user_id if provided
+        if user_id is not None:
+            # Filter running queue items
+            try:
+                queue_running = [
+                    item for item in queue_running 
+                    if len(item) > 3 and isinstance(item[3], dict) and item[3].get("client_id") == user_id
+                ]
+            except Exception as e:
+                logger.warning(f"Error filtering running queue items: {e}")
+                queue_running = []
+
+            # Filter pending queue items
+            try:
+                # Get pending items for this user
+                queue_pending_user = [
+                    item for item in queue_pending 
+                    if len(item) > 3 and isinstance(item[3], dict) and item[3].get("client_id") == user_id
+                ]
+
+                # Get all position numbers, sorted
+                queue_position_size = sorted([item[0] for item in queue_pending if len(item) > 0], reverse=False)
+
+                # Get position numbers for this user's items
+                queue_position = [item[0] for item in queue_pending_user if len(item) > 0]
+            except Exception as e:
+                logger.warning(f"Error filtering pending queue items: {e}")
                 queue_position = []
                 queue_position_size = []
+
+        # Calculate final values
         queue_running_len = len(queue_running)
         queue_pending_len = len(queue_pending)
-        queue_position = queue_position_size.index(queue_position[0]) + 1 if queue_position else 0
-        return {"queue_running": queue_running_len,
-                "queue_pending": queue_pending_len,
-                "queue_position": queue_position}
+
+        # Calculate user's position in queue
+        user_queue_position = 0
+        if queue_position and queue_position_size:
+            try:
+                user_queue_position = queue_position_size.index(queue_position[0]) + 1
+            except (ValueError, IndexError) as e:
+                logger.warning(f"Error calculating queue position: {e}")
+                user_queue_position = 0
+
+        result = {
+            "queue_running": queue_running_len,
+            "queue_pending": queue_pending_len,
+            "queue_position": user_queue_position
+        }
+
+        logger.info(f"Queue status: {result}")
+        return result
+
+    except urllib.error.URLError as e:
+        logger.error(f"Failed to get queue information: {e}")
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse queue response: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in get_queue: {e}")
+        raise
 
 
-async def generate_image(user_id):
-    prompt = json.loads(prompt_text)
-    ws = await ws_connect(user_id)
+async def generate_image(user_id: str) -> Dict[str, List[bytes]]:
+    """
+    Generate images using the default prompt and the specified user ID.
+
+    This is a convenience method that:
+    1. Connects to the WebSocket server
+    2. Queues the default prompt for processing
+    3. Waits for the processing to complete
+    4. Retrieves the generated images
+    5. Closes the WebSocket connection
+
+    Args:
+        user_id (str): The user ID to use for the WebSocket connection and prompt
+
+    Returns:
+        Dict[str, List[bytes]]: Dictionary mapping node IDs to lists of image data
+
+    Raises:
+        ValueError: If user_id is empty
+        websockets.exceptions.WebSocketException: If WebSocket connection fails
+        urllib.error.URLError: If HTTP requests fail
+        json.JSONDecodeError: If JSON parsing fails
+    """
+    if not user_id:
+        raise ValueError("user_id cannot be empty")
+
+    logger.info(f"Generating image for user {user_id}")
+
     try:
-        images = await get_images(ws, user_id, prompt)
-    finally:
-        await ws.close()
+        # Parse the default prompt
+        prompt = json.loads(prompt_text)
 
-    return images
+        # Connect to WebSocket
+        ws = await ws_connect(user_id)
+
+        try:
+            # Generate images
+            images = await get_images(ws, user_id, prompt)
+            logger.info(f"Successfully generated {sum(len(img_list) for img_list in images.values())} images")
+            return images
+        finally:
+            # Always close the WebSocket connection
+            await ws.close()
+            logger.info("WebSocket connection closed")
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse prompt: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Error in generate_image: {e}")
+        raise
 
 prompt_text = """
 {
