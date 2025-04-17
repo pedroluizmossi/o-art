@@ -1,9 +1,9 @@
-from fastapi import Depends, FastAPI, APIRouter
+from fastapi import Depends, APIRouter
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from fief_client import FiefAccessTokenInfo, FiefAsync
 from fief_client.integrations.fastapi import FiefAuth
-from utils.env_core import get_env_variable, Envs
-from utils.config_core import Config
+from core.env_core import get_env_variable, Envs
+from core.config_core import Config
 
 config_instance = Config()
 fief_instance = config_instance.Fief(config_instance)

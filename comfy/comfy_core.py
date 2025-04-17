@@ -4,17 +4,15 @@ It uses websockets API to monitor prompt execution and downloads images using th
 """
 
 import asyncio
-import logging
 
 import websockets
-import uuid
 import json
 import urllib.request
 import urllib.error
 from urllib.parse import urlencode, quote
-from typing import Dict, List, Any, Optional, Union, Tuple
-from utils.logging_core import setup_logger
-from utils.config_core import Config
+from typing import Dict, List, Any, Optional
+from core.logging_core import setup_logger
+from core.config_core import Config
 
 logger = setup_logger(__name__)
 # Initialize configuration

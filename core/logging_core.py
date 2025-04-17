@@ -3,7 +3,7 @@ import logging
 import os
 import datetime
 from logging.handlers import RotatingFileHandler
-from utils.config_core import Config
+from core.config_core import Config
 
 # Initialize the configuration
 config = Config()

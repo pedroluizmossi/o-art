@@ -2,8 +2,8 @@ import hmac
 import json
 import time
 from hashlib import sha256
-from fastapi import FastAPI, HTTPException, Request, status, APIRouter
-from utils.env_core import get_env_variable, Envs
+from fastapi import HTTPException, Request, status, APIRouter
+from core.env_core import get_env_variable, Envs
 
 user_webhook_secret = get_env_variable(Envs.FIEF_USER_WEBHOOK_SECRET)
 
@@ -38,6 +38,7 @@ async def user_webhook(request: Request):
     # Check if the signatures match
     if not hmac.compare_digest(signature, computed_signature):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
 
     # Good to go!
     data = json.loads(payload)
