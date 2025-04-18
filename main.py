@@ -1,3 +1,4 @@
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Response, HTTPException
@@ -26,6 +27,10 @@ async def lifespan(app: FastAPI):
     """
     Event handler for application startup.
     """
+    # Start the queue checking thread
+    async def start_check_queue():
+        await check_queue()
+    asyncio.create_task(start_check_queue())
     yield
 
 app = FastAPI(lifespan=lifespan)

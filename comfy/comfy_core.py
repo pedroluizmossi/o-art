@@ -14,12 +14,15 @@ from urllib.parse import urlencode, quote
 from typing import Dict, List, Any, Optional
 from core.logging_core import setup_logger
 from core.config_core import Config
-
+from core.metric_core import InfluxDBWriter
 logger = setup_logger(__name__)
 # Initialize configuration
 config_instance = Config()
 comfyui_instance = config_instance.Comfyui(config_instance)
 server_address = comfyui_instance.get_server_address()
+
+# Initialize InfluxDB writer
+metric = InfluxDBWriter()
 
 async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
     """
@@ -307,6 +310,15 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
 async def check_queue(user_id: Optional[str] = None):
     while True:
         queue = await get_queue(user_id)
+        metric.write_data(
+            measurement="queue_status",
+            tags={"user_id": user_id},
+            fields={
+                "queue_running": int(queue["queue_running"]),
+                "queue_pending": int(queue["queue_pending"]),
+                "queue_position": int(queue["queue_position"])
+            }
+        )
         logger.debug(f"Queue status: {queue}")
         await asyncio.sleep(1)
 
