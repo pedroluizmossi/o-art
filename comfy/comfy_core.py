@@ -4,7 +4,8 @@ It uses websockets API to monitor prompt execution and downloads images using th
 """
 
 import asyncio
-
+import time
+import datetime
 import websockets
 import json
 import urllib.request
@@ -243,7 +244,7 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
     """
     try:
         url = f"http://{server_address}/queue"
-        logger.info(f"Fetching queue information from {url}")
+        logger.debug(f"Fetching queue information from {url}")
 
         with urllib.request.urlopen(url) as response:
             queue_data = json.loads(response.read())
@@ -252,39 +253,26 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
         queue_running = queue_data.get("queue_running", [])
         queue_pending = queue_data.get("queue_pending", [])
 
-        # Initialize variables
-        queue_position_size = []
-        queue_position = []
+        try:
+            queue_running = [
+                item for item in queue_running
+                if len(item) > 3 and isinstance(item[3], dict)
+            ]
+        except Exception as e:
+            logger.warning(f"Error filtering running queue items: {e}")
+            queue_running = []
 
-        # Filter by user_id if provided
-        if user_id is not None:
-            # Filter running queue items
-            try:
-                queue_running = [
-                    item for item in queue_running 
-                    if len(item) > 3 and isinstance(item[3], dict) and item[3].get("client_id") == user_id
-                ]
-            except Exception as e:
-                logger.warning(f"Error filtering running queue items: {e}")
-                queue_running = []
+        # Filter pending queue items
+        try:
+            # Get all position numbers, sorted
+            queue_position_size = sorted([item[0] for item in queue_pending if len(item) > 0], reverse=False)
 
-            # Filter pending queue items
-            try:
-                # Get pending items for this user
-                queue_pending_user = [
-                    item for item in queue_pending 
-                    if len(item) > 3 and isinstance(item[3], dict) and item[3].get("client_id") == user_id
-                ]
-
-                # Get all position numbers, sorted
-                queue_position_size = sorted([item[0] for item in queue_pending if len(item) > 0], reverse=False)
-
-                # Get position numbers for this user's items
-                queue_position = [item[0] for item in queue_pending_user if len(item) > 0]
-            except Exception as e:
-                logger.warning(f"Error filtering pending queue items: {e}")
-                queue_position = []
-                queue_position_size = []
+            # Get position numbers for pending items
+            queue_position = [item[0] for item in queue_pending if len(item) > 0]
+        except Exception as e:
+            logger.warning(f"Error filtering pending queue items: {e}")
+            queue_position = []
+            queue_position_size = []
 
         # Calculate final values
         queue_running_len = len(queue_running)
@@ -292,20 +280,18 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
 
         # Calculate user's position in queue
         user_queue_position = 0
-        if queue_position and queue_position_size:
-            try:
-                user_queue_position = queue_position_size.index(queue_position[0]) + 1
-            except (ValueError, IndexError) as e:
-                logger.warning(f"Error calculating queue position: {e}")
-                user_queue_position = 0
+        if user_id:
+            for i, item in enumerate(queue_pending):
+                if len(item) > 3 and isinstance(item[3], dict) and item[3].get("client_id") == user_id:
+                    user_queue_position = i + 1
+                    break
+
 
         result = {
             "queue_running": queue_running_len,
             "queue_pending": queue_pending_len,
             "queue_position": user_queue_position
         }
-
-        logger.info(f"Queue status: {result}")
         return result
 
     except urllib.error.URLError as e:
@@ -318,6 +304,11 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
         logger.error(f"Unexpected error in get_queue: {e}")
         raise
 
+async def check_queue(user_id: Optional[str] = None):
+    while True:
+        queue = await get_queue(user_id)
+        logger.debug(f"Queue status: {queue}")
+        await asyncio.sleep(1)
 
 async def generate_image(user_id: str) -> Dict[str, List[bytes]]:
     """
@@ -362,7 +353,6 @@ async def generate_image(user_id: str) -> Dict[str, List[bytes]]:
         finally:
             # Always close the WebSocket connection
             await ws.close()
-            logger.info("WebSocket connection closed")
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse prompt: {e}")
         raise
@@ -374,7 +364,7 @@ prompt_text = """
 {
   "6": {
     "inputs": {
-      "text": "mwv7_alpha_v01, A dinkfsn style ink wash painting, closeup portrait of stunning japanese woman, long loose hair, bangs, denim jacket, white blouse, leaning against a neon sign on a traditional Japanese street, night, neon signs, bokeh",
+      "text": "A chill studio-bedroom for a 25-year-old who loves motorcycles, in 8x5 meters. Dark-toned bed and couch, large motorcycle art over the bed, black desk setup, minimal wardrobe, and a corner shelf with helmets and gloves. Include warm lighting, LED strips, and one green plant for balance.",
       "clip": [
         "44",
         0
@@ -493,7 +483,7 @@ prompt_text = """
   },
   "25": {
     "inputs": {
-      "noise_seed": 738250504518345
+      "noise_seed": 443138300115363
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -556,7 +546,7 @@ prompt_text = """
   },
   "45": {
     "inputs": {
-      "model_path": "svdq-int4-flux-dev",
+      "model_path": "svdq-int4-flux.1-dev",
       "cache_threshold": 0,
       "attention": "nunchaku-fp16",
       "cpu_offload": "auto",
