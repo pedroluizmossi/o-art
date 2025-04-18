@@ -32,6 +32,23 @@ class User(SQLModel, table=True):
         session.refresh(self)
         return self
 
+    def update(self, session):
+        """
+        Update an existing user in the database.
+        """
+        session.add(self)
+        session.commit()
+        session.refresh(self)
+        return self
+
+    def delete(self, session):
+        """
+        Delete a user from the database.
+        """
+        session.delete(self)
+        session.commit()
+        return self
+
 
 
 

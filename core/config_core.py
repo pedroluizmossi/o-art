@@ -1,7 +1,10 @@
 import configparser
 import os
 
-config_file = "config.ini"
+_CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT_DIR = os.path.dirname(_CURRENT_SCRIPT_DIR)
+config_file_path = os.path.join(_PROJECT_ROOT_DIR, "config.ini")
+
 
 class Config:
     """
@@ -12,7 +15,7 @@ class Config:
         config_file (str): The path to the configuration file.
     """
 
-    def __init__(self, config_file=config_file):
+    def __init__(self, config_file=config_file_path):
         self.config = configparser.ConfigParser()
         self.config_file = config_file
         self.load_config()

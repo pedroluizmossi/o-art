@@ -3,6 +3,7 @@ from model.user_model import User
 from uuid import UUID
 from model.enum.fief_type_webhook import FiefTypeWebhook
 from core.logging_core import setup_logger
+from fastapi import HTTPException, status
 
 logger = setup_logger(__name__)
 
@@ -32,7 +33,21 @@ def handle_user_webhook(payload: dict, session: Session):
         if type == FiefTypeWebhook.USER_CREATED.value:
             user.insert(session)
             logger.info(f"User created: {user}")
-        return user
+            return None
+        elif type == FiefTypeWebhook.USER_UPDATED.value:
+            user.update(session)
+            logger.info(f"User updated: {user}")
+            return None
+        elif type == FiefTypeWebhook.USER_DELETED.value:
+            user.delete(session)
+            logger.info(f"User deleted: {user}")
+            return None
+        else:
+            logger.warning(f"Unknown webhook type: {type}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown webhook type: {type}"
+            )
     except Exception as e:
         logger.error(f"Error handling user webhook: {e}")
         return e
