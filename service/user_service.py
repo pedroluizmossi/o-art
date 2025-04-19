@@ -39,9 +39,7 @@ def get_user_by_id(session: Session, user_id: UUID) -> Optional[User]:
         raise e
 
 
-def update_user(
-    session: Session, user_id: UUID, user_update_data: dict
-) -> Optional[User]:
+def update_user(session: Session, user_id: UUID, user_update_data: dict) -> Optional[User]:
     """Updates an existing user identified by user_id with data from user_update_data."""
     try:
         user = get_user_by_id(session, user_id)

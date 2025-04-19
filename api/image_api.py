@@ -70,6 +70,4 @@ async def generate(
         logger.error(
             f"Erro inesperado ao gerar imagem para user {user_id} com workflow {request_data.workflow_name}: {e}"
         )
-        raise HTTPException(
-            status_code=500, detail="Erro interno no servidor ao gerar imagem."
-        )
+        raise HTTPException(status_code=500, detail="Erro interno no servidor ao gerar imagem.")

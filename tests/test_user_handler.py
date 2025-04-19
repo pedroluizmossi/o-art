@@ -35,9 +35,7 @@ def test_handle_user_webhook_user_created(mock_session, valid_payload):
     # Recrie o objeto User como ele seria dentro do handler para obter a string esperada
     user_data = valid_payload["data"]
     # Certifique-se que a lógica aqui (especialmente para username) corresponde à do handler
-    expected_user_str = (
-        f"User: {user_data['email'].split('@')[0]} (ID: {user_data['id']})"
-    )
+    expected_user_str = f"User: {user_data['email'].split('@')[0]} (ID: {user_data['id']})"
     expected_log_message = f"User created: {expected_user_str}"
 
     with (
@@ -53,9 +51,7 @@ def test_handle_user_webhook_user_created(mock_session, valid_payload):
 def test_handle_user_webhook_user_updated(mock_session, valid_payload):
     valid_payload["type"] = FiefTypeWebhook.USER_UPDATED.value
     user_data = valid_payload["data"]
-    expected_user_str = (
-        f"User: {user_data['email'].split('@')[0]} (ID: {user_data['id']})"
-    )
+    expected_user_str = f"User: {user_data['email'].split('@')[0]} (ID: {user_data['id']})"
     expected_log_message = f"User updated: {expected_user_str}"
 
     with (
@@ -64,18 +60,14 @@ def test_handle_user_webhook_user_updated(mock_session, valid_payload):
     ):
         handle_user_webhook(valid_payload, mock_session)
         mock_update.assert_called_once()
-        mock_logger.assert_called_once_with(
-            expected_log_message
-        )  # Atualize esta asserção também
+        mock_logger.assert_called_once_with(expected_log_message)  # Atualize esta asserção também
 
 
 def test_handle_user_webhook_user_deleted(mock_session, valid_payload):
     valid_payload["type"] = FiefTypeWebhook.USER_DELETED.value
     user_data = valid_payload["data"]
     # Crie a string esperada também para este teste
-    expected_user_str = (
-        f"User: {user_data['email'].split('@')[0]} (ID: {user_data['id']})"
-    )
+    expected_user_str = f"User: {user_data['email'].split('@')[0]} (ID: {user_data['id']})"
     expected_log_message = f"User deleted: {expected_user_str}"
 
     with (
@@ -84,9 +76,7 @@ def test_handle_user_webhook_user_deleted(mock_session, valid_payload):
     ):
         handle_user_webhook(valid_payload, mock_session)
         mock_delete.assert_called_once()
-        mock_logger.assert_called_once_with(
-            expected_log_message
-        )  # Atualize esta asserção também
+        mock_logger.assert_called_once_with(expected_log_message)  # Atualize esta asserção também
 
 
 def test_handle_user_webhook_unknown_type(mock_session, valid_payload):
@@ -111,7 +101,5 @@ def test_handle_user_webhook_unknown_type(mock_session, valid_payload):
         assert result.status_code == 400
         assert result.detail == "Unknown webhook type: unknown.type"
 
-        mock_warning_logger.assert_called_once_with(
-            "Unknown webhook type: unknown.type"
-        )
+        mock_warning_logger.assert_called_once_with("Unknown webhook type: unknown.type")
         mock_error_logger.assert_called_once()

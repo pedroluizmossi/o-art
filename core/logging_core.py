@@ -29,9 +29,7 @@ def setup_logger(name: str, config=None) -> logging.Logger:
                 "level": config_instance.get("Logs", "level", "INFO"),
                 "path": config_instance.get("Logs", "path", "./logs"),
                 "max_backups": config_instance.getint("Logs", "max_backups", 5),
-                "max_files": config_instance.getint(
-                    "Logs", "max_files", 10
-                ),  # Para cleanup
+                "max_files": config_instance.getint("Logs", "max_files", 10),  # Para cleanup
             }
         except Exception as e:
             logging.basicConfig(level=logging.WARNING)
@@ -54,9 +52,7 @@ def setup_logger(name: str, config=None) -> logging.Logger:
             os.makedirs(log_dir)
         except OSError as e:
             logging.basicConfig(level=logging.ERROR)
-            logging.error(
-                f"Failed to create log directory {log_dir}: {e}", exc_info=True
-            )
+            logging.error(f"Failed to create log directory {log_dir}: {e}", exc_info=True)
             logger = logging.getLogger(name)
             _loggers[name] = logger
             return logger
@@ -124,9 +120,7 @@ def cleanup_old_logs(log_dir: str, max_files: int):
         files.sort(key=lambda x: os.path.getmtime(os.path.join(log_dir, x)))
 
     except Exception as e:
-        temp_logger.error(
-            "Error listing or sorting log files in %s: %s", log_dir, e, exc_info=True
-        )
+        temp_logger.error("Error listing or sorting log files in %s: %s", log_dir, e, exc_info=True)
         return
 
     files_to_remove_count = len(files) - max_files
@@ -164,9 +158,7 @@ def cleanup_old_logs(log_dir: str, max_files: int):
         except OSError as e:
             temp_logger.error("Failed to remove log file %s: %s", file_path, e)
         except Exception as e:  # Captura outros erros inesperados
-            temp_logger.exception(
-                "Unexpected error removing log file %s: %s", file_path, e
-            )
+            temp_logger.exception("Unexpected error removing log file %s: %s", file_path, e)
 
     temp_logger.info(
         "Log cleanup finished for %s. Successfully removed %d file(s).",

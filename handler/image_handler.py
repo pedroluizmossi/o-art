@@ -34,9 +34,7 @@ def replace_placeholders(obj, params):
         return obj
 
 
-def load_and_populate_workflow(
-    workflow_name: str, params: Dict[str, Any]
-) -> (Dict[str, Any], str):
+def load_and_populate_workflow(workflow_name: str, params: Dict[str, Any]) -> (Dict[str, Any], str):
     workflow_path = os.path.join(WORKFLOW_DIR, workflow_name)
     if not os.path.exists(workflow_path):
         logger.error("Workflow file not found: %s", workflow_path)
@@ -108,9 +106,7 @@ async def handle_generate_image(
     logger.info(
         f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_name}"
     )
-    logger.debug(
-        f"Received parameters: {params}"
-    )  # Cuidado ao logar params em produção
+    logger.debug(f"Received parameters: {params}")  # Cuidado ao logar params em produção
 
     try:
         populated_workflow, designated_output_node_id = load_and_populate_workflow(
@@ -148,11 +144,7 @@ async def handle_generate_image(
             f"Designated output node {designated_output_node_id} not found in results or had no images for job {job_id}. Searching other nodes."
         )
         for node_id, output_data in all_outputs.items():
-            if (
-                isinstance(output_data, list)
-                and output_data
-                and isinstance(output_data[0], bytes)
-            ):
+            if isinstance(output_data, list) and output_data and isinstance(output_data[0], bytes):
                 logger.info(
                     f"Found image output in fallback node {node_id} for job {job_id}. Returning this output."
                 )
@@ -169,7 +161,12 @@ async def handle_generate_image(
     except FileNotFoundError as e:
         logger.error(f"Workflow file error for job {job_id}: {e}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:  # Captura erros de load_and_populate
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        json.JSONDecodeError,
+    ) as e:  # Captura erros de load_and_populate
         logger.error(f"Workflow definition or parameter error for job {job_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -184,9 +181,7 @@ async def handle_generate_image(
             detail = f"ComfyUI backend failed: {e}"
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail)
     except Exception as e:
-        logger.exception(
-            f"Unexpected error in handle_generate_image for job {job_id}: {e}"
-        )
+        logger.exception(f"Unexpected error in handle_generate_image for job {job_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error during image generation.",

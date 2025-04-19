@@ -56,17 +56,11 @@ class InfluxDBWriter:
                 # Consider making write options configurable if needed
                 write_api = client.write_api(write_options=SYNCHRONOUS)
 
-                point = (
-                    Point(measurement)
-                    .tag("host", self.host_name)
-                    .tag("os", self.os_name)
-                )
+                point = Point(measurement).tag("host", self.host_name).tag("os", self.os_name)
 
                 # Add tags dynamically
                 for tag_key, tag_value in tags.items():
-                    point = point.tag(
-                        tag_key, str(tag_value)
-                    )  # Ensure tag value is a string
+                    point = point.tag(tag_key, str(tag_value))  # Ensure tag value is a string
 
                 # Add fields dynamically and validate types
                 for field_key, field_value in fields.items():
@@ -91,18 +85,12 @@ class InfluxDBWriter:
                     f"Successfully wrote point to measurement '{measurement}' in bucket '{self.bucket}'."
                 )
 
-        except (
-            ValueError
-        ) as ve:  # Catch specific ValueError from field type check if raised
-            logger.error(
-                f"Data validation error while preparing point for InfluxDB: {ve}"
-            )
+        except ValueError as ve:  # Catch specific ValueError from field type check if raised
+            logger.error(f"Data validation error while preparing point for InfluxDB: {ve}")
             # Decide if you want to re-raise or just log
             # raise ve
         except Exception as e:
             # Log any other exceptions during InfluxDB interaction
-            logger.exception(
-                f"Error writing data to InfluxDB measurement '{measurement}': {e}"
-            )
+            logger.exception(f"Error writing data to InfluxDB measurement '{measurement}': {e}")
             # Consider re-raising the exception if the calling code needs to handle it
             # raise e

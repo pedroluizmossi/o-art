@@ -60,9 +60,7 @@ def handle_user_webhook(payload: dict, session: Session):
             if deleted:
                 logger.info(f"User deletion handled via service: {user_id}")
             else:
-                logger.info(
-                    f"User deletion handled via service for {user_id}, but user not found."
-                )
+                logger.info(f"User deletion handled via service for {user_id}, but user not found.")
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
         else:

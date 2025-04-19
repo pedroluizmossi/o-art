@@ -41,9 +41,7 @@ async def lifespan(app: FastAPI):
         if log_directory and max_log_files >= 0:
             cleanup_old_logs(log_dir=log_directory, max_files=max_log_files)
         else:
-            logger.warning(
-                "Log cleanup skipped: Invalid directory or max_files configuration."
-            )
+            logger.warning("Log cleanup skipped: Invalid directory or max_files configuration.")
     except Exception as e:
         logger.error("Failed to run initial log cleanup: %s", e, exc_info=True)
 
