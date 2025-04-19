@@ -13,10 +13,9 @@ from api.webhook_api import router as webhook_router
 from api.websocket_api import router as websocket_router
 from core.config_core import Config
 from core.db_core import create_db
+from core.logging_core import cleanup_old_logs, setup_logger
 
 load_dotenv()
-
-from core.logging_core import cleanup_old_logs, setup_logger
 
 logger = setup_logger(__name__)
 

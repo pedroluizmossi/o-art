@@ -30,7 +30,7 @@ class GenerateImageRequest(BaseModel):
 @router.post("/generate")
 async def generate(
     request_data: GenerateImageRequest,
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated),
+    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     user_id = str(access_token_info["id"])
     job_id = str(uuid.uuid4())

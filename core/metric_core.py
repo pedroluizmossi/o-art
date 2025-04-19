@@ -2,11 +2,14 @@ import platform
 import socket
 import time
 
+from dotenv import load_dotenv
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
+
+load_dotenv()
 
 logger = setup_logger(__name__)
 

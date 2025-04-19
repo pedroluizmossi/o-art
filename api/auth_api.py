@@ -22,7 +22,7 @@ router = APIRouter(
 
 @router.get("/user")
 async def get_user(
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated)
+    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated())
 ,
 ):
     return access_token_info
