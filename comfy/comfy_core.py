@@ -88,12 +88,12 @@ async def queue_prompt(prompt: Dict[str, Any], client_id: str) -> Dict[str, Any]
             logger.error(
                 "HTTP Error %s when queuing prompt. Details: %s", e.code, error_details
             )
-        except (IOError, json.JSONDecodeError, UnicodeDecodeError):
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
             logger.error(
                 "HTTP Error %s when queuing prompt. Could not read error body.", e.code
             )
         raise ComfyUIError(
-            f"Failed to queue prompt", status_code=e.code, details=error_details
+            "Failed to queue prompt", status_code=e.code, details=error_details
         ) from e
     except urllib.error.URLError as e:
         logger.error("URL Error queuing prompt: %s", e.reason)

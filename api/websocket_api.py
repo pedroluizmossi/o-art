@@ -1,8 +1,9 @@
+import asyncio
 from typing import Optional
 
-from fastapi import WebSocket, WebSocketDisconnect, APIRouter
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
 from comfy.comfy_core import get_queue
-import asyncio
 
 router = APIRouter(
     prefix="/websocket",

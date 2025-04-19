@@ -1,13 +1,13 @@
+import uuid
+from typing import Any, Dict
+
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fief_client import FiefAccessTokenInfo
 from pydantic import BaseModel, Field
-from typing import Dict, Any
-import uuid
+
 from api.auth_api import auth
-from fastapi import APIRouter, HTTPException, Response, Depends
-
-from handler.image_handler import handle_generate_image
-
 from core.logging_core import setup_logger
+from handler.image_handler import handle_generate_image
 
 logger = setup_logger(__name__)
 

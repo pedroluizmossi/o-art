@@ -1,10 +1,11 @@
 import json
 import os
 import re
+from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException, status
-from typing import Dict, Any, List, Optional
-from comfy.comfy_core import execute_workflow, ComfyUIError
+
+from comfy.comfy_core import ComfyUIError, execute_workflow
 from core.logging_core import setup_logger
 
 logger = setup_logger(__name__)
@@ -42,14 +43,14 @@ def load_and_populate_workflow(
         raise FileNotFoundError(f"Workflow '{workflow_name}' not found.")
 
     try:
-        with open(workflow_path, "r", encoding="utf-8") as f:
+        with open(workflow_path, encoding="utf-8") as f:
             workflow_template = json.load(f)
     except json.JSONDecodeError as e:
         logger.error("Failed to parse workflow JSON file %s: %s", workflow_path, e)
         raise ValueError(f"Invalid JSON in workflow file '{workflow_name}'.") from e
     except Exception as e:
         logger.error("Failed to read workflow file %s: %s", workflow_path, e)
-        raise IOError(f"Could not read workflow file '{workflow_name}'.") from e
+        raise OSError(f"Could not read workflow file '{workflow_name}'.") from e
 
     populated_workflow_dict = replace_placeholders(workflow_template, params)
 
@@ -168,12 +169,7 @@ async def handle_generate_image(
     except FileNotFoundError as e:
         logger.error(f"Workflow file error for job {job_id}: {e}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except (
-        ValueError,
-        KeyError,
-        json.JSONDecodeError,
-        IOError,
-    ) as e:  # Captura erros de load_and_populate
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:  # Captura erros de load_and_populate
         logger.error(f"Workflow definition or parameter error for job {job_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

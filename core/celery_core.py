@@ -1,7 +1,9 @@
-from celery import Celery
 import asyncio
-from core.config_core import Config
+
+from celery import Celery
+
 from comfy.comfy_core import check_queue_task
+from core.config_core import Config
 
 config_instance = Config()
 redis_host = config_instance.get("Redis", "host", default="localhost")

@@ -25,7 +25,7 @@ class Config:
         if os.path.exists(self.config_file):
             try:
                 self.config.read(self.config_file)
-            except configparser.Error as e:
+            except configparser.Error:
                 self.config = configparser.ConfigParser()
         else:
             self.config = configparser.ConfigParser()

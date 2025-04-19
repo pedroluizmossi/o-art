@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 from typing import Optional
-from pydantic import EmailStr
-from sqlmodel import Field, SQLModel, Column
 from uuid import UUID, uuid4
+
+from pydantic import EmailStr
 from sqlalchemy import DateTime
+from sqlmodel import Column, Field, SQLModel
 
 
 class User(SQLModel, table=True):

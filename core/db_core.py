@@ -1,9 +1,8 @@
-from sqlmodel import Field, SQLModel, create_engine, Session
-from core.env_core import get_env_variable, Envs
-
-from core.logging_core import setup_logger
-
 from dotenv import load_dotenv
+from sqlmodel import Session, SQLModel, create_engine
+
+from core.env_core import Envs, get_env_variable
+from core.logging_core import setup_logger
 
 load_dotenv()
 

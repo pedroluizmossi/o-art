@@ -2,13 +2,13 @@ import hmac
 import json
 import time
 from hashlib import sha256
-from fastapi import HTTPException, Request, status, APIRouter, Depends
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 
 from core.db_core import get_session
-from core.env_core import get_env_variable, Envs
+from core.env_core import Envs, get_env_variable
 from handler.user_handler import handle_user_webhook
-
 
 user_webhook_secret = get_env_variable(Envs.FIEF_USER_WEBHOOK_SECRET)
 

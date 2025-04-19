@@ -1,10 +1,11 @@
+from unittest.mock import MagicMock, patch
+from uuid import uuid4  # Import UUID
+
 import pytest
 from fastapi import HTTPException
+
 from handler.user_handler import handle_user_webhook
 from model.enum.fief_type_webhook import FiefTypeWebhook
-from model.user_model import User  # Import User model
-from unittest.mock import MagicMock, patch
-from uuid import uuid4, UUID  # Import UUID
 
 
 @pytest.fixture

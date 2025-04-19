@@ -1,6 +1,7 @@
 from fief_client import FiefAsync
+
 from core.config_core import Config
-from core.env_core import get_env_variable, Envs
+from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
 
 # Set up the logger for this module

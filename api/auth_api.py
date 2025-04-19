@@ -1,7 +1,8 @@
-from fastapi import Depends, APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from fief_client import FiefAccessTokenInfo
 from fief_client.integrations.fastapi import FiefAuth
+
 from handler.auth_handler import domain_address, fief
 
 scheme = OAuth2AuthorizationCodeBearer(

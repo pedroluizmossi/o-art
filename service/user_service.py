@@ -1,10 +1,11 @@
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
-from datetime import datetime, timezone
 
 from sqlmodel import Session, select
-from model.user_model import User
+
 from core.logging_core import setup_logger
+from model.user_model import User
 
 logger = setup_logger(__name__)
 

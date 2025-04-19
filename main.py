@@ -1,23 +1,22 @@
-from contextlib import asynccontextmanager
 import subprocess
 import sys
-
-from fastapi import FastAPI, Response, HTTPException
-from core.config_core import Config
-from core.db_core import create_db
-
-###Routes
-from api.auth_api import router as auth_router
-from api.webhook_api import router as webhook_router
-from api.image_api import router as image_router
-from api.websocket_api import router as websocket_router
+from contextlib import asynccontextmanager
 
 # Load environment variables
 from dotenv import load_dotenv
+from fastapi import FastAPI
+
+###Routes
+from api.auth_api import router as auth_router
+from api.image_api import router as image_router
+from api.webhook_api import router as webhook_router
+from api.websocket_api import router as websocket_router
+from core.config_core import Config
+from core.db_core import create_db
 
 load_dotenv()
 
-from core.logging_core import setup_logger, cleanup_old_logs
+from core.logging_core import cleanup_old_logs, setup_logger
 
 logger = setup_logger(__name__)
 
