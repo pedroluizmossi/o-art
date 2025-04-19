@@ -19,11 +19,11 @@ def create_user(session: Session, user_data: User) -> User:
         session.add(user_data)
         session.commit()
         session.refresh(user_data)
-        logger.info(f"User created successfully: {user_data.id}")
+        logger.info("User created successfully: %s", user_data.id)
         return user_data
     except Exception as e:
         session.rollback()
-        logger.exception(f"Error creating user {user_data.email}: {e}")
+        logger.exception("Error creating user %s: %s", user_data.email, e)
         raise e
 
 
@@ -34,7 +34,7 @@ def get_user_by_id(session: Session, user_id: UUID) -> Optional[User]:
         user = session.exec(statement).first()
         return user
     except Exception as e:
-        logger.exception(f"Error retrieving user by ID {user_id}: {e}")
+        logger.exception("Error retrieving user by ID %s: %s", user_id, e)
         raise e
 
 
@@ -43,7 +43,7 @@ def update_user(session: Session, user_id: UUID, user_update_data: dict) -> Opti
     try:
         user = get_user_by_id(session, user_id)
         if not user:
-            logger.warning(f"User with ID {user_id} not found for update.")
+            logger.warning("User with ID %s not found for update.", user_id)
             return None
 
         updated = False
@@ -57,14 +57,14 @@ def update_user(session: Session, user_id: UUID, user_update_data: dict) -> Opti
             session.add(user)
             session.commit()
             session.refresh(user)
-            logger.info(f"User updated successfully: {user_id}")
+            logger.info("User updated successfully: %s", user_id)
         else:
-            logger.info(f"No changes detected for user {user_id}. Update skipped.")
+            logger.info("No changes detected for user %s. Update skipped.", user_id)
 
         return user
     except Exception as e:
         session.rollback()
-        logger.exception(f"Error updating user {user_id}: {e}")
+        logger.exception("Error updating user %s: %s", user_id, e)
         raise e
 
 
@@ -75,12 +75,12 @@ def delete_user(session: Session, user_id: UUID) -> bool:
         if user:
             session.delete(user)
             session.commit()
-            logger.info(f"User deleted successfully: {user_id}")
+            logger.info("User deleted successfully: %s", user_id)
             return True
         else:
-            logger.warning(f"User with ID {user_id} not found for deletion.")
+            logger.warning("User with ID %s not found for deletion.", user_id)
             return False
     except Exception as e:
         session.rollback()
-        logger.exception(f"Error deleting user {user_id}: {e}")
+        logger.exception("Error deleting user %s: %s", user_id, e)
         raise e

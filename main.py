@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
         else:
             logger.warning("Log cleanup skipped: Invalid directory or max_files configuration.")
     except Exception as e:
-        logger.error(f"Failed to run initial log cleanup: {e}", exc_info=True)
+        logger.error("Failed to run initial log cleanup: %s", e, exc_info=True)
 
     try:
         worker_command = [
@@ -51,32 +51,32 @@ async def lifespan(app: FastAPI):
             "--pool=solo"
         ]
         worker_process = subprocess.Popen(worker_command)
-        logger.info(f"Processo worker iniciado com PID: {worker_process.pid}")
+        logger.info("Processo worker iniciado com PID: %s", worker_process.pid)
 
         beat_command = [
             sys.executable, "-m", "celery", "-A", "core.celery_core.celery_app", "beat", "--loglevel=warning"
         ]
         beat_process = subprocess.Popen(beat_command)
-        logger.info(f"Processo beat iniciado com PID: {beat_process.pid}")
+        logger.info("Processo beat iniciado com PID: %s", beat_process.pid)
 
     except Exception as e:
-        logger.error(f"Falha ao iniciar worker/beat: {e}")
+        logger.error("Falha ao iniciar worker/beat: %s", e)
+
 
     yield
 
     for proc, desc in [(worker_process, "worker"), (beat_process, "beat")]:
         if proc:
-            logger.info(f"Parando o processo {desc}...")
+            logger.info("Parando o processo %s...", desc)
             proc.terminate()
             try:
                 proc.wait(timeout=10)
-                logger.info(f"Processo {desc} terminado graciosamente.")
+                logger.info("Processo %s terminado graciosamente.", desc)
             except subprocess.TimeoutExpired:
-                logger.warning(f"Processo {desc} não terminou a tempo, forçando parada (SIGKILL)...")
+                logger.warning("Processo %s não terminou a tempo, forçando parada (SIGKILL)...", desc)
                 proc.kill()
                 proc.wait()
-                logger.info(f"Processo {desc} forçado a parar.")
-
+                logger.info("Processo %s forçado a parar.", desc)
 
 app = FastAPI(lifespan=lifespan)
 # --- Fim da modificação ---

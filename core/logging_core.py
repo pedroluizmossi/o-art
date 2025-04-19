@@ -87,11 +87,11 @@ def cleanup_old_logs(log_dir: str, max_files: int):
         temp_logger.setLevel(logging.INFO)
 
     if not os.path.exists(log_dir):
-        temp_logger.warning(f"Log directory for cleanup does not exist: {log_dir}")
+        temp_logger.warning("Log directory for cleanup does not exist: %s", log_dir)
         return
 
     if not isinstance(max_files, int) or max_files < 0:
-        temp_logger.error(f"Invalid max_files for log cleanup: {max_files}. Must be a non-negative integer.")
+        temp_logger.error("Invalid max_files for log cleanup: %s. Must be a non-negative integer.", max_files)
         return
 
     try:
@@ -103,32 +103,33 @@ def cleanup_old_logs(log_dir: str, max_files: int):
         files.sort(key=lambda x: os.path.getmtime(os.path.join(log_dir, x)))
 
     except Exception as e:
-        temp_logger.error(f"Error listing or sorting log files in {log_dir}: {e}", exc_info=True)
+        temp_logger.error("Error listing or sorting log files in %s: %s", log_dir, e, exc_info=True)
         return
 
     files_to_remove_count = len(files) - max_files
     if files_to_remove_count <= 0:
         temp_logger.info(
-            f"Log file count ({len(files)}) is within the limit ({max_files}). No cleanup needed in {log_dir}.")
+            "Log file count (%d) is within the limit (%d). No cleanup needed in %s.", len(files), max_files, log_dir)
         return
 
     files_to_remove = files[:files_to_remove_count]
 
     temp_logger.info(
-        f"Starting cleanup of old log files in {log_dir}. Found {len(files)}, keeping last {max_files}, removing {len(files_to_remove)}.")
+        "Starting cleanup of old log files in %s. Found %d, keeping last %d, removing %d.",
+        log_dir, len(files), max_files, len(files_to_remove))
     removed_count = 0
     for f in files_to_remove:
         file_path = os.path.join(log_dir, f)
         try:
             if os.path.exists(file_path):
                 os.remove(file_path)
-                temp_logger.info(f"Removed old log file: {file_path}")
+                temp_logger.info("Removed old log file: %s", file_path)
                 removed_count += 1
             else:
-                temp_logger.warning(f"Log file vanished before removal (likely race condition): {file_path}")
+                temp_logger.warning("Log file vanished before removal (likely race condition): %s", file_path)
         except OSError as e:
-            temp_logger.error(f"Failed to remove log file {file_path}: {e}")
+            temp_logger.error("Failed to remove log file %s: %s", file_path, e)
         except Exception as e:  # Captura outros erros inesperados
-            temp_logger.exception(f"Unexpected error removing log file {file_path}: {e}")
+            temp_logger.exception("Unexpected error removing log file %s: %s", file_path, e)
 
-    temp_logger.info(f"Log cleanup finished for {log_dir}. Successfully removed {removed_count} file(s).")
+    temp_logger.info("Log cleanup finished for %s. Successfully removed %d file(s).", log_dir, removed_count)
