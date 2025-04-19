@@ -1,6 +1,6 @@
 from celery import Celery
-from core.config_core import Config
 import asyncio
+from core.config_core import Config
 from comfy.comfy_core import check_queue_task
 
 config_instance = Config()

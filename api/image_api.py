@@ -1,11 +1,14 @@
 from fief_client import FiefAccessTokenInfo
-
+from pydantic import BaseModel, Field
+from typing import Dict, Any
+import uuid
 from api.auth_api import auth
 from fastapi import APIRouter, HTTPException, Response, Depends
 
 from handler.image_handler import handle_generate_image
 
 from core.logging_core import setup_logger
+
 logger = setup_logger(__name__)
 
 router = APIRouter(
@@ -13,18 +16,18 @@ router = APIRouter(
     tags=["image"],
 )
 
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any
-import uuid
 
 class GenerateImageRequest(BaseModel):
-    workflow_name: str = Field(..., description="Nome do arquivo do workflow (ex: flux_default.json)")
-    parameters: Dict[str, Any] = Field(default_factory=dict, description="Parâmetros para preencher o workflow (ex: {'positive_prompt': 'gato astronauta', 'seed': 123})")
+    workflow_name: str = Field(...,
+                               description="Nome do arquivo do workflow (ex: flux_default.json)")
+    parameters: Dict[str, Any] = Field(default_factory=dict,
+                                       description="Parâmetros para preencher o workflow (ex: {'positive_prompt': 'gato astronauta', 'seed': 123})")
+
 
 @router.post("/generate")
 async def generate(
-    request_data: GenerateImageRequest,
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
+        request_data: GenerateImageRequest,
+        access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     user_id = str(access_token_info["id"])
     job_id = str(uuid.uuid4())
@@ -45,12 +48,16 @@ async def generate(
             first_image_bytes = image_data[first_node_id][0]
             return Response(content=first_image_bytes, media_type="image/png")
         else:
-            raise HTTPException(status_code=500, detail="Falha ao gerar imagem ou workflow não produziu saída esperada.")
+            raise HTTPException(status_code=500,
+                                detail="Falha ao gerar imagem ou workflow não produziu saída esperada.")
 
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Workflow '{request_data.workflow_name}' não encontrado.")
+        raise HTTPException(status_code=404,
+                            detail=f"Workflow '{request_data.workflow_name}' não encontrado.")
     except KeyError as e:
-        raise HTTPException(status_code=400, detail=f"Parâmetro obrigatório '{e}' ausente para o workflow '{request_data.workflow_name}'.")
+        raise HTTPException(status_code=400,
+                            detail=f"Parâmetro obrigatório '{e}' ausente para o workflow '{request_data.workflow_name}'.")
     except Exception as e:
-        logger.error(f"Erro inesperado ao gerar imagem para user {user_id} com workflow {request_data.workflow_name}: {e}")
+        logger.error(
+            f"Erro inesperado ao gerar imagem para user {user_id} com workflow {request_data.workflow_name}: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no servidor ao gerar imagem.")

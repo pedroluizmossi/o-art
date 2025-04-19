@@ -1,4 +1,4 @@
-from fief_client import FiefAccessTokenInfo, FiefAsync, FiefUserInfo
+from fief_client import FiefAsync
 from core.config_core import Config
 from core.env_core import get_env_variable, Envs
 from core.logging_core import setup_logger
@@ -11,7 +11,7 @@ config_instance = Config()
 domain_address = config_instance.get("Fief", "domain", default="http://127.0.0.1:8001")
 
 if not domain_address:
-     logger.error("Fief domain not found in config.ini ([Fief] domain). Authentication might fail.")
+    logger.error("Fief domain not found in config.ini ([Fief] domain). Authentication might fail.")
 
 fief = FiefAsync(
     domain_address,

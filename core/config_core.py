@@ -16,7 +16,7 @@ class Config:
     def __init__(self, config_file=DEFAULT_CONFIG_FILE_PATH):
         self.config = configparser.ConfigParser()
         self.config_file = config_file
-        self._load_config() # Tornar privado para indicar uso interno
+        self._load_config()  # Tornar privado para indicar uso interno
 
     def _load_config(self):
         """
@@ -40,7 +40,8 @@ class Config:
             default: The default value to return if the section/option is not found.
 
         Returns:
-            The value of the configuration option or the default value. Returns None if not found and no default.
+            The value of the configuration option or the default value.
+            Returns None if not found and no default.
         """
         return self.config.get(section, option, fallback=default)
 
@@ -48,12 +49,12 @@ class Config:
         try:
             return self.config.getint(section, option, fallback=default)
         except (ValueError, TypeError):
-             return default
+            return default
 
     def getboolean(self, section, option, default=None):
         try:
-             if not self.config.has_option(section, option):
-                 return default
-             return self.config.getboolean(section, option)
+            if not self.config.has_option(section, option):
+                return default
+            return self.config.getboolean(section, option)
         except (ValueError, TypeError):
-             return default
+            return default
