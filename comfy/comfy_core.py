@@ -4,7 +4,7 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import websockets
 
@@ -60,7 +60,7 @@ async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
         raise ComfyUIError(f"Unexpected error connecting to WebSocket: {e}") from e
 
 
-async def queue_prompt(prompt: Dict[str, Any], client_id: str) -> Dict[str, Any]:
+async def queue_prompt(prompt: dict[str, Any], client_id: str) -> dict[str, Any]:
     if not server_address:
         raise ComfyUIError("ComfyUI server address not configured.")
     if not prompt or not client_id:
@@ -132,7 +132,7 @@ async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
         raise ComfyUIError(f"Unexpected error getting image {filename}: {e}") from e
 
 
-async def get_history(prompt_id: str) -> Dict[str, Any]:
+async def get_history(prompt_id: str) -> dict[str, Any]:
     if not server_address:
         raise ComfyUIError("ComfyUI server address not configured.")
     if not prompt_id:
@@ -166,8 +166,8 @@ async def get_history(prompt_id: str) -> Dict[str, Any]:
 
 
 async def get_images(
-    ws: websockets.WebSocketClientProtocol, client_id: str, prompt: Dict[str, Any]
-) -> Dict[str, List[bytes]]:
+    ws: websockets.WebSocketClientProtocol, client_id: str, prompt: dict[str, Any]
+) -> dict[str, List[bytes]]:
     if not ws or not client_id or not prompt:
         raise ValueError("WebSocket, client_id, and prompt cannot be empty")
 
@@ -311,7 +311,7 @@ async def get_images(
         raise e
 
 
-async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
+async def get_queue(user_id: Optional[str] = None) -> dict[str, int]:
     """
     Get information about the current queue status from the ComfyUI server.
 
@@ -319,7 +319,7 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
         user_id (Optional[str]): If provided, filter queue information for this specific user
 
     Returns:
-        Dict[str, int]: Dictionary containing queue information:
+        dict[str, int]: Dictionary containing queue information:
             - queue_running: Number of running items
             - queue_pending: Number of pending items
             - queue_position: Position in queue for the specified user (0 if not in queue)
@@ -410,8 +410,8 @@ async def check_queue_task(user_id: Optional[str] = None):
 
 
 async def execute_workflow(
-    user_id: str, job_id: str, workflow_dict: Dict[str, Any]
-) -> Optional[Dict[str, List[bytes]]]:
+    user_id: str, job_id: str, workflow_dict: dict[str, Any]
+) -> Optional[dict[str, List[bytes]]]:
     client_id = f"{user_id}"
     logger.info("Executing workflow for user %s (job: %s)", user_id, job_id)
     ws = None

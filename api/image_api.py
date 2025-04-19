@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fief_client import FiefAccessTokenInfo
@@ -21,7 +21,7 @@ class GenerateImageRequest(BaseModel):
     workflow_name: str = Field(
         ..., description="Nome do arquivo do workflow (ex: flux_default.json)"
     )
-    parameters: Dict[str, Any] = Field(
+    parameters: dict[str, Any] = Field(
         default_factory=dict,
         description="Parâmetros para preencher o workflow (ex: {'positive_prompt': 'gato astronauta', 'seed': 123})",
     )

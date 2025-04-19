@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from fastapi import HTTPException, status
 
@@ -34,7 +34,7 @@ def replace_placeholders(obj, params):
         return obj
 
 
-def load_and_populate_workflow(workflow_name: str, params: Dict[str, Any]) -> (Dict[str, Any], str):
+def load_and_populate_workflow(workflow_name: str, params: dict[str, Any]) -> (dict[str, Any], str):
     workflow_path = os.path.join(WORKFLOW_DIR, workflow_name)
     if not os.path.exists(workflow_path):
         logger.error("Workflow file not found: %s", workflow_path)
@@ -101,8 +101,8 @@ def load_and_populate_workflow(workflow_name: str, params: Dict[str, Any]) -> (D
 
 
 async def handle_generate_image(
-    user_id: str, job_id: str, workflow_name: str, params: Dict[str, Any]
-) -> Optional[Dict[str, List[bytes]]]:
+    user_id: str, job_id: str, workflow_name: str, params: dict[str, Any]
+) -> Optional[dict[str, List[bytes]]]:
     logger.info(
         f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_name}"
     )
