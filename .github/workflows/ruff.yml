@@ -1,18 +1,23 @@
-name: ruff-action
-  # You may pin to the exact commit or the version.
-  # uses: astral-sh/ruff-action@9828f49eb4cadf267b40eaa330295c412c68c1f9
-  uses: astral-sh/ruff-action@v3.2.2
-  with:
-    # Arguments passed to Ruff. Use `ruff --help` to see available options. Defaults to `check`.
-    args: # optional, default is check
-    # Source to run Ruff. Defaults to the current directory.
-    src: # optional, default is ${{ github.workspace }}
-    # The version of Ruff to use, e.g., `0.6.0` Defaults to the version in pyproject.toml or 'latest'.
-    version: # optional, default is 
-    # Path to a pyproject.toml or requirements.txt file to read the version from.
-    version-file: # optional
-    # The checksum of the ruff version to install
-    checksum: # optional
-    # Used to increase the rate limit when retrieving versions and downloading ruff.
-    github-token: # optional, default is ${{ github.token }}
-          
+# Exemplo de como o passo completo poderia parecer em seu job:
+    name: Executar o Ruff (e torcer para funcionar desta vez)
+      uses: astral-sh/ruff-action@v3.2.2 # Você pode usar a versão ou o commit hash, decida-se!
+      with:
+        # Argumentos passados para o Ruff. Use `ruff --help` para opções. Padrão: `check`.
+        # args: '--fix --exit-non-zero-on-fix' # Exemplo de como passar argumentos
+
+        # Diretório onde o Ruff vai procurar seus pecados em Python. Padrão: o workspace todo.
+        # src: './meu_projeto_python' # Exemplo
+
+        # Versão específica do Ruff, se você for do tipo controlador. Padrão: a do pyproject.toml ou 'latest'.
+        # version: '0.4.0' # Exemplo
+
+        # Se você não confia no 'latest' e quer travar numa versão do seu requirements.txt.
+        # version-file: 'requirements-dev.txt' # Exemplo
+
+        # Para os paranoicos: verificar o checksum do Ruff baixado.
+        # checksum: 'sha256-...' # Exemplo
+
+        # Token do GitHub para evitar limites de taxa ao baixar o Ruff. Padrão: o token da ação.
+        # github-token: ${{ secrets.MEU_TOKEN_SECRETO }} # Exemplo (raramente necessário mudar)
+
+        # O argumento padrão 'check' já está implícito se você não especificar 'args'.
