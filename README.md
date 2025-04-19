@@ -1,4 +1,4 @@
-# Projeto "Art Engine" (Nome Sugerido, Sinta-se Livre Para Mudar!) 🎨🤖
+# Projeto O-Art 🎨🤖
 
 Seja bem-vindo ao cérebro (ou talvez apenas ao sistema nervoso central) por trás de uma operação de arte gerada por IA! Este projeto é uma API robusta construída com FastAPI, projetada para orquestrar a geração de imagens usando o poderoso [ComfyUI](https://github.com/comfyanonymous/ComfyUI), enquanto lida com toda a burocracia chata de usuários, filas e armazenamento.
 
