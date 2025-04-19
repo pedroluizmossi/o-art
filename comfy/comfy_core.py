@@ -320,254 +320,27 @@ async def check_queue_task(user_id: Optional[str] = None):
     )
     logger.debug(f"Queue status: {queue}")
 
-async def generate_image(user_id: str) -> Dict[str, List[bytes]]:
+# Dentro de comfy/comfy_core.py
+
+async def execute_workflow(user_id: str, job_id: str, workflow_dict: Dict[str, Any]) -> Optional[Dict[str, List[bytes]]]:
     """
-    Generate images using the default prompt and the specified user ID.
-
-    This is a convenience method that:
-    1. Connects to the WebSocket server
-    2. Queues the default prompt for processing
-    3. Waits for the processing to complete
-    4. Retrieves the generated images
-    5. Closes the WebSocket connection
-
-    Args:
-        user_id (str): The user ID to use for the WebSocket connection and prompt
-
-    Returns:
-        Dict[str, List[bytes]]: Dictionary mapping node IDs to lists of image data
-
-    Raises:
-        ValueError: If user_id is empty
-        websockets.exceptions.WebSocketException: If WebSocket connection fails
-        urllib.error.URLError: If HTTP requests fail
-        json.JSONDecodeError: If JSON parsing fails
+    Conecta ao ComfyUI, executa um workflow específico e retorna os resultados.
+    Usa o user_id para o client_id do WebSocket e job_id para rastreamento/logging.
     """
-    if not user_id:
-        raise ValueError("user_id cannot be empty")
+    client_id = f"{user_id}"
+    logger.info(f"Executando workflow para client_id: {client_id}")
 
-    logger.info(f"Generating image for user {user_id}")
-
+    ws = None
     try:
-        # Parse the default prompt
-        prompt = json.loads(prompt_text)
-
-        # Connect to WebSocket
-        ws = await ws_connect(user_id)
-
-        try:
-            # Generate images
-            images = await get_images(ws, user_id, prompt)
-            logger.info(f"Successfully generated {sum(len(img_list) for img_list in images.values())} images")
-            return images
-        finally:
-            # Always close the WebSocket connection
-            await ws.close()
-    except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse prompt: {e}")
-        raise
+        ws = await ws_connect(client_id)
+        images_output = await get_images(ws, client_id, workflow_dict)
+        logger.info(f"Execução do workflow para {client_id} concluída.")
+        return images_output
     except Exception as e:
-        logger.error(f"Error in generate_image: {e}")
-        raise
+        logger.error(f"Falha ao executar workflow para {client_id}: {e}")
+        return None
+    finally:
+        if ws is not None:
+            await ws.close()
+            logger.info(f"Conexão WebSocket para {client_id} fechada.")
 
-prompt_text = """
-{
-  "6": {
-    "inputs": {
-      "text": "A chill studio-bedroom for a 25-year-old who loves motorcycles, in 8x5 meters. Dark-toned bed and couch, large motorcycle art over the bed, black desk setup, minimal wardrobe, and a corner shelf with helmets and gloves. Include warm lighting, LED strips, and one green plant for balance.",
-      "clip": [
-        "44",
-        0
-      ]
-    },
-    "class_type": "CLIPTextEncode",
-    "_meta": {
-      "title": "CLIP Text Encode (Positive Prompt)"
-    }
-  },
-  "8": {
-    "inputs": {
-      "samples": [
-        "13",
-        0
-      ],
-      "vae": [
-        "10",
-        0
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "VAE Decode"
-    }
-  },
-  "9": {
-    "inputs": {
-      "filename_prefix": "ComfyUI",
-      "images": [
-        "8",
-        0
-      ]
-    },
-    "class_type": "SaveImage",
-    "_meta": {
-      "title": "Save Image"
-    }
-  },
-  "10": {
-    "inputs": {
-      "vae_name": "FLUX1\\\\ae.safetensors"
-    },
-    "class_type": "VAELoader",
-    "_meta": {
-      "title": "Load VAE"
-    }
-  },
-  "13": {
-    "inputs": {
-      "noise": [
-        "25",
-        0
-      ],
-      "guider": [
-        "22",
-        0
-      ],
-      "sampler": [
-        "16",
-        0
-      ],
-      "sigmas": [
-        "17",
-        0
-      ],
-      "latent_image": [
-        "27",
-        0
-      ]
-    },
-    "class_type": "SamplerCustomAdvanced",
-    "_meta": {
-      "title": "SamplerCustomAdvanced"
-    }
-  },
-  "16": {
-    "inputs": {
-      "sampler_name": "dpmpp_2m"
-    },
-    "class_type": "KSamplerSelect",
-    "_meta": {
-      "title": "KSamplerSelect"
-    }
-  },
-  "17": {
-    "inputs": {
-      "scheduler": "sgm_uniform",
-      "steps": 30,
-      "denoise": 1,
-      "model": [
-        "30",
-        0
-      ]
-    },
-    "class_type": "BasicScheduler",
-    "_meta": {
-      "title": "BasicScheduler"
-    }
-  },
-  "22": {
-    "inputs": {
-      "model": [
-        "30",
-        0
-      ],
-      "conditioning": [
-        "26",
-        0
-      ]
-    },
-    "class_type": "BasicGuider",
-    "_meta": {
-      "title": "BasicGuider"
-    }
-  },
-  "25": {
-    "inputs": {
-      "noise_seed": 443138300115363
-    },
-    "class_type": "RandomNoise",
-    "_meta": {
-      "title": "RandomNoise"
-    }
-  },
-  "26": {
-    "inputs": {
-      "guidance": 3.5,
-      "conditioning": [
-        "6",
-        0
-      ]
-    },
-    "class_type": "FluxGuidance",
-    "_meta": {
-      "title": "FluxGuidance"
-    }
-  },
-  "27": {
-    "inputs": {
-      "width": 768,
-      "height": 1360,
-      "batch_size": 1
-    },
-    "class_type": "EmptySD3LatentImage",
-    "_meta": {
-      "title": "EmptySD3LatentImage"
-    }
-  },
-  "30": {
-    "inputs": {
-      "max_shift": 1.15,
-      "base_shift": 0.5,
-      "width": 768,
-      "height": 1360,
-      "model": [
-        "45",
-        0
-      ]
-    },
-    "class_type": "ModelSamplingFlux",
-    "_meta": {
-      "title": "ModelSamplingFlux"
-    }
-  },
-  "44": {
-    "inputs": {
-      "model_type": "flux",
-      "text_encoder1": "t5\\\\t5xxl_fp16.safetensors",
-      "text_encoder2": "clip_l.safetensors",
-      "t5_min_length": 512,
-      "use_4bit_t5": "disable",
-      "int4_model": "none"
-    },
-    "class_type": "NunchakuTextEncoderLoader",
-    "_meta": {
-      "title": "Nunchaku Text Encoder Loader"
-    }
-  },
-  "45": {
-    "inputs": {
-      "model_path": "svdq-int4-flux.1-dev",
-      "cache_threshold": 0,
-      "attention": "nunchaku-fp16",
-      "cpu_offload": "auto",
-      "device_id": 0,
-      "data_type": "bfloat16",
-      "i2f_mode": "enabled"
-    },
-    "class_type": "NunchakuFluxDiTLoader",
-    "_meta": {
-      "title": "Nunchaku FLUX DiT Loader"
-    }
-  }
-}
-"""

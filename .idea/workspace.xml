@@ -4,16 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Refactor to modularize and enhance database and logging setup&#10;&#10;Separated database, logging, and InfluxDB functionalities into dedicated modules under the `core` directory for better organization and reusability. Updated user model with UUIDs and timestamps while introducing `User` as the primary table. Replaced the utility-based `metric_core` with an OOP-based `InfluxDBWriter` class to improve maintainability.">
-      <change afterPath="$PROJECT_DIR$/handler/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handler/user_handler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/enum/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/enum/fief_type_webhook.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Integrate Celery for queue handling and enhance logging setup&#10;&#10;Replaced manual queue checks with Celery for distributed task management, including worker and beat processes. Introduced Redis configuration support and updated the logging system to ensure UTF-8 encoding consistency. Adjusted main application lifecycle management to handle worker/beat subprocesses and improved log cleanup logic for better reliability.">
+      <change afterPath="$PROJECT_DIR$/comfy/workflows/Flux-SVDQ-base.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/webhook_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/webhook_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/db_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/db_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/user_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/user_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/image_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/celery_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/celery_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/image_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/image_handler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,13 +50,19 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Docker.docker-compose.yaml: Compose Deployment.executor": "Run",
     "FastAPI.art.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor": "Run",
+    "Python tests.Python tests in test_user_handler.py.executor": "Coverage",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for test_user_handler.executor": "Run",
+    "Python.Worker.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/pedro/PycharmProjects/FastAPIProject",
+    "last_opened_file_path": "C:/Users/pedro/PycharmProjects/art/comfy/workflows",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -71,6 +74,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\pedro\PycharmProjects\art\comfy\workflows" />
       <recent name="C:\Users\pedro\PycharmProjects\art" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -79,6 +83,30 @@
     </key>
   </component>
   <component name="RunManager" selected="FastAPI.art">
+    <configuration name="Worker" type="PythonConfigurationType" factoryName="Python">
+      <module name="art" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (art)" />
+      <option name="WORKING_DIRECTORY" value="C:\Users\pedro\PycharmProjects\art" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="worker.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="art" type="Python.FastAPI">
       <option name="file" value="$PROJECT_DIR$/main.py" />
       <module name="art" />
@@ -97,14 +125,94 @@
     <configuration name="docker-compose.yaml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
       <deployment type="docker-compose.yml">
         <settings>
+          <option name="envFilePath" value="" />
           <option name="sourceFilePath" value="docker-compose.yaml" />
         </settings>
       </deployment>
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_user_handler.test_handle_user_webhook_unknown_type" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="art" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_user_handler.test_handle_user_webhook_unknown_type&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in test_user_handler.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="art" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_user_handler.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="art" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_user_handler" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="art" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/Scripts/python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_user_handler&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
+      <item itemvalue="FastAPI.art" />
+      <item itemvalue="Python.Worker" />
+      <item itemvalue="Python tests.pytest for test_user_handler" />
+      <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
+      <item itemvalue="Python tests.Python tests in test_user_handler.py" />
+      <item itemvalue="Python tests.Python tests in tests" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
+        <item itemvalue="Python tests.Python tests in tests" />
+        <item itemvalue="Python tests.Python tests in test_user_handler.py" />
+        <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
+        <item itemvalue="Python tests.pytest for test_user_handler" />
       </list>
     </recent_temporary>
   </component>
@@ -130,7 +238,9 @@
       <workItem from="1744853290558" duration="581000" />
       <workItem from="1744853892828" duration="132000" />
       <workItem from="1744854033772" duration="439000" />
-      <workItem from="1744854487131" duration="8185000" />
+      <workItem from="1744854487131" duration="8402000" />
+      <workItem from="1744973055863" duration="18817000" />
+      <workItem from="1745009988157" duration="13857000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -164,7 +274,47 @@
       <option name="project" value="LOCAL" />
       <updated>1744861212667</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add user webhook handling and database interaction logic&#10;&#10;Introduced a `handle_user_webhook` function to process user-related webhooks and store user data in the database. Updated the `User` model with utility methods for database insertion and logging improvements. Refactored database session handling and included webhook type enumeration for better structure and scalability.">
+      <option name="closed" value="true" />
+      <created>1744862928295</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1744862928295</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Refactor handlers and APIs, add tests for user webhooks&#10;&#10;Refactored user handling logic to support CRUD operations for webhooks. Updated `Config` to dynamically determine the configuration file path. Split `/generate` route into a dedicated `image_api` module. Added comprehensive tests for user webhook handlers.">
+      <option name="closed" value="true" />
+      <created>1744975147178</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744975147178</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add WebSocket support and optimize queue handling logic&#10;&#10;Introduced a WebSocket API for real-time queue updates and adjusted queue filtering for better efficiency. Refactored authentication handler logic and enhanced image generation API with token-based user identification. Updated dependencies and removed redundant code for improved maintainability.">
+      <option name="closed" value="true" />
+      <created>1744992601810</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1744992601810</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Add InfluxDB metrics and refactor image generation logic&#10;&#10;Introduced InfluxDB metrics tracking in the `check_queue` function to monitor queue status. Refactored image generation to use a dedicated handler, improving structure and readability. Also added a background task for queue monitoring during app startup.">
+      <option name="closed" value="true" />
+      <created>1744996424117</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1744996424117</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Integrate Celery for queue handling and enhance logging setup&#10;&#10;Replaced manual queue checks with Celery for distributed task management, including worker and beat processes. Introduced Redis configuration support and updated the logging system to ensure UTF-8 encoding consistency. Adjusted main application lifecycle management to handle worker/beat subprocesses and improved log cleanup logic for better reliability.">
+      <option name="closed" value="true" />
+      <created>1745026501304</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1745026501304</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -186,9 +336,83 @@
     <MESSAGE value="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Introduced a FastAPI application with endpoints for image generation, user authentication, and webhook processing using modular routers. Added Docker Compose configuration for supporting infrastructure (InfluxDB, Redis, MinIO, Postgres) and included configuration management and environment variable handling utilities. Enhanced the project with a user model, request validation, and InfluxDB integration for logging." />
     <MESSAGE value="Refactor and enhance prompt handling and logging features&#10;&#10;Refactored `comfy_core` to improve error handling, logging, and modularization for prompt execution and image generation. Introduced `logging_core` for centralized log management with rotation and cleanup. Updated `config.ini` and `config_core` to include logging configurations." />
     <MESSAGE value="Refactor to modularize and enhance database and logging setup&#10;&#10;Separated database, logging, and InfluxDB functionalities into dedicated modules under the `core` directory for better organization and reusability. Updated user model with UUIDs and timestamps while introducing `User` as the primary table. Replaced the utility-based `metric_core` with an OOP-based `InfluxDBWriter` class to improve maintainability." />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor to modularize and enhance database and logging setup&#10;&#10;Separated database, logging, and InfluxDB functionalities into dedicated modules under the `core` directory for better organization and reusability. Updated user model with UUIDs and timestamps while introducing `User` as the primary table. Replaced the utility-based `metric_core` with an OOP-based `InfluxDBWriter` class to improve maintainability." />
+    <MESSAGE value="Add user webhook handling and database interaction logic&#10;&#10;Introduced a `handle_user_webhook` function to process user-related webhooks and store user data in the database. Updated the `User` model with utility methods for database insertion and logging improvements. Refactored database session handling and included webhook type enumeration for better structure and scalability." />
+    <MESSAGE value="Refactor handlers and APIs, add tests for user webhooks&#10;&#10;Refactored user handling logic to support CRUD operations for webhooks. Updated `Config` to dynamically determine the configuration file path. Split `/generate` route into a dedicated `image_api` module. Added comprehensive tests for user webhook handlers." />
+    <MESSAGE value="Add WebSocket support and optimize queue handling logic&#10;&#10;Introduced a WebSocket API for real-time queue updates and adjusted queue filtering for better efficiency. Refactored authentication handler logic and enhanced image generation API with token-based user identification. Updated dependencies and removed redundant code for improved maintainability." />
+    <MESSAGE value="Add InfluxDB metrics and refactor image generation logic&#10;&#10;Introduced InfluxDB metrics tracking in the `check_queue` function to monitor queue status. Refactored image generation to use a dedicated handler, improving structure and readability. Also added a background task for queue monitoring during app startup." />
+    <MESSAGE value="Integrate Celery for queue handling and enhance logging setup&#10;&#10;Replaced manual queue checks with Celery for distributed task management, including worker and beat processes. Introduced Redis configuration support and updated the logging system to ensure UTF-8 encoding consistency. Adjusted main application lifecycle management to handle worker/beat subprocesses and improved log cleanup logic for better reliability." />
+    <option name="LAST_COMMIT_MESSAGE" value="Integrate Celery for queue handling and enhance logging setup&#10;&#10;Replaced manual queue checks with Celery for distributed task management, including worker and beat processes. Introduced Redis configuration support and updated the logging system to ensure UTF-8 encoding consistency. Adjusted main application lifecycle management to handle worker/beat subprocesses and improved log cleanup logic for better reliability." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1339</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1340</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1341</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1342</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1343</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1347</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1350</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1352</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1345</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1346</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1344</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/Lib/site-packages/fief_client/client.py</url>
+          <line>1348</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1744862735754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745028582668" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
   </component>
 </project>

@@ -2,7 +2,6 @@ from celery import Celery
 from core.config_core import Config
 import asyncio
 from comfy.comfy_core import check_queue_task
-from celery.schedules import crontab
 
 config = Config()
 redis_cfg = Config.Redis(config)
