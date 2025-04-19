@@ -42,4 +42,5 @@ Pense nisso como o maestro de uma orquestra de macacos pintores digitais, garant
 * Marque seu nó de saída principal (geralmente `SaveImage`) com `{{output_node_id}}` no campo `_meta.title` para fácil identificação (embora haja um fallback para o primeiro `SaveImage`).
 
 [![Python Quality Check Status](https://github.com/pedroluizmossi1/o-art/actions/workflows/pylint.yml/badge.svg)](https://github.com/pedroluizmossi1/o-art/actions/workflows/pylint.yml)
+
 [![Bandit Analysis Status](https://github.com/pedroluizmossi1/o-art/actions/workflows/bandit.yml/badge.svg)](https://github.com/pedroluizmossi1/o-art/actions/workflows/bandit.yml)
