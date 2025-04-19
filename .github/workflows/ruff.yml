@@ -1,4 +1,4 @@
-            - name: ruff-action
+name: ruff-action
   # You may pin to the exact commit or the version.
   # uses: astral-sh/ruff-action@9828f49eb4cadf267b40eaa330295c412c68c1f9
   uses: astral-sh/ruff-action@v3.2.2
