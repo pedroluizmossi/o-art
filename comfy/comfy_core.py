@@ -35,12 +35,15 @@ class ComfyUIError(Exception):
 
 if not server_address:
     logger.critical("ComfyUI server address not configured.")
-    raise ComfyUIError("ComfyUI server address not configured."
-                       " Did you forget to pay the server bill again?")
+    raise ComfyUIError(
+        "ComfyUI server address not configured."
+        " Did you forget to pay the server bill again?"
+    )
 
 
 async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
-    if not server_address: raise ComfyUIError("ComfyUI server address not configured.")
+    if not server_address:
+        raise ComfyUIError("ComfyUI server address not configured.")
     uri = f"ws://{server_address}/ws?clientId={urllib.parse.quote(user_id)}"  # Usar urllib.parse
     logger.info("Connecting to %s", uri)
     try:
@@ -59,16 +62,19 @@ async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
 
 
 async def queue_prompt(prompt: Dict[str, Any], client_id: str) -> Dict[str, Any]:
-    if not server_address: raise ComfyUIError("ComfyUI server address not configured.")
+    if not server_address:
+        raise ComfyUIError("ComfyUI server address not configured.")
     if not prompt or not client_id:
         raise ValueError("prompt and client_id cannot be empty")
 
     p = {"prompt": prompt, "client_id": client_id}
-    data = json.dumps(p).encode('utf-8')
+    data = json.dumps(p).encode("utf-8")
     url = f"http://{server_address}/prompt"
-    req = urllib.request.Request(url, data=data,
-                                 headers={'Content-Type': 'application/json',
-                                          'Accept': 'application/json'})
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/json", "Accept": "application/json"},
+    )
 
     try:
         with urllib.request.urlopen(req, timeout=30.0) as response:
@@ -77,21 +83,26 @@ async def queue_prompt(prompt: Dict[str, Any], client_id: str) -> Dict[str, Any]
     except urllib.error.HTTPError as e:
         error_details = None
         try:
-            error_body = e.read().decode('utf-8')
+            error_body = e.read().decode("utf-8")
             error_details = json.loads(error_body)
-            logger.error("HTTP Error %s when queuing prompt. Details: %s",
-                         e.code, error_details)
+            logger.error(
+                "HTTP Error %s when queuing prompt. Details: %s", e.code, error_details
+            )
         except (IOError, json.JSONDecodeError, UnicodeDecodeError):
-            logger.error("HTTP Error %s when queuing prompt. Could not read error body.",
-                         e.code)
-        raise ComfyUIError(f"Failed to queue prompt", status_code=e.code,
-                           details=error_details) from e
+            logger.error(
+                "HTTP Error %s when queuing prompt. Could not read error body.", e.code
+            )
+        raise ComfyUIError(
+            f"Failed to queue prompt", status_code=e.code, details=error_details
+        ) from e
     except urllib.error.URLError as e:
         logger.error("URL Error queuing prompt: %s", e.reason)
         raise ComfyUIError(f"URL Error queuing prompt: {e.reason}") from e
     except json.JSONDecodeError as e:
-        logger.error("Failed to parse ComfyUI response: %s",
-                     response_body.decode('utf-8', errors='ignore'))
+        logger.error(
+            "Failed to parse ComfyUI response: %s",
+            response_body.decode("utf-8", errors="ignore"),
+        )
         raise ComfyUIError(f"Failed to parse ComfyUI response: {e}") from e
     except asyncio.TimeoutError:
         logger.error("Timeout queuing prompt to %s", url)
@@ -102,13 +113,17 @@ async def queue_prompt(prompt: Dict[str, Any], client_id: str) -> Dict[str, Any]
 
 
 async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
-    if not server_address: raise ComfyUIError("ComfyUI server address not configured.")
-    if not filename: raise ValueError("filename cannot be empty")
+    if not server_address:
+        raise ComfyUIError("ComfyUI server address not configured.")
+    if not filename:
+        raise ValueError("filename cannot be empty")
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
     url_values = urllib.parse.urlencode(data)
     url = f"http://{server_address}/view?{url_values}"
     try:
-        with urllib.request.urlopen(url, timeout=60.0) as response:  # Timeout maior para download
+        with urllib.request.urlopen(
+            url, timeout=60.0
+        ) as response:  # Timeout maior para download
             return response.read()
     except urllib.error.HTTPError as e:
         logger.error("HTTP Error %s getting image %s", e.code, filename)
@@ -125,8 +140,10 @@ async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
 
 
 async def get_history(prompt_id: str) -> Dict[str, Any]:
-    if not server_address: raise ComfyUIError("ComfyUI server address not configured.")
-    if not prompt_id: raise ValueError("prompt_id cannot be empty")
+    if not server_address:
+        raise ComfyUIError("ComfyUI server address not configured.")
+    if not prompt_id:
+        raise ValueError("prompt_id cannot be empty")
     url = f"http://{server_address}/history/{prompt_id}"
     try:
         # context = unsafe_ssl_context # Descomente se precisar ignorar SSL
@@ -136,41 +153,57 @@ async def get_history(prompt_id: str) -> Dict[str, Any]:
             return json.loads(response_body)
     except urllib.error.HTTPError as e:
         logger.error("HTTP Error %s getting history for %s", e.code, prompt_id)
-        raise ComfyUIError(f"Failed to get history for {prompt_id}",
-                           status_code=e.code) from e
+        raise ComfyUIError(
+            f"Failed to get history for {prompt_id}", status_code=e.code
+        ) from e
     except urllib.error.URLError as e:
         logger.error("URL Error getting history for %s: %s", prompt_id, e.reason)
-        raise ComfyUIError(f"URL Error getting history for {prompt_id}: {e.reason}") from e
+        raise ComfyUIError(
+            f"URL Error getting history for {prompt_id}: {e.reason}"
+        ) from e
     except json.JSONDecodeError as e:
         logger.error(
-            "Failed to parse history response for %s: %s", prompt_id,
-            response_body.decode('utf-8', errors='ignore'))
-        raise ComfyUIError(f"Failed to parse history response for {prompt_id}: {e}") from e
+            "Failed to parse history response for %s: %s",
+            prompt_id,
+            response_body.decode("utf-8", errors="ignore"),
+        )
+        raise ComfyUIError(
+            f"Failed to parse history response for {prompt_id}: {e}"
+        ) from e
     except asyncio.TimeoutError:
         logger.error("Timeout getting history for %s from %s", prompt_id, url)
         raise ComfyUIError(f"Timeout getting history for {prompt_id}")
     except Exception as e:
         logger.error("Unexpected error getting history for %s: %s", prompt_id, e)
-        raise ComfyUIError(f"Unexpected error getting history for {prompt_id}: {e}") from e
+        raise ComfyUIError(
+            f"Unexpected error getting history for {prompt_id}: {e}"
+        ) from e
 
 
-async def get_images(ws: websockets.WebSocketClientProtocol,
-                     client_id: str, prompt: Dict[str, Any]) -> Dict[
-    str, List[bytes]]:
+async def get_images(
+    ws: websockets.WebSocketClientProtocol, client_id: str, prompt: Dict[str, Any]
+) -> Dict[str, List[bytes]]:
     if not ws or not client_id or not prompt:
         raise ValueError("WebSocket, client_id, and prompt cannot be empty")
 
     prompt_id = None
     try:
         prompt_response = await queue_prompt(prompt, client_id)
-        prompt_id = prompt_response.get('prompt_id')
+        prompt_id = prompt_response.get("prompt_id")
         if not prompt_id:
-            logger.error("Invalid response when queuing prompt for %s: %s",
-                         client_id, prompt_response)
-            raise ComfyUIError("Invalid response from ComfyUI when queuing prompt (missing prompt_id)")
+            logger.error(
+                "Invalid response when queuing prompt for %s: %s",
+                client_id,
+                prompt_response,
+            )
+            raise ComfyUIError(
+                "Invalid response from ComfyUI when queuing prompt (missing prompt_id)"
+            )
 
         output_images = {}
-        logger.info("Waiting for prompt %s execution (client: %s)", prompt_id, client_id)
+        logger.info(
+            "Waiting for prompt %s execution (client: %s)", prompt_id, client_id
+        )
 
         while True:
             try:
@@ -178,41 +211,64 @@ async def get_images(ws: websockets.WebSocketClientProtocol,
                 if isinstance(out, str):
                     try:
                         message = json.loads(out)
-                        if message.get('type') == 'executing':
-                            data = message.get('data', {})
-                            if data.get('node') is None and data.get('prompt_id') == prompt_id:
+                        if message.get("type") == "executing":
+                            data = message.get("data", {})
+                            if (
+                                data.get("node") is None
+                                and data.get("prompt_id") == prompt_id
+                            ):
                                 logger.info("Prompt %s execution completed.", prompt_id)
                                 break
-                            elif data.get('prompt_id') == prompt_id:
-                                logger.debug("Prompt %s executing node: %s",
-                                             prompt_id, data.get('node'))
-                        elif message.get('type') == 'execution_error' and message.get('data', {}).get(
-                                'prompt_id') == prompt_id:
-                            error_data = message.get('data')
-                            logger.error("Execution error from ComfyUI for prompt %s: %s",
-                                         prompt_id, error_data)
-                            raise ComfyUIError("ComfyUI reported execution error",
-                                               details=error_data)
+                            elif data.get("prompt_id") == prompt_id:
+                                logger.debug(
+                                    "Prompt %s executing node: %s",
+                                    prompt_id,
+                                    data.get("node"),
+                                )
+                        elif (
+                            message.get("type") == "execution_error"
+                            and message.get("data", {}).get("prompt_id") == prompt_id
+                        ):
+                            error_data = message.get("data")
+                            logger.error(
+                                "Execution error from ComfyUI for prompt %s: %s",
+                                prompt_id,
+                                error_data,
+                            )
+                            raise ComfyUIError(
+                                "ComfyUI reported execution error", details=error_data
+                            )
                     except json.JSONDecodeError:
-                        logger.warning("Received non-JSON message from WebSocket: %s...",
-                                       out[:100])  # Log truncado
+                        logger.warning(
+                            "Received non-JSON message from WebSocket: %s...", out[:100]
+                        )  # Log truncado
                     except ComfyUIError:
                         raise
                     except Exception as inner_e:
-                        logger.error("Error processing WebSocket message: %s",
-                                     inner_e)
+                        logger.error("Error processing WebSocket message: %s", inner_e)
 
             except asyncio.TimeoutError:
-                logger.error("WebSocket receive timeout while waiting for prompt %s",
-                             prompt_id)
+                logger.error(
+                    "WebSocket receive timeout while waiting for prompt %s", prompt_id
+                )
                 raise ComfyUIError(f"WebSocket receive timeout for prompt {prompt_id}")
             except websockets.exceptions.ConnectionClosedOK:
-                logger.warning("WebSocket connection closed ok while waiting for prompt %s",
-                               prompt_id)
-                raise ComfyUIError(f"WebSocket connection closed while waiting for prompt {prompt_id}")
+                logger.warning(
+                    "WebSocket connection closed ok while waiting for prompt %s",
+                    prompt_id,
+                )
+                raise ComfyUIError(
+                    f"WebSocket connection closed while waiting for prompt {prompt_id}"
+                )
             except websockets.exceptions.ConnectionClosedError as e:
-                logger.error("WebSocket connection closed with error while waiting for prompt %s: %s", prompt_id, e)
-                raise ComfyUIError(f"WebSocket connection closed unexpectedly for prompt {prompt_id}: {e}") from e
+                logger.error(
+                    "WebSocket connection closed with error while waiting for prompt %s: %s",
+                    prompt_id,
+                    e,
+                )
+                raise ComfyUIError(
+                    f"WebSocket connection closed unexpectedly for prompt {prompt_id}: {e}"
+                ) from e
 
         history_data = await get_history(prompt_id)
         if prompt_id not in history_data:
@@ -220,45 +276,60 @@ async def get_images(ws: websockets.WebSocketClientProtocol,
             return {}
 
         history = history_data[prompt_id]
-        outputs = history.get('outputs', {})
-        logger.debug("Processing outputs for prompt %s: %s", prompt_id,
-                     list(outputs.keys()))
+        outputs = history.get("outputs", {})
+        logger.debug(
+            "Processing outputs for prompt %s: %s", prompt_id, list(outputs.keys())
+        )
 
         for node_id, node_output in outputs.items():
-            if 'images' in node_output:
+            if "images" in node_output:
                 images_output = []
-                for image_info in node_output['images']:
-                    filename = image_info.get('filename')
+                for image_info in node_output["images"]:
+                    filename = image_info.get("filename")
                     if not filename:
-                        logger.warning("Node %s output missing filename for prompt %s",
-                                       node_id, prompt_id)
+                        logger.warning(
+                            "Node %s output missing filename for prompt %s",
+                            node_id,
+                            prompt_id,
+                        )
                         continue
                     try:
                         image_data = await get_image(
                             filename,
-                            image_info.get('subfolder', ''),
-                            image_info.get('type', 'output')
+                            image_info.get("subfolder", ""),
+                            image_info.get("type", "output"),
                         )
                         images_output.append(image_data)
-                        logger.debug("Successfully retrieved image %s for node %s (prompt %s)",
-                                     filename, node_id,
-                                     prompt_id)
+                        logger.debug(
+                            "Successfully retrieved image %s for node %s (prompt %s)",
+                            filename,
+                            node_id,
+                            prompt_id,
+                        )
                     except ComfyUIError as e:  # Captura erros de get_image
-                        logger.error("Failed to get image %s for node %s (prompt %s): %s",
-                                     filename, node_id, prompt_id,
-                                     e)
+                        logger.error(
+                            "Failed to get image %s for node %s (prompt %s): %s",
+                            filename,
+                            node_id,
+                            prompt_id,
+                            e,
+                        )
                     except Exception as e:
                         logger.error(
                             "Unexpected error getting image %s for node %s (prompt %s): %s",
-                            filename, node_id,
-                            prompt_id, e)
+                            filename,
+                            node_id,
+                            prompt_id,
+                            e,
+                        )
 
                 if images_output:
                     output_images[node_id] = images_output
 
         if not output_images:
-            logger.warning("No images found or retrieved in outputs for prompt %s",
-                           prompt_id)
+            logger.warning(
+                "No images found or retrieved in outputs for prompt %s", prompt_id
+            )
 
         return output_images
     except ComfyUIError as e:
@@ -296,7 +367,8 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
 
         try:
             queue_running = [
-                item for item in queue_running
+                item
+                for item in queue_running
                 if len(item) > 3 and isinstance(item[3], dict)
             ]
         except Exception as e:
@@ -306,8 +378,9 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
         # Filter pending queue items
         try:
             # Get all position numbers, sorted
-            queue_position_size = sorted([item[0] for item in queue_pending if len(item) > 0],
-                                         reverse=False)
+            queue_position_size = sorted(
+                [item[0] for item in queue_pending if len(item) > 0], reverse=False
+            )
 
             # Get position numbers for pending items
             queue_position = [item[0] for item in queue_pending if len(item) > 0]
@@ -324,14 +397,18 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
         user_queue_position = 0
         if user_id:
             for i, item in enumerate(queue_pending):
-                if len(item) > 3 and isinstance(item[3], dict) and item[3].get("client_id") == user_id:
+                if (
+                    len(item) > 3
+                    and isinstance(item[3], dict)
+                    and item[3].get("client_id") == user_id
+                ):
                     user_queue_position = i + 1
                     break
 
         result = {
             "queue_running": queue_running_len,
             "queue_pending": queue_pending_len,
-            "queue_position": user_queue_position
+            "queue_position": user_queue_position,
         }
         return result
 
@@ -354,37 +431,49 @@ async def check_queue_task(user_id: Optional[str] = None):
         fields={
             "queue_running": int(queue["queue_running"]),
             "queue_pending": int(queue["queue_pending"]),
-            "queue_position": int(queue["queue_position"])
-        }
+            "queue_position": int(queue["queue_position"]),
+        },
     )
     logger.debug("Queue status: %s", queue)
 
 
-async def execute_workflow(user_id: str, job_id: str, workflow_dict: Dict[str, Any]) -> Optional[
-    Dict[str, List[bytes]]]:
+async def execute_workflow(
+    user_id: str, job_id: str, workflow_dict: Dict[str, Any]
+) -> Optional[Dict[str, List[bytes]]]:
     client_id = f"{user_id}"
     logger.info("Executing workflow for user %s (job: %s)", user_id, job_id)
     ws = None
     try:
         ws = await ws_connect(client_id)
         images_output = await get_images(ws, client_id, workflow_dict)
-        logger.info("Workflow execution successful for user %s (job: %s)",
-                    user_id, job_id)
+        logger.info(
+            "Workflow execution successful for user %s (job: %s)", user_id, job_id
+        )
         return images_output
     except ComfyUIError as e:
-        logger.error("ComfyUI execution failed for user %s (job: %s): %s",
-                     user_id, job_id, e)
+        logger.error(
+            "ComfyUI execution failed for user %s (job: %s): %s", user_id, job_id, e
+        )
         raise e
     except ValueError as e:
-        logger.error("Invalid input for workflow execution user %s (job: %s): %s",
-                     user_id, job_id, e)
+        logger.error(
+            "Invalid input for workflow execution user %s (job: %s): %s",
+            user_id,
+            job_id,
+            e,
+        )
         raise e
     except Exception as e:
-        logger.exception("Unexpected error during workflow execution for user %s (job: %s): %s",
-                         user_id, job_id, e)
+        logger.exception(
+            "Unexpected error during workflow execution for user %s (job: %s): %s",
+            user_id,
+            job_id,
+            e,
+        )
         raise ComfyUIError(f"Unexpected error during workflow execution: {e}") from e
     finally:
         if ws is not None:
             await ws.close()
-            logger.info("WebSocket connection closed for user %s (job: %s)",
-                        user_id, job_id)
+            logger.info(
+                "WebSocket connection closed for user %s (job: %s)", user_id, job_id
+            )

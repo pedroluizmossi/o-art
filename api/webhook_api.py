@@ -17,6 +17,7 @@ router = APIRouter(
     tags=["webhook"],
 )
 
+
 @router.post("/user")
 async def user_webhook(request: Request, session: Session = Depends(get_session)):
     payload = await webhook_signature(request)

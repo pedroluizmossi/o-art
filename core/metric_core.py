@@ -20,7 +20,8 @@ class InfluxDBWriter:
 
             if not all([self.token, self.org, self.url, self.bucket]):
                 logger.error(
-                    "Missing one or more InfluxDB environment variables (TOKEN, ORG, URL, BUCKET). Metrics will be disabled.")
+                    "Missing one or more InfluxDB environment variables (TOKEN, ORG, URL, BUCKET). Metrics will be disabled."
+                )
                 self.enabled = False
             else:
                 self.enabled = True
@@ -30,7 +31,9 @@ class InfluxDBWriter:
             if self.enabled:
                 logger.info("InfluxDBWriter initialized successfully.")
             else:
-                logger.warning("InfluxDBWriter initialized but is disabled due to missing configuration.")
+                logger.warning(
+                    "InfluxDBWriter initialized but is disabled due to missing configuration."
+                )
 
         except Exception as e:
             logger.exception("Failed to initialize InfluxDBWriter.")
@@ -52,22 +55,29 @@ class InfluxDBWriter:
                 # Consider making write options configurable if needed
                 write_api = client.write_api(write_options=SYNCHRONOUS)
 
-                point = Point(measurement).tag("host", self.host_name).tag("os", self.os_name)
+                point = (
+                    Point(measurement)
+                    .tag("host", self.host_name)
+                    .tag("os", self.os_name)
+                )
 
                 # Add tags dynamically
                 for tag_key, tag_value in tags.items():
-                    point = point.tag(tag_key, str(tag_value))  # Ensure tag value is a string
+                    point = point.tag(
+                        tag_key, str(tag_value)
+                    )  # Ensure tag value is a string
 
                 # Add fields dynamically and validate types
                 for field_key, field_value in fields.items():
                     if isinstance(field_value, (str, int, float, bool)):
                         point = point.field(field_key, field_value)
                     else:
-                        # Log a warning instead of raising an immediate error, 
+                        # Log a warning instead of raising an immediate error,
                         # allows processing other fields if desired.
                         # If strict type checking is required, raise ValueError here.
                         logger.warning(
-                            f"Unsupported field type for key '{field_key}': {type(field_value)}. Skipping field.")
+                            f"Unsupported field type for key '{field_key}': {type(field_value)}. Skipping field."
+                        )
                         # Or raise ValueError:
                         # raise ValueError(f"Field type for '{field_key}' is not supported: {type(field_value)}")
 
@@ -76,14 +86,22 @@ class InfluxDBWriter:
 
                 # Write the point to InfluxDB
                 write_api.write(bucket=self.bucket, record=point)
-                logger.debug(f"Successfully wrote point to measurement '{measurement}' in bucket '{self.bucket}'.")
+                logger.debug(
+                    f"Successfully wrote point to measurement '{measurement}' in bucket '{self.bucket}'."
+                )
 
-        except ValueError as ve:  # Catch specific ValueError from field type check if raised
-            logger.error(f"Data validation error while preparing point for InfluxDB: {ve}")
+        except (
+            ValueError
+        ) as ve:  # Catch specific ValueError from field type check if raised
+            logger.error(
+                f"Data validation error while preparing point for InfluxDB: {ve}"
+            )
             # Decide if you want to re-raise or just log
             # raise ve
         except Exception as e:
             # Log any other exceptions during InfluxDB interaction
-            logger.exception(f"Error writing data to InfluxDB measurement '{measurement}': {e}")
+            logger.exception(
+                f"Error writing data to InfluxDB measurement '{measurement}': {e}"
+            )
             # Consider re-raising the exception if the calling code needs to handle it
             # raise e

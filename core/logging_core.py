@@ -23,41 +23,55 @@ def setup_logger(name: str, config=None) -> logging.Logger:
     if config is None:
         try:
             from core.config_core import Config
+
             config_instance = Config()
             log_config = {
-                'level': config_instance.get('Logs', 'level', 'INFO'),
-                'path': config_instance.get('Logs', 'path', './logs'),
-                'max_backups': config_instance.getint('Logs', 'max_backups', 5),
-                'max_files': config_instance.getint('Logs', 'max_files', 10)  # Para cleanup
+                "level": config_instance.get("Logs", "level", "INFO"),
+                "path": config_instance.get("Logs", "path", "./logs"),
+                "max_backups": config_instance.getint("Logs", "max_backups", 5),
+                "max_files": config_instance.getint(
+                    "Logs", "max_files", 10
+                ),  # Para cleanup
             }
         except Exception as e:
             logging.basicConfig(level=logging.WARNING)
-            logging.warning(f"Failed to load logging configuration: {e}. Using basic config.", exc_info=True)
-            log_config = {'level': 'INFO', 'path': './logs', 'max_backups': 5, 'max_files': 10}
+            logging.warning(
+                f"Failed to load logging configuration: {e}. Using basic config.",
+                exc_info=True,
+            )
+            log_config = {
+                "level": "INFO",
+                "path": "./logs",
+                "max_backups": 5,
+                "max_files": 10,
+            }
     else:
         log_config = config
 
-    log_dir = log_config.get('path', './logs')
+    log_dir = log_config.get("path", "./logs")
     if not os.path.exists(log_dir):
         try:
             os.makedirs(log_dir)
         except OSError as e:
             logging.basicConfig(level=logging.ERROR)
-            logging.error(f"Failed to create log directory {log_dir}: {e}", exc_info=True)
+            logging.error(
+                f"Failed to create log directory {log_dir}: {e}", exc_info=True
+            )
             logger = logging.getLogger(name)
             _loggers[name] = logger
             return logger
 
-    log_level_str = log_config.get('level', 'INFO').upper()
+    log_level_str = log_config.get("level", "INFO").upper()
     log_level = getattr(logging, log_level_str, logging.INFO)
 
-    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    log_file_name = f'{log_dir}/{name}_latest.log'
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    log_file_name = f"{log_dir}/{name}_latest.log"
 
     file_handler = RotatingFileHandler(
-        log_file_name, maxBytes=5 * 1024 * 1024,
-        backupCount=log_config.get('max_backups', 5),
-        encoding='utf-8'
+        log_file_name,
+        maxBytes=5 * 1024 * 1024,
+        backupCount=log_config.get("max_backups", 5),
+        encoding="utf-8",
     )
     file_handler.setFormatter(logging.Formatter(log_format))
 
@@ -91,11 +105,18 @@ def cleanup_old_logs(log_dir: str, max_files: int):
         return
 
     if not isinstance(max_files, int) or max_files < 0:
-        temp_logger.error("Invalid max_files for log cleanup: %s. Must be a non-negative integer.", max_files)
+        temp_logger.error(
+            "Invalid max_files for log cleanup: %s. Must be a non-negative integer.",
+            max_files,
+        )
         return
 
     try:
-        files = [f for f in os.listdir(log_dir) if f.endswith('.log') and os.path.isfile(os.path.join(log_dir, f))]
+        files = [
+            f
+            for f in os.listdir(log_dir)
+            if f.endswith(".log") and os.path.isfile(os.path.join(log_dir, f))
+        ]
         if not files:
             temp_logger.info(f"No .log files found in {log_dir} to clean up.")
             return
@@ -103,20 +124,30 @@ def cleanup_old_logs(log_dir: str, max_files: int):
         files.sort(key=lambda x: os.path.getmtime(os.path.join(log_dir, x)))
 
     except Exception as e:
-        temp_logger.error("Error listing or sorting log files in %s: %s", log_dir, e, exc_info=True)
+        temp_logger.error(
+            "Error listing or sorting log files in %s: %s", log_dir, e, exc_info=True
+        )
         return
 
     files_to_remove_count = len(files) - max_files
     if files_to_remove_count <= 0:
         temp_logger.info(
-            "Log file count (%d) is within the limit (%d). No cleanup needed in %s.", len(files), max_files, log_dir)
+            "Log file count (%d) is within the limit (%d). No cleanup needed in %s.",
+            len(files),
+            max_files,
+            log_dir,
+        )
         return
 
     files_to_remove = files[:files_to_remove_count]
 
     temp_logger.info(
         "Starting cleanup of old log files in %s. Found %d, keeping last %d, removing %d.",
-        log_dir, len(files), max_files, len(files_to_remove))
+        log_dir,
+        len(files),
+        max_files,
+        len(files_to_remove),
+    )
     removed_count = 0
     for f in files_to_remove:
         file_path = os.path.join(log_dir, f)
@@ -126,10 +157,19 @@ def cleanup_old_logs(log_dir: str, max_files: int):
                 temp_logger.info("Removed old log file: %s", file_path)
                 removed_count += 1
             else:
-                temp_logger.warning("Log file vanished before removal (likely race condition): %s", file_path)
+                temp_logger.warning(
+                    "Log file vanished before removal (likely race condition): %s",
+                    file_path,
+                )
         except OSError as e:
             temp_logger.error("Failed to remove log file %s: %s", file_path, e)
         except Exception as e:  # Captura outros erros inesperados
-            temp_logger.exception("Unexpected error removing log file %s: %s", file_path, e)
+            temp_logger.exception(
+                "Unexpected error removing log file %s: %s", file_path, e
+            )
 
-    temp_logger.info("Log cleanup finished for %s. Successfully removed %d file(s).", log_dir, removed_count)
+    temp_logger.info(
+        "Log cleanup finished for %s. Successfully removed %d file(s).",
+        log_dir,
+        removed_count,
+    )

@@ -4,15 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python.">
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/pylint.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/ruff.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/auth_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/auth_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/image_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/celery_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/celery_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/config_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/config_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/db_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/db_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/auth_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth_handler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +71,7 @@
     "Python.Worker.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
@@ -84,7 +81,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode",
+    "settings.editor.selected.configurable": "com.koxudaxi.ruff.RuffConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -256,7 +253,7 @@
       <workItem from="1744854033772" duration="439000" />
       <workItem from="1744854487131" duration="8402000" />
       <workItem from="1744973055863" duration="18817000" />
-      <workItem from="1745009988157" duration="27010000" />
+      <workItem from="1745009988157" duration="27516000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -426,7 +423,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745077345716</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;">
+      <option name="closed" value="true" />
+      <created>1745079457363</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1745079457363</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -465,7 +470,8 @@
     <MESSAGE value="    Update .pylintrc to include import-error in ignored rules&#10;&#10;    Added import-error to the list of ignored pylint rules to prevent unnecessary warnings related to imports. This ensures smoother linting for cases where imports may fail due to environment-specific configurations." />
     <MESSAGE value="Refactor logging and add log cleanup utility.&#10;&#10;Replaced f-strings in logging calls with parameterized log messages for consistency and efficiency. Added a `cleanup_old_logs` function to manage log file retention, ensuring only the most recent logs are retained." />
     <MESSAGE value="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python." />
-    <option name="LAST_COMMIT_MESSAGE" value="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python." />
+    <MESSAGE value="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

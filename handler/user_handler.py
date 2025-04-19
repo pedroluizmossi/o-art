@@ -32,7 +32,9 @@ def handle_user_webhook(payload: dict, session: Session):
             "is_active": user_data_payload.get("is_active", True),
             "created_at": user_data_payload.get("created_at"),
             "updated_at": user_data_payload.get("updated_at"),
-            "tenant_id": UUID(user_data_payload["tenant_id"]) if user_data_payload.get("tenant_id") else None
+            "tenant_id": UUID(user_data_payload["tenant_id"])
+            if user_data_payload.get("tenant_id")
+            else None,
         }
         user_model_data = {k: v for k, v in user_model_data.items() if v is not None}
 
@@ -47,7 +49,9 @@ def handle_user_webhook(payload: dict, session: Session):
             if updated_user:
                 logger.info(f"User update handled via service: {updated_user.id}")
             else:
-                logger.info(f"User update handled via service for {user_id}, but user not found or no changes.")
+                logger.info(
+                    f"User update handled via service for {user_id}, but user not found or no changes."
+                )
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
         elif webhook_type == FiefTypeWebhook.USER_DELETED.value:
@@ -55,25 +59,27 @@ def handle_user_webhook(payload: dict, session: Session):
             if deleted:
                 logger.info(f"User deletion handled via service: {user_id}")
             else:
-                logger.info(f"User deletion handled via service for {user_id}, but user not found.")
+                logger.info(
+                    f"User deletion handled via service for {user_id}, but user not found."
+                )
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
         else:
             logger.warning(f"Unknown webhook type received: {webhook_type}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Unknown webhook type: {webhook_type}"
+                detail=f"Unknown webhook type: {webhook_type}",
             )
 
     except (ValueError, KeyError, TypeError, ValidationError) as e:
         logger.error(f"Error processing user webhook payload: {e}. Payload: {payload}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid webhook payload: {e}"
+            detail=f"Invalid webhook payload: {e}",
         ) from e
     except Exception as e:
         logger.exception(f"Error handling user webhook: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error processing user webhook."
+            detail="Internal server error processing user webhook.",
         ) from e
