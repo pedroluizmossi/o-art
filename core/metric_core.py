@@ -3,7 +3,7 @@ import platform
 import socket
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
-from core.env_core import get_env_variable, Envs, load_env_file
+from core.env_core import get_env_variable, Envs
 # Assuming setup_logger is in utils.logging_core, adjust if necessary
 from core.logging_core import setup_logger
 
@@ -12,50 +12,40 @@ from core.logging_core import setup_logger
 logger = setup_logger(__name__) 
 
 class InfluxDBWriter:
-    """
-    Encapsulates the logic for writing data to an InfluxDB instance.
-
-    This class manages the connection to InfluxDB and provides a method 
-    for writing data points. Connection settings are loaded from 
-    environment variables.
-    """
     def __init__(self):
-        """
-        Initializes the InfluxDBWriter by loading necessary configurations.
-        """
         try:
-            load_env_file() # Ensure environment variables are loaded
             self.token = get_env_variable(Envs.INFLUXDB_TOKEN)
             self.org = get_env_variable(Envs.INFLUXDB_ORG)
             self.url = get_env_variable(Envs.INFLUXDB_URL)
             self.bucket = get_env_variable(Envs.INFLUXDB_BUCKET)
-            
-            # Host information is collected once during initialization
+
+            if not all([self.token, self.org, self.url, self.bucket]):
+                 logger.error("Missing one or more InfluxDB environment variables (TOKEN, ORG, URL, BUCKET). Metrics will be disabled.")
+                 self.enabled = False
+            else:
+                 self.enabled = True
+
             self.host_name = socket.gethostname()
             self.os_name = platform.system()
-            logger.info("InfluxDBWriter initialized successfully.")
-            
+            if self.enabled:
+                logger.info("InfluxDBWriter initialized successfully.")
+            else:
+                logger.warning("InfluxDBWriter initialized but is disabled due to missing configuration.")
+
         except Exception as e:
             logger.exception("Failed to initialize InfluxDBWriter.")
-            # Depending on the application's needs, you might want to re-raise the exception
-            # or handle it in a way that prevents the application from starting without proper config.
-            raise e
+            self.enabled = False
 
     def write_data(self, measurement: str, tags: dict, fields: dict):
+        if not self.enabled:
+            logger.debug("InfluxDB is disabled, skipping metric writing.")
+            return
         """
-        Writes a data point to InfluxDB.
-
-        Creates a temporary connection (using 'with') to ensure proper resource 
-        closure. Dynamically adds tags and fields to the point. 
-        Validates field data types before writing.
-
-        :param measurement: The name of the measurement.
-        :type measurement: str
-        :param tags: A dictionary of tag key-value pairs.
-        :type tags: dict
-        :param fields: A dictionary of field key-value pairs.
-        :type fields: dict
-        :raises ValueError: If a field type is not supported.
+        Write data to InfluxDB.
+        Args:
+            measurement (str): The measurement name in InfluxDB.
+            tags (dict): A dictionary of tags to add to the point.
+            fields (dict): A dictionary of fields to add to the point.
         """
         try:
             with InfluxDBClient(url=self.url, token=self.token, org=self.org) as client:

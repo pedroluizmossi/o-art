@@ -4,7 +4,6 @@ import subprocess
 import sys
 
 from fastapi import FastAPI, Response, HTTPException
-from core.env_core import load_env_file
 from core.config_core import Config
 from core.db_core import create_db
 
@@ -14,10 +13,13 @@ from api.webhook_api import router as webhook_router
 from api.image_api import router as image_router
 from api.websocket_api import router as websocket_router
 
+#Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 from core.logging_core import setup_logger
 logger = setup_logger(__name__)
 
-load_env_file()
 create_db()
 
 worker_process = None

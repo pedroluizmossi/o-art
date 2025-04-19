@@ -1,3 +1,5 @@
+# docker-compose.yaml (Corrigido)
+
 version: '3.8'
 
 services:
@@ -5,19 +7,22 @@ services:
     image: postgres:latest
     container_name: postgres_db
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: admin
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    restart: always
 
   redis:
     image: redis:latest
     container_name: redis_cache
     ports:
       - "6379:6379"
+    restart: always
+
 
   fief-server:
     image: ghcr.io/fief-dev/fief:latest
@@ -26,33 +31,77 @@ services:
       - "8001:8001"
     env_file:
       - .env
+    depends_on:
+      - db
     restart: always
 
   minio:
     image: quay.io/minio/minio
     container_name: minio1
     environment:
-      MINIO_ROOT_USER: ROOTUSER
-      MINIO_ROOT_PASSWORD: CHANGEME123
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9000:9000" # API
+      - "9001:9001" # Console
     volumes:
-      - C:\Users\pedro\PycharmProjects\FastAPIProject\files:/data
+      - minio_data:/data
     command: server /data --console-address ":9001"
+    restart: always
 
   influxdb:
     image: influxdb:latest
     container_name: influxdb
     environment:
-      INFLUXDB_ADMIN_USER: admin
-      INFLUXDB_ADMIN_PASSWORD: admin123
-      INFLUXDB_DB: mydb
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_ADMIN_USER:-admin}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD:-adminpass}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
     ports:
       - "8086:8086"
     volumes:
-      - influxdb_data:/var/lib/influxdb
+      - influxdb_data:/var/lib/influxdb # Volume nomeado
+    restart: always
+
+#  app:
+#    build: . # Assume Dockerfile na raiz
+#    container_name: art_app
+#   ports:
+#     - "8000:8000"
+#    env_file:
+#      - .env
+#    depends_on:
+#      - db
+#      - redis
+#    restart: always
+
+#  celery-worker:
+#   build: . # Usa a mesma imagem da API
+#    container_name: celery_worker
+#    command: celery -A core.celery_core.celery_app worker --loglevel=info --pool=solo
+#    env_file:
+#      - .env
+#    depends_on:
+#      - redis
+#      - db
+#    restart: always
+
+#  celery-beat:
+#    build: . # Usa a mesma imagem da API
+#    container_name: celery_beat
+#    command: celery -A core.celery_core.celery_app beat --loglevel=info --scheduler celery.beat.PersistentScheduler
+#    env_file:
+#      - .env
+#    depends_on:
+#      - redis
+#    restart: always
+#    volumes:
+#      - celery_beat_schedule:/schedule
 
 volumes:
   postgres_data:
+  minio_data:
   influxdb_data:
+  celery_beat_schedule:

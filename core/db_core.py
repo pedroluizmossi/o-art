@@ -1,19 +1,23 @@
 from sqlmodel import Field, SQLModel, create_engine, Session
-from core.env_core import get_env_variable, Envs, load_env_file
+from core.env_core import get_env_variable, Envs
 
 from core.logging_core import setup_logger
+
+from dotenv import load_dotenv
+load_dotenv()
 
 #Import Table Models
 from model.user_model import User
 
 # Set up the logger for this module
 logger = setup_logger(__name__)
-# Load environment variables from .env file
-load_env_file()
-
+# Set up the database connection using SQLModel
 postgres_url = get_env_variable(Envs.POSTGRES_URL)
+if not postgres_url:
+    logger.critical("Database URL not found in environment variables (POSTGRES_URL). Cannot connect to database.")
+    raise ValueError("Missing POSTGRES_URL environment variable.")
 
-engine = create_engine(postgres_url, echo=True, future=True)
+engine = create_engine(postgres_url, echo=False, future=True)
 
 def create_db():
     """

@@ -18,8 +18,9 @@ from core.metric_core import InfluxDBWriter
 logger = setup_logger(__name__)
 # Initialize configuration
 config_instance = Config()
-comfyui_instance = config_instance.Comfyui(config_instance)
-server_address = comfyui_instance.get_server_address()
+server_address = config_instance.get("ComfyUI", "server", default="127.0.0.1:8188") # Adiciona um default
+if not server_address:
+    logger.error("ComfyUI server address not found in config.ini ([ComfyUI] server).")
 
 # Initialize InfluxDB writer
 metric = InfluxDBWriter()
