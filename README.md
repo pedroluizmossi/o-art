@@ -43,4 +43,4 @@ Pense nisso como o maestro de uma orquestra de macacos pintores digitais, garant
 
 [![Python Quality Check Status](https://github.com/pedroluizmossi1/o-art/actions/workflows/pylint.yml/badge.svg)](https://github.com/pedroluizmossi1/o-art/actions/workflows/pylint.yml)
 
-[![Bandit Analysis Status](https://github.com/pedroluizmossi1/o-art/actions/workflows/bandit.yml/badge.svg)](https://github.com/pedroluizmossi1/o-art/actions/workflows/bandit.yml)
+[![Bandit Analysis Status](https://github.com/pedroluizmossi1/o-art/actions/workflows/Bandit.yml/badge.svg)](https://github.com/pedroluizmossi1/o-art/actions/workflows/Bandit.yml)
