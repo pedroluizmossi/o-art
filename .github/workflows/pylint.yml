@@ -1,23 +1,48 @@
-name: Pylint
+name: Python Quality Check
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
+  lint_and_test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.12"] # Use a versão real do seu projeto
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5 # Use a versão mais recente
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip' # Habilita o cache para pip
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-    - name: Analysing the code with pylint
+        # Instale dependências do projeto SE Pylint precisar delas
+        # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        # Considere ter um requirements-dev.txt para pylint e outras dev tools
+
+    - name: Analyse code with Pylint
+      # Executa Pylint. Ele usará .pylintrc se existir.
+      # A flag --fail-under (ou --fail-on) deve estar no .pylintrc ou aqui.
+      # Se não usar .pylintrc, adicione as flags aqui:
+      # run: pylint --fail-under=8.0 $(git ls-files '*.py')
       run: |
+        echo "Running Pylint..."
         pylint $(git ls-files '*.py')
+        # (Opcional: Adicione aqui um passo para processar a saída e criar anotações se usar um formato específico ou action)
+
+    # (Opcional) Adicionar outros passos como Ruff, Bandit, Mypy, Pytest aqui...
+
+    # (Opcional) Upload Pylint report if generated
+    # - name: Upload Pylint report
+    #   if: always() # Roda mesmo se o passo anterior falhar
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: pylint-report-${{ matrix.python-version }}
+    #     path: pylint-report.json # Ou o nome do seu arquivo de relatório
