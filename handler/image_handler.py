@@ -35,23 +35,23 @@ def replace_placeholders(obj, params):
 def load_and_populate_workflow(workflow_name: str, params: Dict[str, Any]) -> (Dict[str, Any], str):
     workflow_path = os.path.join(WORKFLOW_DIR, workflow_name)
     if not os.path.exists(workflow_path):
-        logger.error(f"Workflow file not found: {workflow_path}")
+        logger.error("Workflow file not found: %s", workflow_path)
         raise FileNotFoundError(f"Workflow '{workflow_name}' not found.")
 
     try:
         with open(workflow_path, 'r', encoding='utf-8') as f:
             workflow_template = json.load(f)
     except json.JSONDecodeError as e:
-        logger.error(f"Failed to parse workflow JSON file {workflow_path}: {e}")
+        logger.error("Failed to parse workflow JSON file %s: %s", workflow_path, e)
         raise ValueError(f"Invalid JSON in workflow file '{workflow_name}'.") from e
     except Exception as e:
-        logger.error(f"Failed to read workflow file {workflow_path}: {e}")
+        logger.error("Failed to read workflow file %s: %s", workflow_path, e)
         raise IOError(f"Could not read workflow file '{workflow_name}'.") from e
 
     populated_workflow_dict = replace_placeholders(workflow_template, params)
 
     logger.debug(
-        f"Populated workflow for job {params.get('job_id', 'N/A')}: {json.dumps(populated_workflow_dict, indent=2)}")
+        "Populated workflow for job %s: %s", params.get('job_id', 'N/A'), json.dumps(populated_workflow_dict, indent=2))
 
     output_node_id = None
     save_image_nodes = []
@@ -60,22 +60,22 @@ def load_and_populate_workflow(workflow_name: str, params: Dict[str, Any]) -> (D
             "title"]:
             if output_node_id is None:
                 output_node_id = node_id
-                logger.info(f"Designated output node '{{output_node_id}}' found: Node {node_id}")
+                logger.info("Designated output node '{{output_node_id}}' found: Node %s", node_id)
             else:
                 logger.warning(
-                    f"Multiple nodes tagged with '{{output_node_id}}' found in workflow '{workflow_name}'. Using the first one: {output_node_id}")
+                    "Multiple nodes tagged with '{{output_node_id}}' found in workflow '%s'. Using the first one: %s", workflow_name, output_node_id)
         if node_data.get("class_type") == "SaveImage":
             save_image_nodes.append(node_id)
 
     if not output_node_id:
         logger.warning(
-            f"No node explicitly marked with '{{output_node_id}}' in workflow '{workflow_name}'. Will look for SaveImage nodes.")
+            "No node explicitly marked with '{{output_node_id}}' in workflow '%s'. Will look for SaveImage nodes.", workflow_name)
         if save_image_nodes:
             output_node_id = save_image_nodes[0]
-            logger.info(f"Using first SaveImage node as output: Node {output_node_id}")
+            logger.info("Using first SaveImage node as output: Node %s", output_node_id)
         else:
             logger.error(
-                f"No '{{output_node_id}}' placeholder and no SaveImage nodes found in workflow '{workflow_name}'. Cannot determine output.")
+                "No '{{output_node_id}}' placeholder and no SaveImage nodes found in workflow '%s'. Cannot determine output.", workflow_name)
             raise ValueError(
                 f"Workflow '{workflow_name}' does not define an output node ('{{output_node_id}}' or SaveImage type).")
 
