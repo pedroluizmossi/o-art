@@ -3,6 +3,7 @@ disable=missing-module-docstring,
         missing-class-docstring,
         missing-function-docstring,
         invalid-name,
+        import-error,
 
 [REPORTS]
 fail-under=8.0
