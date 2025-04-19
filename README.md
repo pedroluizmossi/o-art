@@ -40,3 +40,5 @@ Pense nisso como o maestro de uma orquestra de macacos pintores digitais, garant
 * Use placeholders `{{nome_do_parametro}}` dentro do JSON do workflow.
 * A API substituirá esses placeholders pelos valores fornecidos no campo `"parameters"` da requisição `/image/generate`.
 * Marque seu nó de saída principal (geralmente `SaveImage`) com `{{output_node_id}}` no campo `_meta.title` para fácil identificação (embora haja um fallback para o primeiro `SaveImage`).
+
+[![Python Quality Check Status](https://github.com/pedroluizmossi1/o-art/actions/workflows/pylint.yml/badge.svg)](https://github.com/pedroluizmossi1/o-art/actions/workflows/pylint.yml)
