@@ -307,20 +307,18 @@ async def get_queue(user_id: Optional[str] = None) -> Dict[str, int]:
         logger.error(f"Unexpected error in get_queue: {e}")
         raise
 
-async def check_queue(user_id: Optional[str] = None):
-    while True:
-        queue = await get_queue(user_id)
-        metric.write_data(
-            measurement="queue_status",
-            tags={"user_id": user_id},
-            fields={
-                "queue_running": int(queue["queue_running"]),
-                "queue_pending": int(queue["queue_pending"]),
-                "queue_position": int(queue["queue_position"])
-            }
-        )
-        logger.debug(f"Queue status: {queue}")
-        await asyncio.sleep(1)
+async def check_queue_task(user_id: Optional[str] = None):
+    queue = await get_queue(user_id)
+    metric.write_data(
+        measurement="queue_status",
+        tags={"user_id": user_id},
+        fields={
+            "queue_running": int(queue["queue_running"]),
+            "queue_pending": int(queue["queue_pending"]),
+            "queue_position": int(queue["queue_position"])
+        }
+    )
+    logger.debug(f"Queue status: {queue}")
 
 async def generate_image(user_id: str) -> Dict[str, List[bytes]]:
     """

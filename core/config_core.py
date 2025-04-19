@@ -78,3 +78,20 @@ class Config:
             return self.max_files
         def get_max_backups(self):
             return self.max_backups
+
+    class Redis:
+        def __init__(self, config_instance):
+            self.config_instance = config_instance
+            self.host = self.config_instance.get("redis", "host", "localhost")
+            self.port = int(self.config_instance.get("redis", "port", 6379))  # Convert to int
+
+        def get_host(self):
+            return self.host
+
+        def get_port(self):
+            return self.port
+
+        def get_settings(self):
+            # Helper method to return settings compatible with metrics
+            from arq.connections import RedisSettings
+            return RedisSettings(host=self.host, port=self.port)
