@@ -2,11 +2,10 @@ import json
 import os
 import re
 
-from comfy.comfy_core import execute_workflow # Precisaremos de uma função nova ou adaptada no comfy_core
+from comfy.comfy_core import execute_workflow, ComfyUIError
 from core.logging_core import setup_logger
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from typing import Dict, Any, List, Optional
-
 logger = setup_logger(__name__)
 
 WORKFLOW_DIR = os.path.join(os.path.dirname(__file__), '..', 'comfy', 'workflows')
@@ -18,13 +17,11 @@ def replace_placeholders(obj, params):
     elif isinstance(obj, list):
         return [replace_placeholders(item, params) for item in obj]
     elif isinstance(obj, str):
-        # Substitui todos placeholders do tipo {{nome}} (apenas onde for string inteira)
         match = re.fullmatch(r"\{\{(\w+)\}\}", obj)
         if match:
             key = match.group(1)
             return params.get(key, obj)
         else:
-            # Substitui dentro da string, se houver algo do tipo 'prefix_{{user_id}}'
             def replacer(m):
                 return str(params.get(m.group(1), m.group(0)))
             return re.sub(r"\{\{(\w+)\}\}", replacer, obj)
@@ -32,70 +29,95 @@ def replace_placeholders(obj, params):
         return obj
 
 def load_and_populate_workflow(workflow_name: str, params: Dict[str, Any]) -> (Dict[str, Any], str):
-    """Carrega o workflow, substitui placeholders por valores reais e retorna o dict pronto."""
     workflow_path = os.path.join(WORKFLOW_DIR, workflow_name)
     if not os.path.exists(workflow_path):
-        logger.error(f"Arquivo de workflow não encontrado: {workflow_path}")
-        raise FileNotFoundError(f"Workflow '{workflow_name}' não encontrado.")
+        logger.error(f"Workflow file not found: {workflow_path}")
+        raise FileNotFoundError(f"Workflow '{workflow_name}' not found.")
 
-    with open(workflow_path, 'r', encoding='utf-8') as f:
-        workflow_template = json.load(f)  # Já vira dict
+    try:
+        with open(workflow_path, 'r', encoding='utf-8') as f:
+            workflow_template = json.load(f)
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse workflow JSON file {workflow_path}: {e}")
+        raise ValueError(f"Invalid JSON in workflow file '{workflow_name}'.") from e
+    except Exception as e:
+        logger.error(f"Failed to read workflow file {workflow_path}: {e}")
+        raise IOError(f"Could not read workflow file '{workflow_name}'.") from e
 
-    # Substitui todos os placeholders de forma segura e recursiva
     populated_workflow_dict = replace_placeholders(workflow_template, params)
 
-    # Buscar nó de saída
+    logger.debug(f"Populated workflow for job {params.get('job_id', 'N/A')}: {json.dumps(populated_workflow_dict, indent=2)}")
+
     output_node_id = None
+    save_image_nodes = []
     for node_id, node_data in populated_workflow_dict.items():
-        if "_meta" in node_data and "title" in node_data["_meta"]:
-            if "{{output_node_id}}" in node_data["_meta"]["title"]:
-                output_node_id = node_id
-                break
+        if isinstance(node_data.get("_meta", {}).get("title"), str) and "{{output_node_id}}" in node_data["_meta"]["title"]:
+            if output_node_id is None:
+                 output_node_id = node_id
+                 logger.info(f"Designated output node '{{output_node_id}}' found: Node {node_id}")
+            else:
+                 logger.warning(f"Multiple nodes tagged with '{{output_node_id}}' found in workflow '{workflow_name}'. Using the first one: {output_node_id}")
+        if node_data.get("class_type") == "SaveImage":
+             save_image_nodes.append(node_id)
+
 
     if not output_node_id:
-        logger.warning(f"Nenhum nó de saída marcado como '{{output_node_id}}' encontrado em '{workflow_name}'.")
+        logger.warning(f"No node explicitly marked with '{{output_node_id}}' in workflow '{workflow_name}'. Will look for SaveImage nodes.")
+        if save_image_nodes:
+             output_node_id = save_image_nodes[0]
+             logger.info(f"Using first SaveImage node as output: Node {output_node_id}")
+        else:
+             logger.error(f"No '{{output_node_id}}' placeholder and no SaveImage nodes found in workflow '{workflow_name}'. Cannot determine output.")
+             raise ValueError(f"Workflow '{workflow_name}' does not define an output node ('{{output_node_id}}' or SaveImage type).")
 
     return populated_workflow_dict, output_node_id
 
 
-
 async def handle_generate_image(user_id: str, job_id: str, workflow_name: str, params: Dict[str, Any]) -> Optional[Dict[str, List[bytes]]]:
-    """
-    Carrega, popula e executa um workflow ComfyUI especificado.
-    Retorna um dicionário mapeando node_id para lista de bytes da imagem, ou None.
-    """
-    logger.info(f"Iniciando geração para user {user_id}, job {job_id}, workflow {workflow_name}")
-    logger.debug(f"Parâmetros recebidos: {params}")
+    logger.info(f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_name}")
+    logger.debug(f"Received parameters: {params}") # Cuidado ao logar params em produção
 
     try:
-        populated_workflow, output_node_id = load_and_populate_workflow(workflow_name, params)
-        if not populated_workflow:
-            raise HTTPException(status_code=400, detail="Falha ao carregar ou popular o workflow.")
+        populated_workflow, designated_output_node_id = load_and_populate_workflow(workflow_name, params)
 
-        all_outputs = await execute_workflow(user_id, job_id, populated_workflow) # Passa o job_id tbm!
+        all_outputs = await execute_workflow(user_id, job_id, populated_workflow)
 
         if not all_outputs:
-            logger.warning(f"Workflow {workflow_name} executado mas não retornou saídas.")
-            return None
+            logger.warning(f"Workflow {workflow_name} executed for job {job_id} but returned no outputs from ComfyUI.")
+            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Image generation failed: No output received from ComfyUI backend.")
 
-        if output_node_id and output_node_id in all_outputs:
-            logger.info(f"Imagens geradas com sucesso pelo nó {output_node_id} para job {job_id}.")
-            return {output_node_id: all_outputs[output_node_id]}
-        elif all_outputs:
-             logger.warning(f"Nó de saída '{output_node_id}' não encontrado nos resultados ou não definido. Retornando todas as saídas de imagem.")
-             image_outputs = {k: v for k, v in all_outputs.items() if isinstance(v, list) and v and isinstance(v[0], bytes)}
-             return image_outputs
-        else:
-            logger.error(f"Nenhuma saída de imagem encontrada para job {job_id} com workflow {workflow_name}.")
-            return None
+        if designated_output_node_id in all_outputs:
+            output_images = all_outputs[designated_output_node_id]
+            if isinstance(output_images, list) and output_images and isinstance(output_images[0], bytes):
+                 logger.info(f"Successfully generated {len(output_images)} image(s) from node {designated_output_node_id} for job {job_id}.")
+                 return {designated_output_node_id: output_images}
+            else:
+                 logger.warning(f"Designated output node {designated_output_node_id} for job {job_id} did not contain valid image data.")
+
+        logger.warning(f"Designated output node {designated_output_node_id} not found in results or had no images for job {job_id}. Searching other nodes.")
+        for node_id, output_data in all_outputs.items():
+             if isinstance(output_data, list) and output_data and isinstance(output_data[0], bytes):
+                  logger.info(f"Found image output in fallback node {node_id} for job {job_id}. Returning this output.")
+                  return {node_id: output_data}
+
+        logger.error(f"No image output found in any node for job {job_id} with workflow {workflow_name}.")
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Image generation failed: ComfyUI backend did not produce any image output.")
 
 
     except FileNotFoundError as e:
-         logger.error(f"Erro de arquivo no handler: {e}")
-         raise
-    except (ValueError, KeyError, json.JSONDecodeError) as e:
-         logger.error(f"Erro de dados/parâmetro no handler: {e}")
-         raise HTTPException(status_code=400, detail=f"Erro nos parâmetros ou formato do workflow: {e}")
+        logger.error(f"Workflow file error for job {job_id}: {e}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except (ValueError, KeyError, json.JSONDecodeError, IOError) as e: # Captura erros de load_and_populate
+        logger.error(f"Workflow definition or parameter error for job {job_id}: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Workflow or parameter error: {e}")
+    except ComfyUIError as e:
+        logger.error(f"ComfyUI backend error for job {job_id}: {e}")
+        if e.status_code == 400:
+             detail = f"ComfyUI validation error: {e.details or str(e)}"
+             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+        else:
+             detail = f"ComfyUI backend failed: {e}"
+             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail)
     except Exception as e:
-         logger.exception(f"Erro inesperado no handle_generate_image para job {job_id}: {e}")
-         raise HTTPException(status_code=500, detail="Erro interno ao processar a geração da imagem.")
+        logger.exception(f"Unexpected error in handle_generate_image for job {job_id}: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error during image generation.")
