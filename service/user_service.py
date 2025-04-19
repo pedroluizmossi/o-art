@@ -1,18 +1,19 @@
 from typing import Optional
+from uuid import UUID
+from datetime import datetime, timezone
 
 from sqlmodel import Session, select
 from model.user_model import User
-from uuid import UUID
 from core.logging_core import setup_logger
-from datetime import datetime, timezone # Import datetime/timezone
 
 logger = setup_logger(__name__)
+
 
 def create_user(session: Session, user_data: User) -> User:
     """Adds a new user to the database."""
     try:
         if not user_data.created_at:
-             user_data.created_at = datetime.now(timezone.utc)
+            user_data.created_at = datetime.now(timezone.utc)
         user_data.updated_at = user_data.created_at
 
         session.add(user_data)
@@ -25,6 +26,7 @@ def create_user(session: Session, user_data: User) -> User:
         logger.exception(f"Error creating user {user_data.email}: {e}")
         raise e
 
+
 def get_user_by_id(session: Session, user_id: UUID) -> Optional[User]:
     """Retrieves a user by their ID."""
     try:
@@ -34,6 +36,7 @@ def get_user_by_id(session: Session, user_id: UUID) -> Optional[User]:
     except Exception as e:
         logger.exception(f"Error retrieving user by ID {user_id}: {e}")
         raise e
+
 
 def update_user(session: Session, user_id: UUID, user_update_data: dict) -> Optional[User]:
     """Updates an existing user identified by user_id with data from user_update_data."""
@@ -45,18 +48,18 @@ def update_user(session: Session, user_id: UUID, user_update_data: dict) -> Opti
 
         updated = False
         for key, value in user_update_data.items():
-             if hasattr(user, key) and getattr(user, key) != value:
-                  setattr(user, key, value)
-                  updated = True
+            if hasattr(user, key) and getattr(user, key) != value:
+                setattr(user, key, value)
+                updated = True
 
         if updated:
-             user.updated_at = datetime.now(timezone.utc)
-             session.add(user)
-             session.commit()
-             session.refresh(user)
-             logger.info(f"User updated successfully: {user_id}")
+            user.updated_at = datetime.now(timezone.utc)
+            session.add(user)
+            session.commit()
+            session.refresh(user)
+            logger.info(f"User updated successfully: {user_id}")
         else:
-             logger.info(f"No changes detected for user {user_id}. Update skipped.")
+            logger.info(f"No changes detected for user {user_id}. Update skipped.")
 
         return user
     except Exception as e:

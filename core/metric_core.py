@@ -4,12 +4,11 @@ import socket
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from core.env_core import get_env_variable, Envs
-# Assuming setup_logger is in utils.logging_core, adjust if necessary
+
 from core.logging_core import setup_logger
 
-# Set up the logger for this module
-# The name 'InfluxDBWriter' is used for the logger instance
-logger = setup_logger(__name__) 
+logger = setup_logger(__name__)
+
 
 class InfluxDBWriter:
     def __init__(self):
@@ -20,10 +19,11 @@ class InfluxDBWriter:
             self.bucket = get_env_variable(Envs.INFLUXDB_BUCKET)
 
             if not all([self.token, self.org, self.url, self.bucket]):
-                 logger.error("Missing one or more InfluxDB environment variables (TOKEN, ORG, URL, BUCKET). Metrics will be disabled.")
-                 self.enabled = False
+                logger.error(
+                    "Missing one or more InfluxDB environment variables (TOKEN, ORG, URL, BUCKET). Metrics will be disabled.")
+                self.enabled = False
             else:
-                 self.enabled = True
+                self.enabled = True
 
             self.host_name = socket.gethostname()
             self.os_name = platform.system()
@@ -50,13 +50,13 @@ class InfluxDBWriter:
         try:
             with InfluxDBClient(url=self.url, token=self.token, org=self.org) as client:
                 # Consider making write options configurable if needed
-                write_api = client.write_api(write_options=SYNCHRONOUS) 
+                write_api = client.write_api(write_options=SYNCHRONOUS)
 
                 point = Point(measurement).tag("host", self.host_name).tag("os", self.os_name)
 
                 # Add tags dynamically
                 for tag_key, tag_value in tags.items():
-                    point = point.tag(tag_key, str(tag_value)) # Ensure tag value is a string
+                    point = point.tag(tag_key, str(tag_value))  # Ensure tag value is a string
 
                 # Add fields dynamically and validate types
                 for field_key, field_value in fields.items():
@@ -66,7 +66,8 @@ class InfluxDBWriter:
                         # Log a warning instead of raising an immediate error, 
                         # allows processing other fields if desired.
                         # If strict type checking is required, raise ValueError here.
-                        logger.warning(f"Unsupported field type for key '{field_key}': {type(field_value)}. Skipping field.")
+                        logger.warning(
+                            f"Unsupported field type for key '{field_key}': {type(field_value)}. Skipping field.")
                         # Or raise ValueError:
                         # raise ValueError(f"Field type for '{field_key}' is not supported: {type(field_value)}")
 
@@ -76,11 +77,11 @@ class InfluxDBWriter:
                 # Write the point to InfluxDB
                 write_api.write(bucket=self.bucket, record=point)
                 logger.debug(f"Successfully wrote point to measurement '{measurement}' in bucket '{self.bucket}'.")
-                
-        except ValueError as ve: # Catch specific ValueError from field type check if raised
-             logger.error(f"Data validation error while preparing point for InfluxDB: {ve}")
-             # Decide if you want to re-raise or just log
-             # raise ve 
+
+        except ValueError as ve:  # Catch specific ValueError from field type check if raised
+            logger.error(f"Data validation error while preparing point for InfluxDB: {ve}")
+            # Decide if you want to re-raise or just log
+            # raise ve
         except Exception as e:
             # Log any other exceptions during InfluxDB interaction
             logger.exception(f"Error writing data to InfluxDB measurement '{measurement}': {e}")
