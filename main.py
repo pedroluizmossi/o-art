@@ -1,4 +1,4 @@
-import subprocess
+import subprocess  # nosec B404
 import sys
 from contextlib import asynccontextmanager
 
@@ -9,6 +9,7 @@ from fastapi import FastAPI
 ###Routes
 from api.auth_api import router as auth_router
 from api.image_api import router as image_router
+from api.scalar_docs_api import router as scalar_docs_router
 from api.webhook_api import router as webhook_router
 from api.websocket_api import router as websocket_router
 from core.config_core import Config
@@ -55,7 +56,7 @@ async def lifespan(app: FastAPI):
             "--loglevel=warning",
             "--pool=solo",
         ]
-        worker_process = subprocess.Popen(worker_command)
+        worker_process = subprocess.Popen(worker_command) # nosec B603
         logger.info("Processo worker iniciado com PID: %s", worker_process.pid)
 
         beat_command = [
@@ -67,7 +68,7 @@ async def lifespan(app: FastAPI):
             "beat",
             "--loglevel=warning",
         ]
-        beat_process = subprocess.Popen(beat_command)
+        beat_process = subprocess.Popen(beat_command) # nosec B603
         logger.info("Processo beat iniciado com PID: %s", beat_process.pid)
 
     except Exception as e:
@@ -99,3 +100,4 @@ app.include_router(auth_router)
 app.include_router(webhook_router)
 app.include_router(image_router)
 app.include_router(websocket_router)
+app.include_router(scalar_docs_router)

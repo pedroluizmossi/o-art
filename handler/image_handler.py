@@ -106,7 +106,7 @@ async def handle_generate_image(
     logger.info(
         f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_name}"
     )
-    logger.debug(f"Received parameters: {params}")  # Cuidado ao logar params em produção
+    logger.debug(f"Received parameters: {params}")
 
     try:
         populated_workflow, designated_output_node_id = load_and_populate_workflow(

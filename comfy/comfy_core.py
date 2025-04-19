@@ -11,6 +11,7 @@ import websockets
 from core.config_core import Config
 from core.logging_core import setup_logger
 from core.metric_core import InfluxDBWriter
+from utils.security_util import safe_urlopen
 
 logger = setup_logger(__name__)
 config_instance = Config()
@@ -76,7 +77,7 @@ async def queue_prompt(prompt: dict[str, Any], client_id: str) -> dict[str, Any]
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=30.0) as response:
+        with safe_urlopen(req, timeout=30.0) as response:
             response_body = response.read()
             return json.loads(response_body)
     except urllib.error.HTTPError as e:
@@ -116,7 +117,7 @@ async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
     url_values = urllib.parse.urlencode(data)
     url = f"http://{server_address}/view?{url_values}"
     try:
-        with urllib.request.urlopen(url, timeout=60.0) as response:  # Timeout maior para download
+        with safe_urlopen(url, timeout=240.0) as response:  # Timeout maior para download
             return response.read()
     except urllib.error.HTTPError as e:
         logger.error("HTTP Error %s getting image %s", e.code, filename)
@@ -141,7 +142,7 @@ async def get_history(prompt_id: str) -> dict[str, Any]:
     try:
         # context = unsafe_ssl_context # Descomente se precisar ignorar SSL
         # with urllib.request.urlopen(url, timeout=30.0, context=context) as response:
-        with urllib.request.urlopen(url, timeout=30.0) as response:
+        with safe_urlopen(url, timeout=30.0) as response:
             response_body = response.read()
             return json.loads(response_body)
     except urllib.error.HTTPError as e:
@@ -332,7 +333,7 @@ async def get_queue(user_id: Optional[str] = None) -> dict[str, int]:
         url = f"http://{server_address}/queue"
         logger.debug("Fetching queue information from %s", url)
 
-        with urllib.request.urlopen(url) as response:
+        with safe_urlopen(url) as response:
             queue_data = json.loads(response.read())
 
         # Extract queue data with defaults
