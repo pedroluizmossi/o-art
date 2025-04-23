@@ -43,7 +43,7 @@
   },
   "10": {
     "inputs": {
-      "vae_name": "FLUX1\\ae.safetensors"
+      "vae_name": "FLUX1/ae.safetensors"
     },
     "class_type": "VAELoader",
     "_meta": {
@@ -170,7 +170,7 @@
   "44": {
     "inputs": {
       "model_type": "flux",
-      "text_encoder1": "t5\\t5xxl_fp16.safetensors",
+      "text_encoder1": "t5xxl_fp8_e4m3fn.safetensors",
       "text_encoder2": "clip_l.safetensors",
       "t5_min_length": 512,
       "use_4bit_t5": "disable",

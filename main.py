@@ -16,6 +16,11 @@ from core.config_core import Config
 from core.db_core import create_db
 from core.logging_core import cleanup_old_logs, setup_logger
 
+###Tables
+from model.user_model import User
+from model.workflow_model import Workflow
+from model.image_model import Image
+
 load_dotenv()
 
 logger = setup_logger(__name__)

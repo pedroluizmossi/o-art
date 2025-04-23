@@ -119,6 +119,7 @@ async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
     try:
         with safe_urlopen(url, timeout=240.0) as response:  # Timeout maior para download
             return response.read()
+
     except urllib.error.HTTPError as e:
         logger.error("HTTP Error %s getting image %s", e.code, filename)
         raise ComfyUIError(f"Failed to get image {filename}", status_code=e.code) from e

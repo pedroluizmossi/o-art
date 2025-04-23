@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AIAssistantCustomInstructionsStorage">
+    <option name="instructions">
+      <map>
+        <entry key="AIAssistant.VCS.GenerateCommitMessage">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.VCS.GenerateCommitMessage" />
+              <option name="content" value="Avoid overly verbose descriptions or unnecessary details. Broke each file " />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Fix redundant parentheses in dependency injection calls&#10;&#10;Removed unnecessary parentheses from `Depends(auth.authenticated)` in `image_api.py` and `auth_api.py` to resolve potential issues with FastAPI's dependency injection. This change ensures alignment with FastAPI's expected usage and improves code readability. Additionally, restructured `load_dotenv()` placement for consistency across modules.">
-      <change afterPath="$PROJECT_DIR$/api/scalar_docs_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/security_util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/enum/model_type.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/enum/workflow_segment_type.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/enum/workflow_type.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/image_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/workflow_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/art.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/art.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/env_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/env_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/image_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/image_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comfy/workflows/Flux-SVDQ-base.json" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/workflows/Flux-SVDQ-base.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,12 +56,12 @@
   }
 }</component>
   <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="ab61f536-7be3-47ff-872d-388e2b151531" />
+    <option name="defaultAccountId" value="d8c852e9-a7f9-4a26-802d-13fc7eb8a8e0" />
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/pedroluizmossi1/o-art.git&quot;,
-    &quot;accountId&quot;: &quot;ab61f536-7be3-47ff-872d-388e2b151531&quot;
+    &quot;accountId&quot;: &quot;d8c852e9-a7f9-4a26-802d-13fc7eb8a8e0&quot;
   }
 }</component>
   <component name="JsbtTreeLayoutManager">
@@ -61,35 +80,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Docker.docker-compose.yaml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;FastAPI.art.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_user_handler.py.executor&quot;: &quot;Coverage&quot;,
-    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_user_handler.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Worker.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/pedro/PycharmProjects/art&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Docker.docker-compose.yaml: Compose Deployment.executor": "Run",
+    "FastAPI.art.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor": "Run",
+    "Python tests.Python tests in test_user_handler.py.executor": "Coverage",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for test_user_handler.executor": "Run",
+    "Python.Worker.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/pedro/PycharmProjects/o-art/model",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "Docker",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model" />
+      <recent name="$PROJECT_DIR$/model/enum" />
       <recent name="C:\Users\pedro\PycharmProjects\art" />
       <recent name="C:\Users\pedro\PycharmProjects\art\comfy\workflows" />
     </key>
@@ -108,7 +130,6 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (art)" />
       <option name="WORKING_DIRECTORY" value="C:\Users\pedro\PycharmProjects\art" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -224,11 +245,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
         <item itemvalue="Python tests.pytest for test_user_handler" />
         <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.Python tests in test_user_handler.py" />
         <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
-        <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
@@ -260,6 +281,27 @@
       <workItem from="1745084754499" duration="139000" />
       <workItem from="1745084907551" duration="1004000" />
       <workItem from="1745085938343" duration="3296000" />
+      <workItem from="1745203806636" duration="104000" />
+      <workItem from="1745203920776" duration="200000" />
+      <workItem from="1745204127139" duration="53000" />
+      <workItem from="1745212256446" duration="1504000" />
+      <workItem from="1745213768874" duration="7000" />
+      <workItem from="1745213782406" duration="1031000" />
+      <workItem from="1745214843194" duration="1678000" />
+      <workItem from="1745218131065" duration="515000" />
+      <workItem from="1745218654044" duration="59000" />
+      <workItem from="1745247237128" duration="87000" />
+      <workItem from="1745247333734" duration="1282000" />
+      <workItem from="1745248718040" duration="1270000" />
+      <workItem from="1745252479412" duration="1369000" />
+      <workItem from="1745253896892" duration="484000" />
+      <workItem from="1745254388529" duration="331000" />
+      <workItem from="1745255134261" duration="16000" />
+      <workItem from="1745255170854" duration="66000" />
+      <workItem from="1745255245562" duration="163000" />
+      <workItem from="1745255514982" duration="24000" />
+      <workItem from="1745255545186" duration="2562000" />
+      <workItem from="1745362903890" duration="5123000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -503,7 +545,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor to modularize and enhance database and logging setup&#10;&#10;Separated database, logging, and InfluxDB functionalities into dedicated modules under the `core` directory for better organization and reusability. Updated user model with UUIDs and timestamps while introducing `User` as the primary table. Replaced the utility-based `metric_core` with an OOP-based `InfluxDBWriter` class to improve maintainability." />
     <MESSAGE value="Add user webhook handling and database interaction logic&#10;&#10;Introduced a `handle_user_webhook` function to process user-related webhooks and store user data in the database. Updated the `User` model with utility methods for database insertion and logging improvements. Refactored database session handling and included webhook type enumeration for better structure and scalability." />
     <MESSAGE value="Refactor handlers and APIs, add tests for user webhooks&#10;&#10;Refactored user handling logic to support CRUD operations for webhooks. Updated `Config` to dynamically determine the configuration file path. Split `/generate` route into a dedicated `image_api` module. Added comprehensive tests for user webhook handlers." />
     <MESSAGE value="Add WebSocket support and optimize queue handling logic&#10;&#10;Introduced a WebSocket API for real-time queue updates and adjusted queue filtering for better efficiency. Refactored authentication handler logic and enhanced image generation API with token-based user identification. Updated dependencies and removed redundant code for improved maintainability." />
@@ -528,7 +569,8 @@
     <MESSAGE value="Use modern `dict` type hints across the codebase&#10;&#10;Replaced `Dict` type hints with modern `dict` syntax for improved consistency and readability. This change aligns with Python 3.9+ typing conventions and simplifies type annotations throughout the project. Updated multiple files to adhere to this standard." />
     <MESSAGE value="Fix dependency function calls by removing redundant parentheses&#10;&#10;Removed unnecessary parentheses from `Depends(auth.authenticated)` in `image_api.py` and `auth_api.py`. This fixes potential issues with function injection and aligns with FastAPI's expected usage." />
     <MESSAGE value="Fix redundant parentheses in dependency injection calls&#10;&#10;Removed unnecessary parentheses from `Depends(auth.authenticated)` in `image_api.py` and `auth_api.py` to resolve potential issues with FastAPI's dependency injection. This change ensures alignment with FastAPI's expected usage and improves code readability. Additionally, restructured `load_dotenv()` placement for consistency across modules." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix redundant parentheses in dependency injection calls&#10;&#10;Removed unnecessary parentheses from `Depends(auth.authenticated)` in `image_api.py` and `auth_api.py` to resolve potential issues with FastAPI's dependency injection. This change ensures alignment with FastAPI's expected usage and improves code readability. Additionally, restructured `load_dotenv()` placement for consistency across modules." />
+    <MESSAGE value="Create workflow and image models with supporting enums  &#10;&#10;Added Workflow and Image models, providing schema definitions for database operations. Introduced supporting enums (Model, WorkflowType, and WorkflowSegment) to categorize workflow types and related segments. Updated main.py and related configurations to integrate the models. Additionally, fixed paths and updated IDE settings for consistency." />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -598,8 +640,9 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745367650377" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
   </component>
 </project>
