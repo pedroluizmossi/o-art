@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Workflow(Enum):
-    IMAGE = "image"
-    VIDEO = "video"
-    AUDIO = "audio"
-    TEXT = "text"
+    IMAGE = "IMAGE"
+    VIDEO = "VIDEO"
+    AUDIO = "AUDIO"
+    TEXT = "TEXT"

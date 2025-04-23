@@ -1,10 +1,13 @@
+import io
 import json
 import os
 import re
-from typing import Any, List, Optional
+from typing import Any, List, Optional, BinaryIO
 
+from Crypto.Util.RFC1751 import binary
 from fastapi import HTTPException, status
 
+from core.minio_core import upload_bytes_to_bucket
 from comfy.comfy_core import ComfyUIError, execute_workflow
 from core.logging_core import setup_logger
 
@@ -134,8 +137,17 @@ async def handle_generate_image(
                 logger.info(
                     f"Successfully generated {len(output_images)} image(s) from node {designated_output_node_id} for job {job_id}."
                 )
+                bytes_binaryio = io.BytesIO()
+                for image in output_images:
+                    bytes_binaryio.write(image)
+                bytes_binaryio.seek(0)
+                upload_bytes_to_bucket(
+                    "default",
+                    bytes_binaryio,
+                    f"{user_id}/{job_id}.png",
+                )
                 return {designated_output_node_id: output_images}
-            else:
+        else:
                 logger.warning(
                     f"Designated output node {designated_output_node_id} for job {job_id} did not contain valid image data."
                 )

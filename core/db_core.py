@@ -3,6 +3,8 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
+from service.model_service import seed_model_from_json, MODELS_JSON_PATH
+from service.workflow_service import seed_workflow_from_json, WORKFLOWS_JSON_PATH
 
 load_dotenv()
 
@@ -10,6 +12,9 @@ load_dotenv()
 logger = setup_logger(__name__)
 # Set up the database connection using SQLModel
 postgres_url = get_env_variable(Envs.POSTGRES_URL)
+
+RESOURCE_PATH = "./resources"
+RESOURCE_POSTGRES_PATH = f"{RESOURCE_PATH}/postgres/"
 if not postgres_url:
     logger.critical(
         "Database URL not found in environment variables "
@@ -38,3 +43,18 @@ def create_db():
 def get_session():
     with Session(engine) as session:
         yield session
+
+def initial_data():
+    """
+    Initialize the database with initial data.
+    """
+    try:
+        with Session(engine) as session:
+            seed_model_from_json(session, RESOURCE_POSTGRES_PATH + MODELS_JSON_PATH)
+            seed_workflow_from_json(session, RESOURCE_POSTGRES_PATH + WORKFLOWS_JSON_PATH)
+            session.commit()
+            logger.info("Initial data loaded successfully.")
+    except Exception as e:
+        logger.error(f"Error loading initial data: {e}")
+        raise e
+
