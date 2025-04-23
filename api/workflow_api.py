@@ -23,14 +23,13 @@ router = APIRouter(
 
 @router.get("/")
 async def get_workflows(
-    session: Session = Depends(get_session),
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Endpoint to retrieve all workflows.
     """
     try:
-        workflows = await get_all_workflows_handler(session)
+        workflows = await get_all_workflows_handler()
         return workflows
     except Exception as e:
         logger.exception("Error retrieving workflows: %s", e)

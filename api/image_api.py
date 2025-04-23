@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID, uuid4
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response
@@ -18,8 +18,9 @@ router = APIRouter(
 
 
 class GenerateImageRequest(BaseModel):
-    workflow_name: str = Field(
-        ..., description="Nome do arquivo do workflow (ex: flux_default.json)"
+    workflow_id: UUID = Field(
+        ...,
+        description="ID do workflow a ser utilizado para gerar a imagem.",
     )
     parameters: dict[str, Any] = Field(
         default_factory=dict,
@@ -33,7 +34,7 @@ async def generate(
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     user_id = str(access_token_info["id"])
-    job_id = str(uuid.uuid4())
+    job_id = str(uuid4())
 
     try:
         request_data.parameters["user_id"] = user_id
@@ -42,7 +43,7 @@ async def generate(
         image_data = await handle_generate_image(
             user_id=user_id,
             job_id=job_id,
-            workflow_name=request_data.workflow_name,
+            workflow_id=request_data.workflow_id,
             params=request_data.parameters,
         )
 
@@ -59,15 +60,15 @@ async def generate(
     except FileNotFoundError:
         raise HTTPException(
             status_code=404,
-            detail=f"Workflow '{request_data.workflow_name}' não encontrado.",
+            detail=f"Workflow '{request_data.workflow_id}' não encontrado.",
         )
     except KeyError as e:
         raise HTTPException(
             status_code=400,
-            detail=f"Parâmetro obrigatório '{e}' ausente para o workflow '{request_data.workflow_name}'.",
+            detail=f"Parâmetro obrigatório '{e}' ausente para o workflow '{request_data.workflow_id}'.",
         )
     except Exception as e:
         logger.error(
-            f"Erro inesperado ao gerar imagem para user {user_id} com workflow {request_data.workflow_name}: {e}"
+            f"Erro inesperado ao gerar imagem para user {user_id} com workflow {request_data.workflow_id}: {e}"
         )
-        raise HTTPException(status_code=500, detail="Erro interno no servidor ao gerar imagem.")
+        raise HTTPException(status_code=500, detail="Erro interno no servidor ao gerar imagem: " + str(e))
