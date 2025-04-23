@@ -1,39 +1,56 @@
 import io
 import json
 import os
-import re
 import uuid
 from typing import Any, List, Optional, BinaryIO
 
-from Crypto.Util.RFC1751 import binary
 from fastapi import HTTPException, status
+from sqlmodel import Session
 
+from core.db_core import engine
 from core.minio_core import upload_bytes_to_bucket
 from comfy.comfy_core import ComfyUIError, execute_workflow
 from core.logging_core import setup_logger
 from handler.workflow_handler import load_and_populate_workflow
+from model.image_model import Image
 
 logger = setup_logger(__name__)
-
 WORKFLOW_DIR = os.path.join(os.path.dirname(__file__), "..", "comfy", "workflows")
+BUCKET_NAME = "default"
+FILE_EXTENSION = ".png"
 
+def save_output_images_to_bucket(object_name: str, node_id: str, images: List[bytes]) -> None:
+    if isinstance(images, list) and images and isinstance(images[0], bytes):
+        logger.info(f"Saving output images to bucket for node {node_id}.")
+        byte_stream = io.BytesIO()
+        for img in images:
+            byte_stream.write(img)
+        byte_stream.seek(0)
+        upload_bytes_to_bucket(
+            BUCKET_NAME,
+            byte_stream,
+            f"{object_name}{FILE_EXTENSION}",
+        )
+    else:
+        raise ValueError("Output images are not valid bytes list.")
 
 async def handle_generate_image(
-    user_id: str, job_id: str, workflow_id: uuid.uuid4, params: dict[str, Any]
+    user_id: str, job_id: str, workflow_id: uuid.UUID, params: dict[str, Any]
 ) -> Optional[dict[str, List[bytes]]]:
     logger.info(
         f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_id}"
     )
     logger.debug(f"Received parameters: {params}")
+    object_name = f"{user_id}/{job_id}"
 
     try:
-        populated_workflow, designated_output_node_id = load_and_populate_workflow(
-            workflow_id, params
+        populated_workflow, output_node_id = load_and_populate_workflow(
+            workflow_id,
+            params
         )
+        workflow_outputs = await execute_workflow(user_id, job_id, populated_workflow)
 
-        all_outputs = await execute_workflow(user_id, job_id, populated_workflow)
-
-        if not all_outputs:
+        if not workflow_outputs:
             logger.warning(
                 f"Workflow {workflow_id} executed for job {job_id} but returned no outputs from ComfyUI."
             )
@@ -42,40 +59,41 @@ async def handle_generate_image(
                 detail="Image generation failed: No output received from ComfyUI backend.",
             )
 
-        if designated_output_node_id in all_outputs:
-            output_images = all_outputs[designated_output_node_id]
-            if (
-                isinstance(output_images, list)
-                and output_images
-                and isinstance(output_images[0], bytes)
-            ):
+        if output_node_id in workflow_outputs:
+            output_images = workflow_outputs[output_node_id]
+            try:
+                save_output_images_to_bucket(object_name, output_node_id, output_images)
+                image = Image(
+                    url=f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}",
+                    workflow_id=workflow_id,
+                    user_id=user_id,
+                    parameters=params,
+                )
+                with Session(engine) as session:
+                    session.add(image)
+                    session.commit()
+                    session.refresh(image)
                 logger.info(
-                    f"Successfully generated {len(output_images)} image(s) from node {designated_output_node_id} for job {job_id}."
+                    f"Image saved successfully for job {job_id}: {image.id}"
                 )
-                bytes_binaryio = io.BytesIO()
-                for image in output_images:
-                    bytes_binaryio.write(image)
-                bytes_binaryio.seek(0)
-                upload_bytes_to_bucket(
-                    "default",
-                    bytes_binaryio,
-                    f"{user_id}/{job_id}.png",
-                )
-                return {designated_output_node_id: output_images}
-        else:
+                return {output_node_id: output_images}
+            except ValueError:
                 logger.warning(
-                    f"Designated output node {designated_output_node_id} for job {job_id} did not contain valid image data."
+                    f"Designated output node {output_node_id} for job {job_id} did not contain valid image data."
                 )
 
         logger.warning(
-            f"Designated output node {designated_output_node_id} not found in results or had no images for job {job_id}. Searching other nodes."
+            f"Designated output node {output_node_id} not found or had no images for job {job_id}. Searching other nodes."
         )
-        for node_id, output_data in all_outputs.items():
-            if isinstance(output_data, list) and output_data and isinstance(output_data[0], bytes):
+        for node_id, images in workflow_outputs.items():
+            try:
+                save_output_images_to_bucket(user_id, job_id, node_id, images)
                 logger.info(
                     f"Found image output in fallback node {node_id} for job {job_id}. Returning this output."
                 )
-                return {node_id: output_data}
+                return {node_id: images}
+            except ValueError:
+                continue
 
         logger.error(
             f"No image output found in any node for job {job_id} with workflow {workflow_id}."
@@ -85,15 +103,7 @@ async def handle_generate_image(
             detail="Image generation failed: ComfyUI backend did not produce any image output.",
         )
 
-    except FileNotFoundError as e:
-        logger.error(f"Workflow file error for job {job_id}: {e}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-    except (
-        OSError,
-        ValueError,
-        KeyError,
-        json.JSONDecodeError,
-    ) as e:  # Captura erros de load_and_populate
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:
         logger.error(f"Workflow definition or parameter error for job {job_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

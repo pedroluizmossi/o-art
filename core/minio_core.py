@@ -2,9 +2,13 @@ from typing import BinaryIO
 from dotenv import load_dotenv
 from minio import Minio
 from minio.error import S3Error
+
 from core.env_core import get_env_variable, Envs
+from core.logging_core import setup_logger
 
 load_dotenv()
+
+logger = setup_logger(__name__)
 
 def create_minio_client():
     """
@@ -29,11 +33,11 @@ def create_bucket_if_missing(bucket_name: str):
     try:
         if not minio_client.bucket_exists(bucket_name):
             minio_client.make_bucket(bucket_name)
-            print(f"Bucket '{bucket_name}' created successfully.")
+            logger.info(f"Bucket S% created successfully.", bucket_name)
         else:
-            print(f"Bucket '{bucket_name}' already exists.")
+            logger.info(f"Bucket S% already exists.", bucket_name)
     except S3Error as e:
-        print(f"Error creating bucket: {e}")
+        logger.error(f"Error creating bucket: %", e)
 
 def create_default_bucket():
     """
@@ -50,7 +54,8 @@ def list_all_buckets():
         for bucket in buckets:
             print(bucket.name)
     except S3Error as e:
-        print(f"Error listing buckets: {e}")
+        logger.error(f"Error listing buckets: %", e)
+        raise e
 
 def upload_file_to_bucket(bucket_name: str, file_path: str, object_name: str):
     """
@@ -62,9 +67,11 @@ def upload_file_to_bucket(bucket_name: str, file_path: str, object_name: str):
     """
     try:
         minio_client.fput_object(bucket_name, object_name, file_path)
-        print(f"File '{file_path}' uploaded to bucket '{bucket_name}' as '{object_name}'.")
+        logger.info(f"File S% uploaded to bucket S%.", file_path, bucket_name)
     except S3Error as e:
-        print(f"Error uploading file: {e}")
+        logger.error(f"Error uploading file: S%", e)
+        raise e
+
 
 def upload_bytes_to_bucket(bucket_name: str, data: BinaryIO, object_name: str):
     """
@@ -81,9 +88,10 @@ def upload_bytes_to_bucket(bucket_name: str, data: BinaryIO, object_name: str):
         size = data.tell()
         data.seek(pos)
         minio_client.put_object(bucket_name, object_name, data, size)
-        print(f"Bytes uploaded to bucket '{bucket_name}' as '{object_name}'.")
+        logger.info(f"Bytes uploaded to bucket S% as S%.", bucket_name, object_name)
     except S3Error as e:
-        print(f"Error uploading bytes: {e}")
+        logger.error(f"Error uploading bytes: %", e)
+        raise e
 
 
 def download_file_from_bucket(bucket_name: str, object_name: str, file_path: str):
@@ -96,6 +104,7 @@ def download_file_from_bucket(bucket_name: str, object_name: str, file_path: str
     """
     try:
         minio_client.fget_object(bucket_name, object_name, file_path)
-        print(f"File '{object_name}' downloaded from bucket '{bucket_name}' to '{file_path}'.")
+        logger.info(f"File S% downloaded from bucket S%.", file_path, bucket_name)
     except S3Error as e:
-        print(f"Error downloading file: {e}")
+        logger.error(f"Error downloading file: %", e)
+        raise e

@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import random
 import re
 from typing import Any, List, Optional, BinaryIO
 
@@ -29,12 +30,15 @@ async def get_all_workflows_handler() -> List[Workflow]:
             detail="Error retrieving workflows",
         )
 
-def replace_placeholders(obj, params):
+def replace_placeholders(obj, workflow_params, params):
     """Função recursiva para substituir placeholders em qualquer estrutura."""
+    validate_workflow_params(workflow_params, params)
+    # Validate and set the seed if not provided or invalid (0) generate a random one.
+    params['seed'] = get_valid_seed(params.get('seed'))
     if isinstance(obj, dict):
-        return {k: replace_placeholders(v, params) for k, v in obj.items()}
+        return {k: replace_placeholders(v,workflow_params, params) for k, v in obj.items()}
     elif isinstance(obj, list):
-        return [replace_placeholders(item, params) for item in obj]
+        return [replace_placeholders(item,workflow_params, params) for item in obj]
     elif isinstance(obj, str):
         match = re.fullmatch(r"\{\{(\w+)\}\}", obj)
         if match:
@@ -48,6 +52,27 @@ def replace_placeholders(obj, params):
             return re.sub(r"\{\{(\w+)\}\}", replacer, obj)
     else:
         return obj
+
+def validate_workflow_params(workflow_params: dict, user_params: dict):
+    """
+    Validate if the parameters provided by the user match those defined in the workflow.
+    :param workflow_params: Expected parameters from the workflow (from the database)
+    :param user_params: Parameters sent by the user (from the API)
+    :raise: HTTPException if there is any inconsistency
+    """
+    extra_keys = [k for k in user_params if k not in workflow_params]
+
+    errors = []
+    if extra_keys:
+        errors.append(f"Unexpected parameters: {', '.join(extra_keys)}")
+
+    if errors:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="; ".join(errors)
+        )
+
+
 
 def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str, Any]) -> (dict[str, Any], str):
     """
@@ -65,7 +90,8 @@ def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str, Any])
             detail=f"Workflow with ID {workflow_id} not found.",
         )
     workflow_template = workflow.workflow_json
-    populated_workflow_dict = replace_placeholders(workflow_template, params)
+    workflow_params = workflow.parameters
+    populated_workflow_dict = replace_placeholders(workflow_template, workflow_params, params)
 
     logger.debug(
         "Populated workflow for job %s: %s",
@@ -113,3 +139,13 @@ def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str, Any])
             )
 
     return populated_workflow_dict, output_node_id
+
+def get_valid_seed(seed):
+    """
+    Validate and return a seed value if not provided or invalid (0) generate a random one.
+    :param seed:
+    :return:
+    """
+    if not seed or seed == 0:
+        return random.randint(1, 2**32 - 1)
+    return seed

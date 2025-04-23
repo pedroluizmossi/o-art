@@ -37,9 +37,6 @@ async def generate(
     job_id = str(uuid4())
 
     try:
-        request_data.parameters["user_id"] = user_id
-        request_data.parameters["job_id"] = job_id
-
         image_data = await handle_generate_image(
             user_id=user_id,
             job_id=job_id,
@@ -71,4 +68,4 @@ async def generate(
         logger.error(
             f"Erro inesperado ao gerar imagem para user {user_id} com workflow {request_data.workflow_id}: {e}"
         )
-        raise HTTPException(status_code=500, detail="Erro interno no servidor ao gerar imagem: " + str(e))
+        raise HTTPException(status_code=500, detail=str(e))

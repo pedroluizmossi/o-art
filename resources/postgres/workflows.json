@@ -208,5 +208,218 @@
 			"positive_prompt": "Dog",
 			"seed": 66
 		}
+	},
+	{
+	"name": "Flux Dev",
+	"description": "Flux Dev FP8",
+	"model_type": "FLUX",
+	"workflow_type": "IMAGE",
+	"workflow_segment": "TEXT_TO_IMAGE",
+	"workflow_json": {
+		"6": {
+			"inputs": {
+				"text": "{{positive_prompt}}",
+				"clip": [
+					"11",
+					0
+				]
+			},
+			"class_type": "CLIPTextEncode",
+			"_meta": {
+				"title": "CLIP Text Encode (Positive Prompt)"
+			}
+		},
+		"8": {
+			"inputs": {
+				"samples": [
+					"13",
+					0
+				],
+				"vae": [
+					"10",
+					0
+				]
+			},
+			"class_type": "VAEDecode",
+			"_meta": {
+				"title": "VAE Decode"
+			}
+		},
+		"9": {
+			"inputs": {
+				"filename_prefix": "user_{{user_id}}_job_{{job_id}}",
+				"images": [
+					"8",
+					0
+				]
+			},
+			"class_type": "SaveImage",
+			"_meta": {
+				"title": "Save Image - {{output_node_id}}"
+			}
+		},
+		"10": {
+			"inputs": {
+				"vae_name": "FLUX1/ae.safetensors"
+			},
+			"class_type": "VAELoader",
+			"_meta": {
+				"title": "Load VAE"
+			}
+		},
+		"11": {
+			"inputs": {
+				"clip_name1": "t5xxl_fp8_e4m3fn.safetensors",
+				"clip_name2": "clip_l.safetensors",
+				"type": "flux",
+				"device": "default"
+			},
+			"class_type": "DualCLIPLoader",
+			"_meta": {
+				"title": "DualCLIPLoader"
+			}
+		},
+		"12": {
+			"inputs": {
+				"unet_name": "{{model_path}}",
+				"weight_dtype": "fp8_e4m3fn"
+			},
+			"class_type": "UNETLoader",
+			"_meta": {
+				"title": "Load Diffusion Model"
+			}
+		},
+		"13": {
+			"inputs": {
+				"noise": [
+					"25",
+					0
+				],
+				"guider": [
+					"22",
+					0
+				],
+				"sampler": [
+					"16",
+					0
+				],
+				"sigmas": [
+					"17",
+					0
+				],
+				"latent_image": [
+					"38",
+					4
+				]
+			},
+			"class_type": "SamplerCustomAdvanced",
+			"_meta": {
+				"title": "SamplerCustomAdvanced"
+			}
+		},
+		"16": {
+			"inputs": {
+				"sampler_name": "dpmpp_2m"
+			},
+			"class_type": "KSamplerSelect",
+			"_meta": {
+				"title": "KSamplerSelect"
+			}
+		},
+		"17": {
+			"inputs": {
+				"scheduler": "simple",
+				"steps": 30,
+				"denoise": 1,
+				"model": [
+					"30",
+					0
+				]
+			},
+			"class_type": "BasicScheduler",
+			"_meta": {
+				"title": "BasicScheduler"
+			}
+		},
+		"22": {
+			"inputs": {
+				"model": [
+					"30",
+					0
+				],
+				"conditioning": [
+					"26",
+					0
+				]
+			},
+			"class_type": "BasicGuider",
+			"_meta": {
+				"title": "BasicGuider"
+			}
+		},
+		"25": {
+			"inputs": {
+				"noise_seed": "{{seed}}"
+			},
+			"class_type": "RandomNoise",
+			"_meta": {
+				"title": "RandomNoise"
+			}
+		},
+		"26": {
+			"inputs": {
+				"guidance": 3.5,
+				"conditioning": [
+					"6",
+					0
+				]
+			},
+			"class_type": "FluxGuidance",
+			"_meta": {
+				"title": "FluxGuidance"
+			}
+		},
+		"30": {
+			"inputs": {
+				"max_shift": 1.15,
+				"base_shift": 0.5,
+				"width": [
+					"38",
+					0
+				],
+				"height": [
+					"38",
+					1
+				],
+				"model": [
+					"12",
+					0
+				]
+			},
+			"class_type": "ModelSamplingFlux",
+			"_meta": {
+				"title": "ModelSamplingFlux"
+			}
+		},
+		"38": {
+			"inputs": {
+				"width": 1024,
+				"height": 1024,
+				"aspect_ratio": "3:2 landscape 1216x832",
+				"swap_dimensions": "Off",
+				"upscale_factor": 1,
+				"batch_size": 1
+			},
+			"class_type": "CR SDXL Aspect Ratio",
+			"_meta": {
+				"title": "🔳 CR SDXL Aspect Ratio"
+			}
+		}
+	},
+	"parameters": {
+		"positive_prompt": "Dog",
+		"seed": 66,
+		"model_path": "FLUX1/flux_fp8.safetensors"
 	}
+}
 ]
