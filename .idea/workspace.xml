@@ -4,14 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Refactor workflow handling and enhance error handling.&#10;&#10;Replaced generic exceptions with FastAPI's `HTTPException` for improved error responses in `workflow_service.py`. Updated workflow logic to use UUIDs and adjusted image-related handlers accordingly. Simplified `.gitignore` and removed redundant workspace configurations.">
-      <change afterPath="$PROJECT_DIR$/service/image_service.py" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Refactor image handling and improve workflow execution.&#10;&#10;Streamlined workflow parameter validation, added image saving to MinIO buckets, and integrated a database for image metadata persistence. Introduced robust error handling, optimized seed generation, and enhanced modularity with a new `image_service.py`. Updated workflows JSON to include new &quot;Flux Dev&quot; workflow configuration.">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/image_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/minio_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/minio_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/image_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/image_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/workflow_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/workflow_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handler/workflow_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/workflow_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/workflow_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/workflow_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/postgres/workflows.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/postgres/workflows.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/workflow_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_main.http" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +87,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "Docker",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -284,7 +285,12 @@
       <workItem from="1745255245562" duration="163000" />
       <workItem from="1745255514982" duration="24000" />
       <workItem from="1745255545186" duration="2562000" />
-      <workItem from="1745362903890" duration="20731000" />
+      <workItem from="1745362903890" duration="20964000" />
+      <workItem from="1745459235717" duration="3085000" />
+      <workItem from="1745465665471" duration="741000" />
+      <workItem from="1745466863879" duration="279000" />
+      <workItem from="1745699516225" duration="40000" />
+      <workItem from="1745699570083" duration="9525000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -534,7 +540,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745379391612</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Refactor image handling and improve workflow execution.&#10;&#10;Streamlined workflow parameter validation, added image saving to MinIO buckets, and integrated a database for image metadata persistence. Introduced robust error handling, optimized seed generation, and enhanced modularity with a new `image_service.py`. Updated workflows JSON to include new &quot;Flux Dev&quot; workflow configuration.">
+      <option name="closed" value="true" />
+      <created>1745384515564</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1745384515564</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -552,7 +566,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add workflow execution logic and enhance image generation API.&#10;&#10;Introduced a modular workflow execution system for ComfyUI, replacing static prompts with dynamic, parameterized workflows. Updated API to validate and handle user-specified workflows with error handling. Streamlined image generation logic into reusable functions, supporting placeholders in workflows for customization and flexibility." />
     <MESSAGE value="Update .gitignore to exclude Celery beat schedule files&#10;&#10;Added `celerybeat-schedule.bak`, `.dat`, and `.dir` to `.gitignore` to prevent versioning of Celery beat schedule files. This ensures unnecessary local files are not tracked in the repository." />
     <MESSAGE value="Add Dockerfile, enhance config management, and logging  &#10;&#10;Introduce a new Dockerfile for containerization. Rework configuration handling to include better fallback and validation mechanisms, including default values for critical settings. Improve logging infrastructure with enhanced error handling, log rotation, and configuration-driven parameters. Added Celery setup in requirements and adjusted docker-compose services for robust service dependency management." />
     <MESSAGE value="Refactor user and ComfyUI handlers to improve modularity and error handling&#10;&#10;Revised user management to utilize service layer for create, update, and delete operations. Enhanced error handling and logging in ComfyUI workflows and improved maintainability by refactoring shared components. Applied input validations and adjusted datetime handling for consistency across the codebase." />
@@ -577,7 +590,8 @@
     <MESSAGE value="1. **`comfy/workflows/Flux-SVDQ-base.json`:** Removed obsolete workflow file.&#10;2. **`model/workflow_model.py`:** Added `model_id` field for database relationship.&#10;3. **`model/enum`:** Standardized enum values to uppercase for all workflow and model types.&#10;4. **`handler/image_handler.py`:** Enhanced image processing by integrating MinIO for image uploads.&#10;5. **`core/minio_core.py`:** Introduced MinIO utility functions for bucket and file operations.&#10;6. **`requirements.txt`:** Added `minio` dependency for S3-compatible operations.&#10;7. **`model/model_model.py`:** Added new database model for managing ML models.&#10;8. **`.idea/workspace.xml`:** Updated IDE config for accuracy in commit message handling and project settings.&#10;9. **`service/model_service.py`:** Added service to handle database operations for models." />
     <MESSAGE value="Remove unused workflow and JSON schema, add MinIO integration&#10;&#10;Eliminated the outdated `Flux-SVDQ-base.json` workflow and introduced MinIO integration for handling image uploads. Enhanced project functionality by adding `model_model.py` for database schema, updated enums for consistent formatting, and improved various file handlers." />
     <MESSAGE value="Refactor workflow handling and enhance error handling.&#10;&#10;Replaced generic exceptions with FastAPI's `HTTPException` for improved error responses in `workflow_service.py`. Updated workflow logic to use UUIDs and adjusted image-related handlers accordingly. Simplified `.gitignore` and removed redundant workspace configurations." />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor workflow handling and enhance error handling.&#10;&#10;Replaced generic exceptions with FastAPI's `HTTPException` for improved error responses in `workflow_service.py`. Updated workflow logic to use UUIDs and adjusted image-related handlers accordingly. Simplified `.gitignore` and removed redundant workspace configurations." />
+    <MESSAGE value="Refactor image handling and improve workflow execution.&#10;&#10;Streamlined workflow parameter validation, added image saving to MinIO buckets, and integrated a database for image metadata persistence. Introduced robust error handling, optimized seed generation, and enhanced modularity with a new `image_service.py`. Updated workflows JSON to include new &quot;Flux Dev&quot; workflow configuration." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor image handling and improve workflow execution.&#10;&#10;Streamlined workflow parameter validation, added image saving to MinIO buckets, and integrated a database for image metadata persistence. Introduced robust error handling, optimized seed generation, and enhanced modularity with a new `image_service.py`. Updated workflows JSON to include new &quot;Flux Dev&quot; workflow configuration." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -648,7 +662,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745384225088" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745709061822" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>

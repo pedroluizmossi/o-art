@@ -2,3 +2,5 @@
 /.venv
 /logs
 **celerybeat-schedule
+
+/.junie/

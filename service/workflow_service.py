@@ -4,33 +4,39 @@ from typing import Optional
 from uuid import UUID
 
 from sqlmodel import Session, select
-from fastapi import HTTPException, status
 from core.logging_core import setup_logger
-from model.workflow_model import Workflow
+from model.workflow_model import Workflow, WorkflowCreate
 
 logger = setup_logger(__name__)
 
 WORKFLOWS_JSON_PATH = "workflows.json"
 
-def create_workflow(session: Session, workflow_data: Workflow) -> Workflow:
+class WorkflowNotFound(Exception):
+    """Custom exception for workflow not found."""
+    def __init__(self, workflow_id: UUID):
+        self.workflow_id = workflow_id
+        super().__init__(f"Workflow with ID {workflow_id} not found.")
+
+def create_workflow(session: Session, workflow_data: WorkflowCreate) -> Workflow:
     """Adds a new workflow to the database."""
     try:
-        if not workflow_data.created_at:
-            workflow_data.created_at = datetime.now(timezone.utc)
-        workflow_data.updated_at = workflow_data.created_at
+        now = datetime.now(timezone.utc)
+        workflow = Workflow(
+            **workflow_data.model_dump(),
+            created_at=now,
+            updated_at=now
+        )
 
-        session.add(workflow_data)
+        session.add(workflow)
         session.commit()
-        session.refresh(workflow_data)
-        logger.info("Workflow created successfully: %s", workflow_data.id)
-        return workflow_data
+        session.refresh(workflow)
+        logger.info("Workflow created successfully: %s", workflow.id)
+        return workflow
     except Exception as e:
         session.rollback()
         logger.exception("Error creating workflow %s: %s", getattr(workflow_data, "name", ""), e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating workflow",
-        )
+        raise e
+
 
 def get_all_workflows(session: Session) -> list[Workflow]:
     """Retrieves all workflows from the database."""
@@ -40,23 +46,23 @@ def get_all_workflows(session: Session) -> list[Workflow]:
         return workflows
     except Exception as e:
         logger.exception("Error retrieving all workflows: %s", e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error retrieving all workflows",
-        )
+        raise e
+
 
 def get_workflow_by_id(session: Session, workflow_id: UUID) -> Optional[Workflow]:
     """Retrieves a workflow by its ID."""
     try:
         statement = select(Workflow).where(Workflow.id == workflow_id)
         workflow = session.exec(statement).first()
+        if not workflow:
+            logger.warning("Workflow with ID %s not found.", workflow_id)
+            raise WorkflowNotFound(workflow_id)
         return workflow
     except Exception as e:
-        logger.exception("Error retrieving workflow by ID %s: %s", workflow_id, e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error retrieving workflow with ID {workflow_id}",
-        )
+        logger.exception("Error retrieving workflow %s: %s", workflow_id, e)
+        raise e
+
+
 
 def update_workflow(session: Session, workflow_id: UUID, workflow_update_data: dict) -> Optional[Workflow]:
     """Updates an existing workflow identified by workflow_id with data from workflow_update_data."""
@@ -64,7 +70,7 @@ def update_workflow(session: Session, workflow_id: UUID, workflow_update_data: d
         workflow = get_workflow_by_id(session, workflow_id)
         if not workflow:
             logger.warning("Workflow with ID %s not found for update.", workflow_id)
-            return None
+            raise WorkflowNotFound(workflow_id)
 
         updated = False
         for key, value in workflow_update_data.items():
@@ -85,10 +91,7 @@ def update_workflow(session: Session, workflow_id: UUID, workflow_update_data: d
     except Exception as e:
         session.rollback()
         logger.exception("Error updating workflow %s: %s", workflow_id, e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error updating workflow with ID {workflow_id}",
-        )
+        raise e
 
 def delete_workflow(session: Session, workflow_id: UUID) -> bool:
     """Deletes a workflow from the database."""
@@ -96,7 +99,7 @@ def delete_workflow(session: Session, workflow_id: UUID) -> bool:
         workflow = get_workflow_by_id(session, workflow_id)
         if not workflow:
             logger.warning("Workflow with ID %s not found for deletion.", workflow_id)
-            return False
+            raise WorkflowNotFound(workflow_id)
 
         session.delete(workflow)
         session.commit()
@@ -105,10 +108,7 @@ def delete_workflow(session: Session, workflow_id: UUID) -> bool:
     except Exception as e:
         session.rollback()
         logger.exception("Error deleting workflow %s: %s", workflow_id, e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error deleting workflow with ID {workflow_id}",
-        )
+        raise e
 
 def seed_workflow_from_json(session, json_path):
     with open(json_path, "r", encoding="utf-8") as f:

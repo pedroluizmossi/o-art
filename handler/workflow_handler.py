@@ -4,14 +4,17 @@ import os
 import random
 import re
 from typing import Any, List, Optional, BinaryIO
+from uuid import UUID
 
+from dns.name import empty
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
 
 from core.db_core import engine
 from core.logging_core import setup_logger
-from service.workflow_service import get_all_workflows, get_workflow_by_id
-from model.workflow_model import Workflow
+from service.workflow_service import (get_all_workflows, get_workflow_by_id, create_workflow, delete_workflow,
+                                      update_workflow, WorkflowNotFound)
+from model.workflow_model import Workflow, WorkflowCreate
 
 logger = setup_logger(__name__)
 
@@ -24,10 +27,85 @@ async def get_all_workflows_handler() -> List[Workflow]:
             workflows = get_all_workflows(session)
         return workflows
     except Exception as e:
-        logger.exception("Error retrieving workflows: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving workflows",
+        )
+
+async def get_workflow_by_id_handler(workflow_id: UUID) -> Optional[Workflow]:
+    """
+    Handler to retrieve a workflow by its ID.
+    Returns the workflow or raises an HTTP 404 if not found.
+    """
+    try:
+        with Session(engine) as session:
+            workflow = get_workflow_by_id(session, workflow_id)
+        return workflow
+    except WorkflowNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Workflow with ID %s not found." % workflow_id,
+        )
+    except Exception as e:
+        logger.exception("Unhandled error retrieving workflow %s: %s", workflow_id, e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving workflow with ID %s" % workflow_id,
+        )
+
+
+async def create_workflow_handler(workflow_data: WorkflowCreate) -> Workflow:
+    """
+    Handler to create a new workflow.
+    """
+    try:
+        with Session(engine) as session:
+            workflow = create_workflow(session, workflow_data)
+        return workflow
+    except Exception as e:
+        logger.exception("Unhandled error creating workflow %s: %s", getattr(workflow_data, "name", ""), e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating workflow",
+        )
+
+async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data: dict) -> Optional[Workflow]:
+    """
+    Handler to update a workflow by its ID.
+    """
+    try:
+        with Session(engine) as session:
+            workflow = update_workflow(session, workflow_id, workflow_update_data)
+        return workflow
+    except WorkflowNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Workflow with ID {workflow_id} not found.",
+        )
+    except Exception as e:
+        logger.exception("Unhandled error updating workflow %s: %s", workflow_id, e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error updating workflow",
+        )
+
+async def delete_workflow_handler(workflow_id: Workflow.id) -> None:
+    """
+    Handler to delete a workflow by its ID.
+    """
+    try:
+        with Session(engine) as session:
+            delete_workflow(session, workflow_id)
+    except WorkflowNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Workflow with ID {workflow_id} not found.",
+        )
+    except Exception as e:
+        logger.exception("Unhandled error deleting workflow %s: %s", workflow_id, e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error deleting workflow",
         )
 
 def replace_placeholders(obj, workflow_params, params):
