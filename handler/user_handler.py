@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import HTTPException, Response, status
 from pydantic import ValidationError
 from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.logging_core import setup_logger
 from model.enum.fief_type_webhook import FiefTypeWebhook
@@ -12,7 +13,7 @@ from service.user_service import create_user, delete_user, update_user
 logger = setup_logger(__name__)
 
 
-def handle_user_webhook(payload: dict, session: Session):
+async def handle_user_webhook(payload: dict, session: AsyncSession):
     """
     Parses the webhook payload and uses the user service to manage users.
     """
@@ -41,7 +42,7 @@ def handle_user_webhook(payload: dict, session: Session):
 
         if webhook_type == FiefTypeWebhook.USER_CREATED.value:
             user = User(**user_model_data)
-            created_user = create_user(session, user)
+            created_user = await create_user(session, user)
             logger.info(f"User creation handled via service: {created_user.id}")
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 

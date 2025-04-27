@@ -88,7 +88,7 @@ def upload_bytes_to_bucket(bucket_name: str, data: BinaryIO, object_name: str):
         size = data.tell()
         data.seek(pos)
         minio_client.put_object(bucket_name, object_name, data, size)
-        logger.info(f"Bytes uploaded to bucket S% as S%.", bucket_name, object_name)
+        logger.info(f"Bytes uploaded to bucket {bucket_name} as {object_name}.")
     except S3Error as e:
         logger.error(f"Error uploading bytes: %", e)
         raise e
@@ -104,7 +104,7 @@ def download_file_from_bucket(bucket_name: str, object_name: str, file_path: str
     """
     try:
         minio_client.fget_object(bucket_name, object_name, file_path)
-        logger.info(f"File S% downloaded from bucket S%.", file_path, bucket_name)
+        logger.info(f"File {file_path} downloaded from bucket {bucket_name}.")
     except S3Error as e:
         logger.error(f"Error downloading file: %", e)
         raise e

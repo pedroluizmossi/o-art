@@ -21,8 +21,6 @@ from model.model_model import Model
 load_dotenv()
 logger = setup_logger(__name__)
 config = Config()
-create_db()
-initial_data()
 worker_process = None
 beat_process = None
 
@@ -72,6 +70,8 @@ def _setup_minio_bucket():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await create_db()
+    await initial_data()
     global worker_process, beat_process
     logger.info("Starting worker and beat processes...")
     try:

@@ -7,7 +7,7 @@ from typing import Any, List, Optional, BinaryIO
 from fastapi import HTTPException, status
 from sqlmodel import Session
 
-from core.db_core import engine
+from core.db_core import get_db_session
 from core.minio_core import upload_bytes_to_bucket
 from comfy.comfy_core import ComfyUIError, execute_workflow
 from core.logging_core import setup_logger
@@ -19,7 +19,7 @@ WORKFLOW_DIR = os.path.join(os.path.dirname(__file__), "..", "comfy", "workflows
 BUCKET_NAME = "default"
 FILE_EXTENSION = ".png"
 
-def save_output_images_to_bucket(object_name: str, node_id: str, images: List[bytes]) -> None:
+async def save_output_images_to_bucket(object_name: str, node_id: str, images: List[bytes]) -> None:
     if isinstance(images, list) and images and isinstance(images[0], bytes):
         logger.info(f"Saving output images to bucket for node {node_id}.")
         byte_stream = io.BytesIO()
@@ -44,7 +44,7 @@ async def handle_generate_image(
     object_name = f"{user_id}/{job_id}"
 
     try:
-        populated_workflow, output_node_id = load_and_populate_workflow(
+        populated_workflow, output_node_id = await load_and_populate_workflow(
             workflow_id,
             params
         )
@@ -62,17 +62,17 @@ async def handle_generate_image(
         if output_node_id in workflow_outputs:
             output_images = workflow_outputs[output_node_id]
             try:
-                save_output_images_to_bucket(object_name, output_node_id, output_images)
+                await save_output_images_to_bucket(object_name, output_node_id, output_images)
                 image = Image(
                     url=f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}",
                     workflow_id=workflow_id,
                     user_id=user_id,
                     parameters=params,
                 )
-                with Session(engine) as session:
+                async with get_db_session() as session:
                     session.add(image)
-                    session.commit()
-                    session.refresh(image)
+                    await session.commit()
+                    await session.refresh(image)
                 logger.info(
                     f"Image saved successfully for job {job_id}: {image.id}"
                 )
@@ -87,7 +87,7 @@ async def handle_generate_image(
         )
         for node_id, images in workflow_outputs.items():
             try:
-                save_output_images_to_bucket(user_id, job_id, node_id, images)
+                await save_output_images_to_bucket(user_id, job_id, node_id, images)
                 logger.info(
                     f"Found image output in fallback node {node_id} for job {job_id}. Returning this output."
                 )

@@ -1,5 +1,10 @@
+from contextlib import asynccontextmanager
+
 from dotenv import load_dotenv
-from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel, create_engine
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
@@ -22,39 +27,52 @@ if not postgres_url:
     )
     raise ValueError("Missing POSTGRES_URL environment variable.")
 
-engine = create_engine(postgres_url, echo=False, future=True)
+async_engine = create_async_engine(
+    postgres_url,
+    echo=False,
+    future=True
+)
+AsyncSessionLocal = sessionmaker(
+    bind=async_engine, class_=AsyncSession, expire_on_commit=False
+)
 
-
-def create_db():
+async def create_db():
     """
     Create the database and tables if they do not exist.
     """
+    async def async_create_all():
+        async with async_engine.begin() as conn:
+            await conn.run_sync(SQLModel.metadata.create_all)
+
     try:
-        SQLModel.metadata.create_all(engine)
+        await async_create_all()
         logger.info("Database and tables created successfully.")
     except Exception as e:
         logger.error(f"Error creating database: {e}")
         raise e
     finally:
-        engine.dispose()
+        # Dispose of engine properly for async usage
+        await async_engine.dispose()
         logger.info("Database connection closed.")
 
+@asynccontextmanager
+async def get_db_session() -> AsyncSession:
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
 
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-def initial_data():
+async def initial_data():
     """
     Initialize the database with initial data.
     """
     try:
-        with Session(engine) as session:
-            seed_model_from_json(session, RESOURCE_POSTGRES_PATH + MODELS_JSON_PATH)
-            seed_workflow_from_json(session, RESOURCE_POSTGRES_PATH + WORKFLOWS_JSON_PATH)
-            session.commit()
+        async with get_db_session() as session:
+            await seed_model_from_json(session, RESOURCE_POSTGRES_PATH + MODELS_JSON_PATH)
+            await seed_workflow_from_json(session, RESOURCE_POSTGRES_PATH + WORKFLOWS_JSON_PATH)
+            await session.commit()
             logger.info("Initial data loaded successfully.")
     except Exception as e:
         logger.error(f"Error loading initial data: {e}")
         raise e
-

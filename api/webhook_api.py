@@ -4,9 +4,9 @@ import time
 from hashlib import sha256
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.db_core import get_session
+from core.db_core import get_db_session
 from core.env_core import Envs, get_env_variable
 from handler.user_handler import handle_user_webhook
 
@@ -19,9 +19,9 @@ router = APIRouter(
 
 
 @router.post("/user")
-async def user_webhook(request: Request, session: Session = Depends(get_session)):
+async def user_webhook(request: Request, session: AsyncSession = Depends(get_db_session)):
     payload = await webhook_signature(request)
-    return handle_user_webhook(payload, session)
+    return await handle_user_webhook(payload, session)
 
 
 async def webhook_signature(request):

@@ -9,8 +9,9 @@ from uuid import UUID
 from dns.name import empty
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from core.db_core import engine
+from core.db_core import get_db_session
 from core.logging_core import setup_logger
 from service.workflow_service import (get_all_workflows, get_workflow_by_id, create_workflow, delete_workflow,
                                       update_workflow, WorkflowNotFound)
@@ -23,8 +24,8 @@ async def get_all_workflows_handler() -> List[Workflow]:
     Handler to retrieve all workflows.
     """
     try:
-        with Session(engine) as session:
-            workflows = get_all_workflows(session)
+        async with get_db_session() as session:
+            workflows = await get_all_workflows(session)
         return workflows
     except Exception as e:
         raise HTTPException(
@@ -38,8 +39,8 @@ async def get_workflow_by_id_handler(workflow_id: UUID) -> Optional[Workflow]:
     Returns the workflow or raises an HTTP 404 if not found.
     """
     try:
-        with Session(engine) as session:
-            workflow = get_workflow_by_id(session, workflow_id)
+        async with get_db_session() as session:
+            workflow = await get_workflow_by_id(session, workflow_id)
         return workflow
     except WorkflowNotFound:
         raise HTTPException(
@@ -59,8 +60,8 @@ async def create_workflow_handler(workflow_data: WorkflowCreate) -> Workflow:
     Handler to create a new workflow.
     """
     try:
-        with Session(engine) as session:
-            workflow = create_workflow(session, workflow_data)
+        async with get_db_session() as session:
+            workflow = await create_workflow(session, workflow_data)
         return workflow
     except Exception as e:
         logger.exception("Unhandled error creating workflow %s: %s", getattr(workflow_data, "name", ""), e)
@@ -74,8 +75,8 @@ async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data
     Handler to update a workflow by its ID.
     """
     try:
-        with Session(engine) as session:
-            workflow = update_workflow(session, workflow_id, workflow_update_data)
+        async with get_db_session() as session:
+            workflow = await update_workflow(session, workflow_id, workflow_update_data)
         return workflow
     except WorkflowNotFound:
         raise HTTPException(
@@ -94,8 +95,8 @@ async def delete_workflow_handler(workflow_id: Workflow.id) -> None:
     Handler to delete a workflow by its ID.
     """
     try:
-        with Session(engine) as session:
-            delete_workflow(session, workflow_id)
+        async with get_db_session() as session:
+            await delete_workflow(session, workflow_id)
     except WorkflowNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -152,15 +153,15 @@ def validate_workflow_params(workflow_params: dict, user_params: dict):
 
 
 
-def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str, Any]) -> (dict[str, Any], str):
+async def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str, Any]) -> (dict[str, Any], str):
     """
     Load a workflow from the database and populate it with parameters.
     :param workflow_id:
     :param params:
     :return:
     """
-    with Session(engine) as session:
-        workflow = get_workflow_by_id(session, workflow_id)
+    async with get_db_session() as session:
+        workflow = await get_workflow_by_id(session, workflow_id)
     if not workflow:
         logger.error("Workflow with ID %s not found.", workflow_id)
         raise HTTPException(
