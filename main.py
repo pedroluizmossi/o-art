@@ -7,6 +7,7 @@ from api.auth_api import router as auth_router
 from api.image_api import router as image_router
 from api.workflow_api import router as workflow_router
 from api.model_api import router as model_router
+from api.plan_api import router as plan_router
 from api.scalar_docs_api import router as scalar_docs_router
 from api.webhook_api import router as webhook_router
 from api.websocket_api import router as websocket_router
@@ -18,6 +19,7 @@ from model.user_model import User
 from model.workflow_model import Workflow
 from model.image_model import Image
 from model.model_model import Model
+from model.plan_model import Plan
 
 load_dotenv()
 logger = setup_logger(__name__)
@@ -94,5 +96,6 @@ app.include_router(webhook_router)
 app.include_router(image_router)
 app.include_router(workflow_router)
 app.include_router(model_router)
+app.include_router(plan_router)
 app.include_router(websocket_router)
 app.include_router(scalar_docs_router)

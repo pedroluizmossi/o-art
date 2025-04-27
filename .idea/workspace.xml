@@ -4,13 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Update workflow API to support partial updates with patch.&#10;&#10;Replaced `WorkflowCreate` with `WorkflowUpdate` for update operations, allowing partial updates of workflows. Adjusted the API route to use `PATCH` and updated the handler to accommodate the new model. Refactored related components to ensure compatibility with optional fields and unset values.">
-      <change afterPath="$PROJECT_DIR$/api/model_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handler/model_handler.py" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling.">
+      <change afterPath="$PROJECT_DIR$/api/plan_api.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/enum/sampler_type.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/map/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/map/segment_parameter_mapping.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/map/type_parameter_mapping.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model/plan_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/model_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/model_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/model_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/enum/model_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/enum/model_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/user_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/user_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,25 +90,27 @@
     "git-widget-placeholder": "feature/0.0.1",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/home/pedro/PycharmProjects/o-art/service",
+    "last_opened_file_path": "/home/pedro/PycharmProjects/o-art/model/map",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "run.code.analysis.last.selected.profile": "aDefault",
+    "settings.editor.selected.configurable": "reference.settings.ide.settings.file-colors",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model/map" />
+      <recent name="$PROJECT_DIR$/model/enum" />
+      <recent name="$PROJECT_DIR$/api" />
       <recent name="$PROJECT_DIR$/service" />
       <recent name="$PROJECT_DIR$/handler" />
-      <recent name="$PROJECT_DIR$/api" />
-      <recent name="$PROJECT_DIR$/resources/postgres" />
-      <recent name="$PROJECT_DIR$/model" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model/map" />
       <recent name="C:\Users\pedro\PycharmProjects\art\core" />
       <recent name="C:\Users\pedro\PycharmProjects\art\api" />
     </key>
@@ -294,7 +302,8 @@
       <workItem from="1745466863879" duration="279000" />
       <workItem from="1745699516225" duration="40000" />
       <workItem from="1745699570083" duration="16264000" />
-      <workItem from="1745730172926" duration="2825000" />
+      <workItem from="1745730172926" duration="3981000" />
+      <workItem from="1745763403361" duration="16756000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -576,7 +585,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745730370005</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling.">
+      <option name="closed" value="true" />
+      <created>1745733287139</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1745733287139</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -594,7 +611,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="&quot;Refactor logging and add log cleanup logic&quot;&#10;&#10;Revised logging setup to support configuration-driven parameters and improve modularity. Added a log cleanup mechanism to manage log file retention based on configurable limits. Enhanced error handling in logging and log cleanup functions for better reliability and maintainability." />
     <MESSAGE value="Add .pylintrc configuration file to disable specific checks&#10;&#10;This configuration disables docstring and naming checks to streamline linting for the current codebase. It also sets a minimum score threshold of 8.0 and outputs results in JSON format." />
     <MESSAGE value="Refactor user webhook handling and improve workflow execution.&#10;&#10;Refactored user webhook processing for better readability and fixed inconsistent logging. Adjusted workflow execution functions in `comfy_core` to enhance error handling, add missing validations, and clean up logging statements. Removed duplicated logic and addressed minor formatting issues across files." />
     <MESSAGE value="Standardize formatting and fix indentations in codebase&#10;&#10;Improved code readability by standardizing formatting, fixing inconsistent indentations, and removing unnecessary imports. These changes ensure better code style adherence and maintainability without altering functionality." />
@@ -619,7 +635,8 @@
     <MESSAGE value="Refactor workflow handling and enhance API structure.&#10;&#10;Introduced error handling improvements with custom exceptions and better HTTP responses. Added WorkflowBase and WorkflowCreate models for reusability and streamlined the creation/update logic. Removed redundant files, cleaned up `.gitignore`, and refactored workflows API for improved clarity and modularity." />
     <MESSAGE value="Migrate to async SQLAlchemy sessions and improve database handling.&#10;&#10;Replaced synchronous `Session` with `AsyncSession` throughout the codebase to enable non-blocking database operations. Updated function signatures, adjusted workflow, user, and image models for consistent datetime handling, and refactored services for better async support. Improved error handling and logging for critical operations." />
     <MESSAGE value="Update workflow API to support partial updates with patch.&#10;&#10;Replaced `WorkflowCreate` with `WorkflowUpdate` for update operations, allowing partial updates of workflows. Adjusted the API route to use `PATCH` and updated the handler to accommodate the new model. Refactored related components to ensure compatibility with optional fields and unset values." />
-    <option name="LAST_COMMIT_MESSAGE" value="Update workflow API to support partial updates with patch.&#10;&#10;Replaced `WorkflowCreate` with `WorkflowUpdate` for update operations, allowing partial updates of workflows. Adjusted the API route to use `PATCH` and updated the handler to accommodate the new model. Refactored related components to ensure compatibility with optional fields and unset values." />
+    <MESSAGE value="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -690,7 +707,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745732978266" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745780288129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>

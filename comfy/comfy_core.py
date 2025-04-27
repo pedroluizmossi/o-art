@@ -42,8 +42,6 @@ if not server_address:
 
 
 async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
-    if not server_address:
-        raise ComfyUIError("ComfyUI server address not configured.")
     uri = f"ws://{server_address}/ws?clientId={urllib.parse.quote(user_id)}"  # Usar urllib.parse
     logger.info("Connecting to %s", uri)
     try:
@@ -62,8 +60,6 @@ async def ws_connect(user_id: str) -> websockets.WebSocketClientProtocol:
 
 
 async def queue_prompt(prompt: dict[str, Any], client_id: str) -> dict[str, Any]:
-    if not server_address:
-        raise ComfyUIError("ComfyUI server address not configured.")
     if not prompt or not client_id:
         raise ValueError("prompt and client_id cannot be empty")
 
@@ -109,8 +105,6 @@ async def queue_prompt(prompt: dict[str, Any], client_id: str) -> dict[str, Any]
 
 
 async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
-    if not server_address:
-        raise ComfyUIError("ComfyUI server address not configured.")
     if not filename:
         raise ValueError("filename cannot be empty")
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
@@ -135,8 +129,6 @@ async def get_image(filename: str, subfolder: str, folder_type: str) -> bytes:
 
 
 async def get_history(prompt_id: str) -> dict[str, Any]:
-    if not server_address:
-        raise ComfyUIError("ComfyUI server address not configured.")
     if not prompt_id:
         raise ValueError("prompt_id cannot be empty")
     url = f"http://{server_address}/history/{prompt_id}"

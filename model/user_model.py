@@ -15,6 +15,7 @@ class User(SQLModel, table=True):
     username: str
     email_verified: bool = False
     is_active: bool = True
+    plan_id: Optional[UUID] = Field(default=None, foreign_key="plans.id")
 
     created_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), nullable=False),
