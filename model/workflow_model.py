@@ -39,3 +39,13 @@ class Workflow(WorkflowBase, table=True):
 
 class WorkflowCreate(WorkflowBase):
     pass
+
+class WorkflowUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    model_type: Optional[Model] = None
+    model_id: Optional[UUID] = None
+    workflow_type: Optional[WorkflowType] = None
+    workflow_segment: Optional[WorkflowSegment] = None
+    workflow_json: Optional[Dict] = None
+    parameters: Optional[Dict] = None

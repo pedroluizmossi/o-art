@@ -13,7 +13,7 @@ from handler.workflow_handler import (
     delete_workflow_handler,
     update_workflow_handler,
 )
-from model.workflow_model import Workflow, WorkflowCreate
+from model.workflow_model import Workflow, WorkflowCreate, WorkflowUpdate
 
 logger = setup_logger(__name__)
 
@@ -63,14 +63,14 @@ async def delete_workflow(
     await delete_workflow_handler(workflow_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.put("/{workflow_id}", response_model=Workflow)
+@router.patch("/{workflow_id}", response_model=Workflow)
 async def update_workflow(
     workflow_id: uuid.UUID,
-    workflow_data: WorkflowCreate,
+    workflow_data: WorkflowUpdate,
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Updates an existing workflow by ID.
     """
-    workflow = await update_workflow_handler(workflow_id, workflow_data.model_dump())
+    workflow = await update_workflow_handler(workflow_id, workflow_data)
     return workflow

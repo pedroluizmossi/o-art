@@ -15,7 +15,7 @@ from core.db_core import get_db_session
 from core.logging_core import setup_logger
 from service.workflow_service import (get_all_workflows, get_workflow_by_id, create_workflow, delete_workflow,
                                       update_workflow, WorkflowNotFound)
-from model.workflow_model import Workflow, WorkflowCreate
+from model.workflow_model import Workflow, WorkflowCreate, WorkflowUpdate
 
 logger = setup_logger(__name__)
 
@@ -70,11 +70,12 @@ async def create_workflow_handler(workflow_data: WorkflowCreate) -> Workflow:
             detail="Error creating workflow",
         )
 
-async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data: dict) -> Optional[Workflow]:
+async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data: WorkflowUpdate) -> Optional[Workflow]:
     """
     Handler to update a workflow by its ID.
     """
     try:
+        workflow_update_data = workflow_update_data.model_dump(exclude_unset=True)
         async with get_db_session() as session:
             workflow = await update_workflow(session, workflow_id, workflow_update_data)
         return workflow
