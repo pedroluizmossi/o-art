@@ -6,6 +6,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel
 from sqlalchemy import DateTime
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import validates
 from sqlmodel import Column, Field, SQLModel
 
 
@@ -26,6 +27,12 @@ class WorkflowBase(SQLModel):
     )
     workflow_json: dict = Field(sa_column=Column(JSONB))
     parameters: dict = Field(default_factory=dict, sa_column=Column(JSONB))
+
+    @validates("name")
+    def validate_name(self, key, value):
+        if not value:
+            raise ValueError("Name cannot be empty")
+        return value
 
 class Workflow(WorkflowBase, table=True):
     __tablename__ = "workflows"

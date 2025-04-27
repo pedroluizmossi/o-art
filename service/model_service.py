@@ -7,27 +7,47 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.logging_core import setup_logger
-from model.model_model import Model
+from model.model_model import Model, ModelCreate
 
 logger = setup_logger(__name__)
 
 MODELS_JSON_PATH = "models.json"
 
-async def create_model(session: AsyncSession, model_data: Model) -> Model:
+class ModelNotFound(Exception):
+    """Custom exception for 'model' not found."""
+    def __init__(self, model_id: UUID):
+        self.model_id = model_id
+        super().__init__(f"Model with ID {model_id} not found.")
+
+async def create_model(session: AsyncSession, model_data: ModelCreate) -> Model:
     """Adds a new model to the database."""
     try:
-        if not model_data.created_at:
-            model_data.created_at = datetime.now(timezone.utc)
-        model_data.updated_at = model_data.created_at
+        now = datetime.now(timezone.utc)
+        model = Model(
+            **model_data.model_dump(),
+            created_at=now,
+            updated_at=now
+        )
 
-        session.add(model_data)
+        session.add(model)
         await session.commit()
-        await session.refresh(model_data)
-        logger.info("Model created successfully: %s", model_data.id)
-        return model_data
+        await session.refresh(model)
+        logger.info("Model created successfully: %s", model.id)
+        return model
     except Exception as e:
         await session.rollback()
         logger.exception("Error creating model %s: %s", model_data.name, e)
+        raise e
+
+async def get_all_models(session: AsyncSession) -> list[Model]:
+    """Retrieves all models from the database."""
+    try:
+        statement = select(Model)
+        models = await session.exec(statement)
+        models = models.all()
+        return models
+    except Exception as e:
+        logger.exception("Error retrieving all models: %s", e)
         raise e
 
 async def get_model_by_id(session: AsyncSession, model_id: UUID) -> Optional[Model]:
@@ -36,6 +56,9 @@ async def get_model_by_id(session: AsyncSession, model_id: UUID) -> Optional[Mod
         statement = select(Model).where(Model.id == model_id)
         model = await session.exec(statement)
         model = model.first()
+        if not model:
+            logger.warning("Model with ID %s not found.", model_id)
+            raise ModelNotFound(model_id)
         return model
     except Exception as e:
         logger.exception("Error retrieving model by ID %s: %s", model_id, e)
@@ -47,7 +70,7 @@ async def update_model(session: AsyncSession, model_id: UUID, model_update_data:
         model = await get_model_by_id(session, model_id)
         if not model:
             logger.warning("Model with ID %s not found for update.", model_id)
-            return None
+            raise ModelNotFound(model_id)
 
         updated = False
         for key, value in model_update_data.items():
@@ -76,7 +99,7 @@ async def delete_model(session: AsyncSession, model_id: UUID) -> bool:
         model = await get_model_by_id(session, model_id)
         if not model:
             logger.warning("Model with ID %s not found for deletion.", model_id)
-            return False
+            raise ModelNotFound(model_id)
 
         await session.delete(model)
         await session.commit()

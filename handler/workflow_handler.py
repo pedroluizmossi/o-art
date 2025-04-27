@@ -84,6 +84,12 @@ async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Workflow with ID {workflow_id} not found.",
         )
+    except ValueError as ve:
+        logger.error("Validation error updating workflow %s: %s", workflow_id, ve)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Validation error: {ve}",
+        )
     except Exception as e:
         logger.exception("Unhandled error updating workflow %s: %s", workflow_id, e)
         raise HTTPException(
