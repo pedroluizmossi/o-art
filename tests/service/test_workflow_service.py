@@ -1,24 +1,23 @@
 import json
-import os
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, Mock, patch, mock_open
+from unittest.mock import AsyncMock, MagicMock, Mock, mock_open, patch
 
 import pytest
 from sqlalchemy.exc import SQLAlchemyError
 
 from model.enum.model_type import Model
-from model.enum.workflow_type import Workflow as WorkflowType
 from model.enum.workflow_segment_type import WorkflowSegment
+from model.enum.workflow_type import Workflow as WorkflowType
 from model.workflow_model import Workflow, WorkflowCreate
 from service.workflow_service import (
+    WorkflowNotFound,
     create_workflow,
+    delete_workflow,
     get_all_workflows,
     get_workflow_by_id,
-    update_workflow,
-    delete_workflow,
     seed_workflow_from_json,
-    WorkflowNotFound,
+    update_workflow,
 )
 
 
@@ -172,7 +171,8 @@ class TestUpdateWorkflow:
 
     @pytest.mark.asyncio
     async def test_update_workflow_not_found(self, mock_session, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id', side_effect=WorkflowNotFound(sample_workflow_id)):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   side_effect=WorkflowNotFound(sample_workflow_id)):
             with pytest.raises(WorkflowNotFound):
                 await update_workflow(mock_session, sample_workflow_id, {"name": "Updated Name"})
 
@@ -199,7 +199,8 @@ class TestDeleteWorkflow:
 
     @pytest.mark.asyncio
     async def test_delete_workflow_not_found(self, mock_session, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id', side_effect=WorkflowNotFound(sample_workflow_id)):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   side_effect=WorkflowNotFound(sample_workflow_id)):
             with pytest.raises(WorkflowNotFound):
                 await delete_workflow(mock_session, sample_workflow_id)
 

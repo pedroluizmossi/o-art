@@ -1,5 +1,6 @@
 import os
 
+
 def get_env_variable(var_name: str, default_value: str = None) -> str:
     """
     Get an environment variable value provided by the operating system or container runtime.

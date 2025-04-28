@@ -2,9 +2,8 @@ from core.db_core import RESOURCE_POSTGRES_PATH, get_db_session
 from core.logging_core import setup_logger
 from handler.user_handler import sync_users_handler
 from service.model_service import MODELS_JSON_PATH, seed_model_from_json
-from service.workflow_service import WORKFLOWS_JSON_PATH, seed_workflow_from_json
 from service.plan_service import PLANS_JSON_PATH, seed_plan_from_json
-
+from service.workflow_service import WORKFLOWS_JSON_PATH, seed_workflow_from_json
 
 logger = setup_logger(__name__)
 

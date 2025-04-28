@@ -1,7 +1,8 @@
-from unittest.mock import patch, Mock
-from urllib.request import Request, urlopen
+from unittest.mock import Mock, patch
+from urllib.request import Request
 
 import pytest
+
 from utils.security_util import safe_urlopen
 
 

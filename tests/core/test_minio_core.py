@@ -1,12 +1,19 @@
 from io import BytesIO
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from minio import S3Error
 
 from core.env_core import Envs
-from core.minio_core import create_minio_client, create_bucket_if_missing, create_default_bucket, list_all_buckets, \
-    upload_file_to_bucket, upload_bytes_to_bucket, download_file_from_bucket
+from core.minio_core import (
+    create_bucket_if_missing,
+    create_default_bucket,
+    create_minio_client,
+    download_file_from_bucket,
+    list_all_buckets,
+    upload_bytes_to_bucket,
+    upload_file_to_bucket,
+)
 
 
 def test_create_minio_client_success():
@@ -16,7 +23,7 @@ def test_create_minio_client_success():
             Envs.MINIO_ENDPOINT: "http://localhost:9000",
             Envs.MINIO_ACCESS_KEY: "test_access_key",
             Envs.MINIO_SECRET_KEY: "test_secret_key"
-        }.get(key, None)
+        }.get(key)
         create_minio_client()
         mock_minio.assert_called_once_with(
             "http://localhost:9000",
@@ -65,7 +72,12 @@ def test_create_bucket_if_missing_raises_s3_error():
             "core.minio_core.logger"
     ) as logger:
         minio_client.bucket_exists.side_effect = S3Error(
-            "ERR", "Bucket error", "resource", "request_id", "host_id", "response"
+            "ERR",
+            "Bucket error",
+            "resource",
+            "request_id",
+            "host_id",
+            "response"
         )
 
         with pytest.raises(S3Error):
@@ -126,7 +138,12 @@ def test_list_all_buckets_empty():
 def test_list_all_buckets_error():
     mock_minio_client = MagicMock()
     mock_minio_client.list_buckets.side_effect = S3Error(
-        "ERR", "Bucket error", "resource", "request_id", "host_id", "response"
+        "ERR",
+        "Bucket error",
+        "resource",
+        "request_id",
+        "host_id",
+        "response"
     )
 
     with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger") as mock_logger:
@@ -158,7 +175,12 @@ def test_upload_file_to_bucket_s3_error():
     minio_client_mock = MagicMock()
     logger_mock = MagicMock()
     test_error = S3Error(
-        "ERR", "File upload error", "resource", "request_id", "host_id", "response"
+        "ERR",
+        "File upload error",
+        "resource",
+        "request_id",
+        "host_id",
+        "response"
     )
 
     with patch("core.minio_core.minio_client", minio_client_mock), patch("core.minio_core.logger", logger_mock):
@@ -201,7 +223,12 @@ def test_upload_bytes_to_bucket_s3_error():
 
     with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger", patched_logger):
         mock_minio_client.put_object.side_effect = S3Error(
-            "ERR", "Upload error", "resource", "request_id", "host_id", "response"
+            "ERR",
+            "Upload error",
+            "resource",
+            "request_id",
+            "host_id",
+            "response"
         )
 
         # Act and Assert
@@ -231,7 +258,12 @@ def test_download_file_s3_error():
 
     mock_minio_client = MagicMock()
     mock_minio_client.fget_object.side_effect = S3Error(
-        "ERR", "Download error", "resource", "request_id", "host_id", "response"
+        "ERR",
+        "Download error",
+        "resource",
+        "request_id",
+        "host_id",
+        "response"
     )
 
     with patch("core.minio_core.minio_client", mock_minio_client):

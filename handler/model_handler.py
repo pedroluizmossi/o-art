@@ -1,21 +1,19 @@
-import io
-import json
-import os
-import random
-import re
-from typing import Any, List, Optional, BinaryIO
+from typing import List, Optional
 from uuid import UUID
 
-from dns.name import empty
-from sqlmodel import Session, select
-from fastapi import HTTPException, status, APIRouter
-from sqlmodel.ext.asyncio.session import AsyncSession
+from fastapi import HTTPException, status
 
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
-from model.model_model import Model, ModelUpdate, ModelCreate
-from service.model_service import create_model, get_model_by_id, update_model, delete_model, ModelNotFound, \
-    get_all_models
+from model.model_model import Model, ModelCreate, ModelUpdate
+from service.model_service import (
+    ModelNotFound,
+    create_model,
+    delete_model,
+    get_all_models,
+    get_model_by_id,
+    update_model,
+)
 
 logger = setup_logger(__name__)
 
@@ -27,7 +25,7 @@ async def get_all_models_handler() -> List[Model]:
         async with get_db_session() as session:
             models = await get_all_models(session)
         return models
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving models",
@@ -45,13 +43,13 @@ async def get_model_by_id_handler(model_id: UUID) -> Optional[Model]:
     except ModelNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Model with ID %s not found." % model_id,
+            detail="Model with ID %s not found." % model_id,
         )
     except Exception as e:
         logger.exception("Unhandled error retrieving model %s: %s", model_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error retrieving model with ID %s" % model_id,
+            detail="Error retrieving model with ID %s" % model_id,
         )
 
 async def create_model_handler(model_data: ModelCreate) -> Model:
@@ -87,7 +85,7 @@ async def update_model_handler(model_id: UUID, model_update_data: ModelUpdate) -
     except ModelNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Model with ID %s not found." % model_id,
+            detail="Model with ID %s not found." % model_id,
         )
     except ValueError as e:
         logger.exception("Validation error updating model %s: %s", model_id, e)
@@ -112,7 +110,7 @@ async def delete_model_handler(model_id: UUID) -> None:
     except ModelNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Model with ID %s not found." % model_id,
+            detail="Model with ID %s not found." % model_id,
         )
     except Exception as e:
         logger.exception("Error deleting model %s: %s", model_id, e)

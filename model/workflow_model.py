@@ -1,18 +1,17 @@
 from datetime import datetime, timezone
-from sqlalchemy import Enum as SqlEnum
 from typing import Dict, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 from sqlalchemy import DateTime
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import validates
 from sqlmodel import Column, Field, SQLModel
 
-
 from model.enum.model_type import Model
-from model.enum.workflow_type import Workflow as WorkflowType
 from model.enum.workflow_segment_type import WorkflowSegment
+from model.enum.workflow_type import Workflow as WorkflowType
 
 
 class WorkflowBase(SQLModel):

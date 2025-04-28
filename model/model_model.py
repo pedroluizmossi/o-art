@@ -1,15 +1,15 @@
 from datetime import datetime, timezone
-from sqlalchemy import Enum as SqlEnum
 from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import validates
 from sqlmodel import Column, Field, SQLModel
 
-
 from model.enum.model_type import Model as ModelType
+
 
 class ModelBase(SQLModel):
     """Base model with common model fields."""

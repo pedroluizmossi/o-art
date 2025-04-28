@@ -1,10 +1,8 @@
 from uuid import UUID
 
-from dns.name import empty
 from fastapi import HTTPException, Response, status
 from pydantic import ValidationError
 from pydantic.v1.datetime_parse import parse_datetime
-from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.db_core import get_db_session
@@ -12,7 +10,13 @@ from core.fief_core import FiefHttpClient
 from core.logging_core import setup_logger
 from model.enum.fief_type_webhook import FiefTypeWebhook
 from model.user_model import User
-from service.user_service import create_user, delete_user, update_user, get_user_by_id, get_all_users
+from service.user_service import (
+    create_user,
+    delete_user,
+    get_all_users,
+    get_user_by_id,
+    update_user,
+)
 
 logger = setup_logger(__name__)
 

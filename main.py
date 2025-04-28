@@ -1,26 +1,23 @@
 import subprocess  # nosec B404
 import sys
 from contextlib import asynccontextmanager
+
 from dotenv import load_dotenv
 from fastapi import FastAPI
+
 from api.auth_api import router as auth_router
 from api.image_api import router as image_router
-from api.workflow_api import router as workflow_router
 from api.model_api import router as model_router
 from api.plan_api import router as plan_router
 from api.scalar_docs_api import router as scalar_docs_router
 from api.webhook_api import router as webhook_router
 from api.websocket_api import router as websocket_router
+from api.workflow_api import router as workflow_router
 from core.config_core import Config
 from core.db_core import create_db
 from core.logging_core import cleanup_old_logs, setup_logger
 from core.minio_core import create_default_bucket
 from handler.start_data_handler import initial_data
-from model.user_model import User
-from model.workflow_model import Workflow
-from model.image_model import Image
-from model.model_model import Model
-from model.plan_model import Plan
 from resources.openapi_tags_metadata import tags_metadata
 
 load_dotenv()

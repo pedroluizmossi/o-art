@@ -104,7 +104,7 @@ async def delete_plan(session: AsyncSession, plan_id: UUID) -> Optional[Plan]:
         raise e
 
 async def seed_plan_from_json(session, json_path):
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         plans_data = json.load(f)
 
     for plan_data in plans_data:

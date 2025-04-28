@@ -1,10 +1,9 @@
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
-from influxdb_client import WritePrecision
 
-from core.env_core import Envs, get_env_variable
+from core.env_core import Envs
 from core.metric_core import InfluxDBWriter
 
 

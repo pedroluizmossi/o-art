@@ -3,14 +3,11 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.env_core import Envs, get_env_variable
-from core.fief_core import FiefHttpClient
 from core.logging_core import setup_logger
-from service.model_service import seed_model_from_json, MODELS_JSON_PATH
-from service.workflow_service import seed_workflow_from_json, WORKFLOWS_JSON_PATH
 
 load_dotenv()
 

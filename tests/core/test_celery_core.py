@@ -1,7 +1,7 @@
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
-from comfy.comfy_core import check_queue_task
+
 from core.celery_core import check_queue_task_celery
 
 

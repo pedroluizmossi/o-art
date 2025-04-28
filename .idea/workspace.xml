@@ -4,22 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints.">
-      <change afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/core/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/core/test_celery_core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/core/test_config_core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/core/test_env_core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/core/test_metric_core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/core/test_minio_core.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/service/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/service/test_workflow_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/utils/test_security_util.py" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging.">
+      <change beforePath="$PROJECT_DIR$/.idea/ruff.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ruff.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/env_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/env_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/minio_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/minio_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_user_handler.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/image_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/image_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/core/test_minio_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core/test_minio_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/service/test_workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/service/test_workflow_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +114,7 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.28409094&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -268,8 +259,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.Worker" />
       <item itemvalue="FastAPI.art" />
+      <item itemvalue="Python.Worker" />
       <item itemvalue="Python tests.Python tests in test_db_core.py (1)" />
       <item itemvalue="Python tests.Python tests in test_db_core.py" />
       <item itemvalue="Python tests.Python tests in tests" />
@@ -343,6 +334,7 @@
       <workItem from="1745730172926" duration="3981000" />
       <workItem from="1745763403361" duration="31872000" />
       <workItem from="1745807060967" duration="50000" />
+      <workItem from="1745807121625" duration="1323000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -664,7 +656,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745803918540</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging.">
+      <option name="closed" value="true" />
+      <created>1745807266556</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1745807266556</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -682,7 +682,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="    Update .pylintrc to include import-error in ignored rules&#10;&#10;    Added import-error to the list of ignored pylint rules to prevent unnecessary warnings related to imports. This ensures smoother linting for cases where imports may fail due to environment-specific configurations." />
     <MESSAGE value="Refactor logging and add log cleanup utility.&#10;&#10;Replaced f-strings in logging calls with parameterized log messages for consistency and efficiency. Added a `cleanup_old_logs` function to manage log file retention, ensuring only the most recent logs are retained." />
     <MESSAGE value="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python." />
     <MESSAGE value="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;" />
@@ -707,7 +706,8 @@
     <MESSAGE value="Add user sync and Fief API client integration  &#10;&#10;Introduced user synchronization from Fief API with the new `FiefHttpClient`. Added handlers for retrieving, syncing, and creating users, along with support for initial data setup. Refactored code to decouple user and database logic, enhancing modularity and maintainability." />
     <MESSAGE value="Add plan management system with seeding and CRUD services&#10;&#10;Introduced a `Plan` management system for handling subscription plans, including model updates, CRUD operations, and JSON-based seeding. Added the `plan_service.py` for plan-related logic and integrated the `plans.json` file for initializing data. Updated initial data handling to include plan seeding and ensured compatibility with existing workflows." />
     <MESSAGE value="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints." />
+    <MESSAGE value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,5 +1,5 @@
-from uuid import UUID, uuid4
 from typing import Any
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fief_client import FiefAccessTokenInfo

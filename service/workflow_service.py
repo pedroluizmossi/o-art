@@ -115,7 +115,7 @@ async def delete_workflow(session: AsyncSession, workflow_id: UUID) -> bool:
         raise e
 
 async def seed_workflow_from_json(session, json_path):
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         workflows_data = json.load(f)
 
     for workflow_data in workflows_data:

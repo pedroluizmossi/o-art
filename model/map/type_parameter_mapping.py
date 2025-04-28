@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, field_validator
 import pydantic
+from pydantic import BaseModel, Field
+
 from model.enum.workflow_type import Workflow
 
 

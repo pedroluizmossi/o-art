@@ -1,10 +1,7 @@
 import httpx
 from dotenv import load_dotenv
 
-from model.user_model import User
-
 from core.env_core import Envs, get_env_variable
-
 from core.logging_core import setup_logger
 
 # Set up the logger for this module

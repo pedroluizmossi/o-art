@@ -1,9 +1,10 @@
 from typing import BinaryIO
+
 from dotenv import load_dotenv
 from minio import Minio
 from minio.error import S3Error
 
-from core.env_core import get_env_variable, Envs
+from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
 
 load_dotenv()
@@ -33,11 +34,11 @@ def create_bucket_if_missing(bucket_name: str):
     try:
         if not minio_client.bucket_exists(bucket_name):
             minio_client.make_bucket(bucket_name)
-            logger.info(f"Bucket %s created successfully.", bucket_name)
+            logger.info("Bucket %s created successfully.", bucket_name)
         else:
-            logger.info(f"Bucket %s already exists.", bucket_name)
+            logger.info("Bucket %s already exists.", bucket_name)
     except S3Error as e:
-        logger.error(f"Error creating bucket: %", e)
+        logger.error("Error creating bucket: %", e)
         raise e
 
 def create_default_bucket():
@@ -55,7 +56,7 @@ def list_all_buckets():
         for bucket in buckets:
             print(bucket.name)
     except S3Error as e:
-        logger.error(f"Error listing buckets: %", e)
+        logger.error("Error listing buckets: %", e)
         raise e
 
 def upload_file_to_bucket(bucket_name: str, file_path: str, object_name: str):
@@ -68,9 +69,9 @@ def upload_file_to_bucket(bucket_name: str, file_path: str, object_name: str):
     """
     try:
         minio_client.fput_object(bucket_name, object_name, file_path)
-        logger.info(f"File %s uploaded to bucket %.", file_path, bucket_name)
+        logger.info("File %s uploaded to bucket %.", file_path, bucket_name)
     except S3Error as e:
-        logger.error(f"Error uploading file: %", e)
+        logger.error("Error uploading file: %", e)
         raise e
 
 
@@ -91,7 +92,7 @@ def upload_bytes_to_bucket(bucket_name: str, data: BinaryIO, object_name: str):
         minio_client.put_object(bucket_name, object_name, data, size)
         logger.info(f"Bytes uploaded to bucket {bucket_name} as {object_name}.")
     except S3Error as e:
-        logger.error(f"Error uploading bytes: %", e)
+        logger.error("Error uploading bytes: %", e)
         raise e
 
 
@@ -107,5 +108,5 @@ def download_file_from_bucket(bucket_name: str, object_name: str, file_path: str
         minio_client.fget_object(bucket_name, object_name, file_path)
         logger.info(f"File {file_path} downloaded from bucket {bucket_name}.")
     except S3Error as e:
-        logger.error(f"Error downloading file: %", e)
+        logger.error("Error downloading file: %", e)
         raise e

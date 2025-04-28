@@ -2,12 +2,14 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import Column, DateTime, JSON
-from sqlmodel import Field, SQLModel
-from model.map.model_parameter_mapping import Parameters
-from model.map.type_parameter_mapping import WorkflowType
-from model.map.segment_parameter_mapping import WorkflowSegment
 from pydantic import field_validator
+from sqlalchemy import JSON, Column, DateTime
+from sqlmodel import Field, SQLModel
+
+from model.map.model_parameter_mapping import Parameters
+from model.map.segment_parameter_mapping import WorkflowSegment
+from model.map.type_parameter_mapping import WorkflowType
+
 
 class PlanBase(SQLModel):
     name: str = Field(index=True, unique=True)

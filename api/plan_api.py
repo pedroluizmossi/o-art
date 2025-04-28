@@ -2,18 +2,17 @@ import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends, Response, status
-from fief_client import FiefAccessTokenInfo
 
 from api.auth_api import auth
 from core.logging_core import setup_logger
 from handler.plan_handler import (
-    get_all_plans_handler,
     create_plan_handler,
-    get_plan_by_id_handler,
     delete_plan_handler,
+    get_all_plans_handler,
+    get_plan_by_id_handler,
     update_plan_handler,
 )
-from model.plan_model import Plan, PlanUpdate, PlanCreate
+from model.plan_model import Plan, PlanCreate, PlanUpdate
 
 logger = setup_logger(__name__)
 

@@ -1,19 +1,18 @@
 import uuid
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from fief_client import FiefAccessTokenInfo
+from fastapi import APIRouter, Depends, Response, status
 
 from api.auth_api import auth
 from core.logging_core import setup_logger
 from handler.model_handler import (
-    get_all_models_handler,
     create_model_handler,
-    get_model_by_id_handler,
     delete_model_handler,
+    get_all_models_handler,
+    get_model_by_id_handler,
     update_model_handler,
 )
-from model.model_model import Model, ModelUpdate, ModelCreate
+from model.model_model import Model, ModelCreate, ModelUpdate
 
 logger = setup_logger(__name__)
 

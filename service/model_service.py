@@ -111,7 +111,7 @@ async def delete_model(session: AsyncSession, model_id: UUID) -> bool:
         raise e
 
 async def seed_model_from_json(session, json_path):
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         models_data = json.load(f)
 
     for model_data in models_data:

@@ -2,7 +2,8 @@ import os
 from unittest.mock import patch
 
 import pytest
-from core.env_core import get_env_variable, Envs
+
+from core.env_core import Envs, get_env_variable
 
 
 def test_get_env_variable_existing_variable():

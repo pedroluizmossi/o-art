@@ -1,10 +1,9 @@
-import json
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 
-from sqlmodel import select
 from fastapi import HTTPException, status
+from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.logging_core import setup_logger

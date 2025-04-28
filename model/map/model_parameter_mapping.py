@@ -1,6 +1,6 @@
-from typing import Dict, List
-from pydantic import BaseModel, Field, field_validator
 import pydantic
+from pydantic import BaseModel, Field, field_validator
+
 from model.enum.model_type import Model
 from model.enum.sampler_type import Sampler
 
@@ -12,7 +12,7 @@ class ParameterDetail(BaseModel):
     )
     WIDTH: int = Field(..., gt=0, description="Width in pixels")
     HEIGHT: int = Field(..., gt=0, description="Height in pixels")
-    SAMPLERS: List[Sampler] = Field(..., description="List of supported samplers")
+    SAMPLERS: list[Sampler] = Field(..., description="List of supported samplers")
     STEPS: int = Field(default=20, gt=0, description="Number of steps for the model to run")
     CFG: float = Field(default=7.5, gt=0, description="Classifier-Free Guidance scale")
     SEED: int = Field(default=0, description="Random seed for reproducibility")
@@ -30,7 +30,7 @@ class ParameterDetail(BaseModel):
         return value
 
     @field_validator("SAMPLERS")
-    def validate_samplers(cls, value: List[Sampler]) -> List[Sampler]:
+    def validate_samplers(cls, value: list[Sampler]) -> list[Sampler]:
         if not value:
             raise ValueError("The list of samplers cannot be empty.")
         return value
@@ -56,7 +56,7 @@ _example_mapping = {
 }
 
 
-class Parameters(pydantic.RootModel[Dict[Model, ParameterDetail]]):
+class Parameters(pydantic.RootModel[dict[Model, ParameterDetail]]):
     """
     Maps model names (e.g., "SDXL", "FLUX") to their parameter definitions.
     """
