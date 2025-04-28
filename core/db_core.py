@@ -7,6 +7,7 @@ from sqlmodel import SQLModel, create_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.env_core import Envs, get_env_variable
+from core.fief_core import FiefHttpClient
 from core.logging_core import setup_logger
 from service.model_service import seed_model_from_json, MODELS_JSON_PATH
 from service.workflow_service import seed_workflow_from_json, WORKFLOWS_JSON_PATH
@@ -63,16 +64,3 @@ async def get_db_session() -> AsyncSession:
         finally:
             await session.close()
 
-async def initial_data():
-    """
-    Initialize the database with initial data.
-    """
-    try:
-        async with get_db_session() as session:
-            await seed_model_from_json(session, RESOURCE_POSTGRES_PATH + MODELS_JSON_PATH)
-            await seed_workflow_from_json(session, RESOURCE_POSTGRES_PATH + WORKFLOWS_JSON_PATH)
-            await session.commit()
-            logger.info("Initial data loaded successfully.")
-    except Exception as e:
-        logger.error(f"Error loading initial data: {e}")
-        raise e

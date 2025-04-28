@@ -28,6 +28,15 @@ async def create_user(session: AsyncSession, user_data: User) -> User:
         logger.exception("Error creating user %s: %s", user_data.email, e)
         raise e
 
+async def get_all_users(session: AsyncSession) -> list[User]:
+    """Retrieves all users from the database."""
+    try:
+        statement = select(User)
+        users = await session.exec(statement)
+        return users.all()
+    except Exception as e:
+        logger.exception("Error retrieving all users: %s", e)
+        raise e
 
 async def get_user_by_id(session: AsyncSession, user_id: UUID) -> Optional[User]:
     """Retrieves a user by their ID."""

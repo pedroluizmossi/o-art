@@ -12,9 +12,10 @@ from api.scalar_docs_api import router as scalar_docs_router
 from api.webhook_api import router as webhook_router
 from api.websocket_api import router as websocket_router
 from core.config_core import Config
-from core.db_core import create_db, initial_data
+from core.db_core import create_db
 from core.logging_core import cleanup_old_logs, setup_logger
 from core.minio_core import create_default_bucket
+from handler.start_data_handler import initial_data
 from model.user_model import User
 from model.workflow_model import Workflow
 from model.image_model import Image
