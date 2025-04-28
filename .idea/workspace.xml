@@ -4,11 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging.">
-      <change beforePath="$PROJECT_DIR$/.idea/ruff.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ruff.xml" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/image_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/image_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/auth_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/model_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/model_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/workflow_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/workflow_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/plan_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/plan_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/workflow_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/core/test_config_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core/test_config_core.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/core/test_minio_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core/test_minio_core.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/service/test_workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/service/test_workflow_service.py" afterDir="false" />
     </list>
@@ -69,56 +73,56 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Docker.docker-compose.yaml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;FastAPI.art.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_config_core.test_load_config_file_invalid_format.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_metric_core.test_influxdbwriter_write_data_success.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_minio_core.test_create_default_bucket_s3_error.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_celery_core.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_config_core.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_db_core.py (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_db_core.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_env_core.py.executor&quot;: &quot;Coverage&quot;,
-    &quot;Python tests.Python tests in test_metric_core.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_minio_core.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_security_util.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_user_handler.py.executor&quot;: &quot;Coverage&quot;,
-    &quot;Python tests.Python tests in test_user_service.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_workflow_service.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Coverage&quot;,
-    &quot;Python tests.pytest for test_config_core.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_db_core.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_metric_core.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_minio_core.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_minio_core.test_download_file_s3_error.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_user_handler.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_user_service.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_workflow_service.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Worker.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/0.0.1&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/pedro/PycharmProjects/o-art/tests/core&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.28409094&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Docker.docker-compose.yaml: Compose Deployment.executor": "Run",
+    "FastAPI.art.executor": "Run",
+    "Python tests.Python tests for test_config_core.test_load_config_file_invalid_format.executor": "Run",
+    "Python tests.Python tests for test_metric_core.test_influxdbwriter_write_data_success.executor": "Run",
+    "Python tests.Python tests for test_minio_core.test_create_default_bucket_s3_error.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor": "Run",
+    "Python tests.Python tests in test_celery_core.py.executor": "Run",
+    "Python tests.Python tests in test_config_core.py.executor": "Run",
+    "Python tests.Python tests in test_db_core.py (1).executor": "Run",
+    "Python tests.Python tests in test_db_core.py.executor": "Run",
+    "Python tests.Python tests in test_env_core.py.executor": "Coverage",
+    "Python tests.Python tests in test_metric_core.py.executor": "Run",
+    "Python tests.Python tests in test_minio_core.py.executor": "Run",
+    "Python tests.Python tests in test_security_util.py.executor": "Run",
+    "Python tests.Python tests in test_user_handler.py.executor": "Coverage",
+    "Python tests.Python tests in test_user_service.py.executor": "Run",
+    "Python tests.Python tests in test_workflow_service.py.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for test_config_core.executor": "Run",
+    "Python tests.pytest for test_db_core.executor": "Run",
+    "Python tests.pytest for test_metric_core.executor": "Run",
+    "Python tests.pytest for test_minio_core.executor": "Run",
+    "Python tests.pytest for test_minio_core.test_download_file_s3_error.executor": "Run",
+    "Python tests.pytest for test_user_handler.executor": "Run",
+    "Python tests.pytest for test_user_service.executor": "Run",
+    "Python tests.pytest for test_workflow_service.executor": "Run",
+    "Python.Worker.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "feature/0.0.1",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/pedro/PycharmProjects/o-art/tests/core",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "aDefault",
+    "settings.editor.selected.configurable": "preferences.sourceCode",
+    "settings.editor.splitter.proportion": "0.28409094",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/handler" />
@@ -135,7 +139,7 @@
       <recent name="C:\Users\pedro\PycharmProjects\art\api" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.pytest for test_db_core">
+  <component name="RunManager" selected="FastAPI.art">
     <configuration name="Worker" type="PythonConfigurationType" factoryName="Python">
       <module name="art" />
       <option name="ENV_FILES" value="" />
@@ -269,9 +273,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.pytest for test_user_service" />
         <item itemvalue="Python tests.pytest for test_db_core" />
-        <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.Python tests in test_db_core.py" />
         <item itemvalue="Python tests.Python tests in test_db_core.py (1)" />
       </list>
@@ -334,7 +338,7 @@
       <workItem from="1745730172926" duration="3981000" />
       <workItem from="1745763403361" duration="31872000" />
       <workItem from="1745807060967" duration="50000" />
-      <workItem from="1745807121625" duration="1323000" />
+      <workItem from="1745807121625" duration="2417000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -664,7 +668,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745807266556</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable.">
+      <option name="closed" value="true" />
+      <created>1745808537048</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1745808537048</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -682,7 +694,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor logging and add log cleanup utility.&#10;&#10;Replaced f-strings in logging calls with parameterized log messages for consistency and efficiency. Added a `cleanup_old_logs` function to manage log file retention, ensuring only the most recent logs are retained." />
     <MESSAGE value="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python." />
     <MESSAGE value="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;" />
     <MESSAGE value="Refactor and clean up codebase for consistency and readability&#10;&#10;Applied formatting improvements across multiple modules to enhance code consistency and readability. Resolved redundant logic, improved exception handling, and adhered to best practices in method and error definitions. Also added PyLint and Ruff configuration files for static analysis support." />
@@ -707,7 +718,8 @@
     <MESSAGE value="Add plan management system with seeding and CRUD services&#10;&#10;Introduced a `Plan` management system for handling subscription plans, including model updates, CRUD operations, and JSON-based seeding. Added the `plan_service.py` for plan-related logic and integrated the `plans.json` file for initializing data. Updated initial data handling to include plan seeding and ensured compatibility with existing workflows." />
     <MESSAGE value="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints." />
     <MESSAGE value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
+    <MESSAGE value="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -781,18 +793,18 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745803807412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745808641586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core_test_download_file_s3_error.coverage" NAME="pytest for test_minio_core.test_download_file_s3_error Coverage Results" MODIFIED="1745805164120" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_workflow_service.coverage" NAME="pytest for test_workflow_service Coverage Results" MODIFIED="1745806340413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core.coverage" NAME="pytest for test_minio_core Coverage Results" MODIFIED="1745805156401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_metric_core.coverage" NAME="pytest for test_metric_core Coverage Results" MODIFIED="1745805979158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_user_service.coverage" NAME="pytest for test_user_service Coverage Results" MODIFIED="1745806585882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
-    <SUITE FILE_PATH="coverage/o_art$.coverage" NAME=" Coverage Results" MODIFIED="1745806852546" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_db_core.coverage" NAME="pytest for test_db_core Coverage Results" MODIFIED="1745806919671" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
+    <SUITE FILE_PATH="coverage/o_art$.coverage" NAME=" Coverage Results" MODIFIED="1745808953599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

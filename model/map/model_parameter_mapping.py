@@ -17,16 +17,10 @@ class ParameterDetail(BaseModel):
     CFG: float = Field(default=7.5, gt=0, description="Classifier-Free Guidance scale")
     SEED: int = Field(default=0, description="Random seed for reproducibility")
 
-    @field_validator("STEPS", "CFG", "SEED")
+    @field_validator("STEPS", "CFG", "SEED", "WIDTH", "HEIGHT")
     def validate_positive(cls, value: int) -> int:
         if value < 0:
             raise ValueError("The value must be greater than or equal to zero.")
-        return value
-
-    @field_validator("WIDTH", "HEIGHT")
-    def validate_positive(cls, value: int) -> int:
-        if value <= 0:
-            raise ValueError("The value must be greater than zero.")
         return value
 
     @field_validator("SAMPLERS")

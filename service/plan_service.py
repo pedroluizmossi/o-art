@@ -64,7 +64,9 @@ async def get_plan_by_id(session: AsyncSession, plan_id: UUID) -> Optional[Plan]
         logger.exception("Error retrieving plan by ID %s: %s", plan_id, e)
         raise e
 
-async def update_plan(session: AsyncSession, plan_id: UUID, plan_update_data: dict) -> Optional[Plan]:
+async def update_plan(session: AsyncSession,
+                      plan_id: UUID,
+                      plan_update_data: dict) -> Optional[Plan]:
     """Updates an existing plan identified by plan_id with data from plan_update_data."""
     try:
         plan = await get_plan_by_id(session, plan_id)

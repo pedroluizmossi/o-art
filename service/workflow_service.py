@@ -36,7 +36,8 @@ async def create_workflow(session: AsyncSession, workflow_data: WorkflowCreate) 
         return workflow
     except Exception as e:
         await session.rollback()
-        logger.exception("Error creating workflow %s: %s", getattr(workflow_data, "name", ""), e)
+        logger.exception("Error creating workflow %s: %s",
+                         getattr(workflow_data, "name", ""), e)
         raise e
 
 
@@ -68,8 +69,9 @@ async def get_workflow_by_id(session: AsyncSession, workflow_id: UUID) -> Option
 
 
 
-async def update_workflow(session: AsyncSession, workflow_id: UUID, workflow_update_data: dict) -> Optional[Workflow]:
-    """Updates an existing workflow identified by workflow_id with data from workflow_update_data."""
+async def update_workflow(session: AsyncSession,
+                          workflow_id: UUID,
+                          workflow_update_data: dict) -> Optional[Workflow]:
     try:
         workflow = await get_workflow_by_id(session, workflow_id)
         if not workflow:

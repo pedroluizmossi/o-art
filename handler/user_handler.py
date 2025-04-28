@@ -147,7 +147,8 @@ async def sync_users_handler() -> None:
         fief_client = FiefHttpClient()
         users = fief_client.get_all_users()
         all_local_users = await get_all_users_handler()
-        local_user_ids = {str(existing_user.id) for existing_user in all_local_users} if all_local_users else set()
+        local_user_ids = {str(existing_user.id) for existing_user in all_local_users} \
+            if all_local_users else set()
 
         for user in users["results"]:
             user_external_id = user.get("id")

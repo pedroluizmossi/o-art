@@ -77,7 +77,8 @@ def test_getboolean_missing_value_with_default():
 
 def test_load_config_file_invalid_format():
     with patch("os.path.exists", return_value=True), \
-            patch("core.config_core.configparser.ConfigParser.read", side_effect=configparser.Error), \
+            patch("core.config_core.configparser.ConfigParser.read",
+                  side_effect=configparser.Error), \
             patch("core.config_core.configparser.ConfigParser") as mock_parser:
         config = Config("test_invalid_config.ini")
         config._load_config()

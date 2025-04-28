@@ -31,10 +31,12 @@ class Model(ModelBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), sa_column=Column(DateTime(timezone=True))
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True))
     )
     updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), sa_column=Column(DateTime(timezone=True))
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True))
     )
 
 class ModelCreate(ModelBase):

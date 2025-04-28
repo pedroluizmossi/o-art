@@ -1,7 +1,7 @@
 import json
 import random
 import re
-from typing import Any, List, Optional
+from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -20,7 +20,7 @@ from service.workflow_service import (
 
 logger = setup_logger(__name__)
 
-async def get_all_workflows_handler() -> List[Workflow]:
+async def get_all_workflows_handler() -> list[Workflow]:
     """
     Handler to retrieve all workflows.
     """

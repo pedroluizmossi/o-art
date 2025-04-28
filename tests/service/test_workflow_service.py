@@ -69,7 +69,10 @@ def mock_session():
 
 class TestCreateWorkflow:
     @pytest.mark.asyncio
-    async def test_create_workflow_success(self, mock_session, sample_workflow_create_data, sample_workflow):
+    async def test_create_workflow_success(self,
+                                           mock_session,
+                                           sample_workflow_create_data,
+                                           sample_workflow):
         mock_session.refresh.return_value = None
         
         with patch('service.workflow_service.Workflow', return_value=sample_workflow):
@@ -115,7 +118,10 @@ class TestGetAllWorkflows:
 
 class TestGetWorkflowById:
     @pytest.mark.asyncio
-    async def test_get_workflow_by_id_success(self, mock_session, sample_workflow, sample_workflow_id):
+    async def test_get_workflow_by_id_success(self,
+                                              mock_session,
+                                              sample_workflow,
+                                              sample_workflow_id):
         result_mock = MagicMock()
         result_mock.first.return_value = sample_workflow
         mock_session.exec.return_value = result_mock
@@ -144,9 +150,13 @@ class TestGetWorkflowById:
 
 class TestUpdateWorkflow:
     @pytest.mark.asyncio
-    async def test_update_workflow_success(self, mock_session, sample_workflow, sample_workflow_id):
+    async def test_update_workflow_success(self,
+                                           mock_session,
+                                           sample_workflow,
+                                           sample_workflow_id):
         # Mock get_workflow_by_id to return our sample workflow
-        with patch('service.workflow_service.get_workflow_by_id', return_value=sample_workflow):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   return_value=sample_workflow):
             update_data = {"name": "Updated Name", "description": "Updated Description"}
             result = await update_workflow(mock_session, sample_workflow_id, update_data)
             
@@ -157,9 +167,13 @@ class TestUpdateWorkflow:
             assert result.description == "Updated Description"
 
     @pytest.mark.asyncio
-    async def test_update_workflow_no_changes(self, mock_session, sample_workflow, sample_workflow_id):
+    async def test_update_workflow_no_changes(self,
+                                              mock_session,
+                                              sample_workflow,
+                                              sample_workflow_id):
         # Mock get_workflow_by_id to return our sample workflow
-        with patch('service.workflow_service.get_workflow_by_id', return_value=sample_workflow):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   return_value=sample_workflow):
             # Use same values that are already in the workflow
             update_data = {"name": sample_workflow.name, "description": sample_workflow.description}
             
@@ -174,23 +188,35 @@ class TestUpdateWorkflow:
         with patch('service.workflow_service.get_workflow_by_id',
                    side_effect=WorkflowNotFound(sample_workflow_id)):
             with pytest.raises(WorkflowNotFound):
-                await update_workflow(mock_session, sample_workflow_id, {"name": "Updated Name"})
+                await update_workflow(mock_session,
+                                      sample_workflow_id,
+                                      {"name": "Updated Name"})
 
     @pytest.mark.asyncio
-    async def test_update_workflow_exception(self, mock_session, sample_workflow, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id', return_value=sample_workflow):
+    async def test_update_workflow_exception(self,
+                                             mock_session,
+                                             sample_workflow,
+                                             sample_workflow_id):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   return_value=sample_workflow):
             mock_session.commit.side_effect = SQLAlchemyError("Database error")
             
-            with pytest.raises(SQLAlchemyError), patch('service.workflow_service.logger.exception'):
-                await update_workflow(mock_session, sample_workflow_id, {"name": "Updated Name"})
+            with pytest.raises(
+                    SQLAlchemyError), patch('service.workflow_service.logger.exception'):
+                await update_workflow(
+                    mock_session, sample_workflow_id, {"name": "Updated Name"})
             
             assert mock_session.rollback.called
 
 
 class TestDeleteWorkflow:
     @pytest.mark.asyncio
-    async def test_delete_workflow_success(self, mock_session, sample_workflow, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id', return_value=sample_workflow):
+    async def test_delete_workflow_success(self,
+                                           mock_session,
+                                           sample_workflow,
+                                           sample_workflow_id):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   return_value=sample_workflow):
             result = await delete_workflow(mock_session, sample_workflow_id)
             
             assert mock_session.delete.called
@@ -205,8 +231,12 @@ class TestDeleteWorkflow:
                 await delete_workflow(mock_session, sample_workflow_id)
 
     @pytest.mark.asyncio
-    async def test_delete_workflow_exception(self, mock_session, sample_workflow, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id', return_value=sample_workflow):
+    async def test_delete_workflow_exception(self,
+                                             mock_session,
+                                             sample_workflow,
+                                             sample_workflow_id):
+        with patch('service.workflow_service.get_workflow_by_id',
+                   return_value=sample_workflow):
             mock_session.commit.side_effect = SQLAlchemyError("Database error")
             
             with pytest.raises(SQLAlchemyError), patch('service.workflow_service.logger.exception'):

@@ -20,7 +20,8 @@ class WorkflowBase(SQLModel):
     description: Optional[str] = Field(default=None, nullable=True)
     model_type: Model = Field(sa_column=Column("model", SqlEnum(Model)))
     model_id: Optional[UUID] = Field(default=None, foreign_key="models.id")
-    workflow_type: WorkflowType = Field(sa_column=Column("workflow_type", SqlEnum(WorkflowType)))
+    workflow_type: WorkflowType = Field(
+        sa_column=Column("workflow_type", SqlEnum(WorkflowType)))
     workflow_segment: WorkflowSegment = Field(
         sa_column=Column("workflow_segment", SqlEnum(WorkflowSegment))
     )
@@ -37,10 +38,12 @@ class Workflow(WorkflowBase, table=True):
     __tablename__ = "workflows"
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), sa_column=Column(DateTime(timezone=True))
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True))
     )
     updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), sa_column=Column(DateTime(timezone=True))
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True))
     )
 
 class WorkflowCreate(WorkflowBase):

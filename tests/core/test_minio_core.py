@@ -84,10 +84,12 @@ def test_create_bucket_if_missing_raises_s3_error():
             create_bucket_if_missing("error-bucket")
 
         minio_client.bucket_exists.assert_called_once_with("error-bucket")
-        logger.error.assert_called_once_with("Error creating bucket: %", minio_client.bucket_exists.side_effect)
+        logger.error.assert_called_once_with("Error creating bucket: %",
+                                             minio_client.bucket_exists.side_effect)
 
 def test_create_default_bucket_bucket_does_not_exist():
-    with patch("core.minio_core.minio_client") as mock_minio_client, patch("core.minio_core.logger") as mock_logger:
+    with (patch("core.minio_core.minio_client") as mock_minio_client,
+          patch("core.minio_core.logger") as mock_logger):
         mock_minio_client.bucket_exists.return_value = False
         mock_minio_client.make_bucket = MagicMock()
 
@@ -100,7 +102,8 @@ def test_create_default_bucket_bucket_does_not_exist():
 
 
 def test_create_default_bucket_bucket_exists():
-    with patch("core.minio_core.minio_client") as mock_minio_client, patch("core.minio_core.logger") as mock_logger:
+    with (patch("core.minio_core.minio_client") as mock_minio_client,
+          patch("core.minio_core.logger") as mock_logger):
         mock_minio_client.bucket_exists.return_value = True
 
         create_default_bucket()
@@ -119,7 +122,8 @@ def test_list_all_buckets_success():
     mock_bucket_2.name = "bucket2"
     mock_minio_client.list_buckets.return_value = [mock_bucket_1, mock_bucket_2]
 
-    with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger") as mock_logger:
+    with (patch("core.minio_core.minio_client", mock_minio_client),
+          patch("core.minio_core.logger") as mock_logger):
         list_all_buckets()
         mock_minio_client.list_buckets.assert_called_once()
         mock_logger.error.assert_not_called()
@@ -129,7 +133,8 @@ def test_list_all_buckets_empty():
     mock_minio_client = MagicMock()
     mock_minio_client.list_buckets.return_value = []
 
-    with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger") as mock_logger:
+    with (patch("core.minio_core.minio_client", mock_minio_client),
+          patch("core.minio_core.logger") as mock_logger):
         list_all_buckets()
         mock_minio_client.list_buckets.assert_called_once()
         mock_logger.error.assert_not_called()
@@ -146,7 +151,8 @@ def test_list_all_buckets_error():
         "response"
     )
 
-    with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger") as mock_logger:
+    with (patch("core.minio_core.minio_client", mock_minio_client),
+          patch("core.minio_core.logger") as mock_logger):
         with pytest.raises(S3Error):
             list_all_buckets()
         mock_minio_client.list_buckets.assert_called_once()
@@ -160,11 +166,13 @@ def test_upload_file_to_bucket_success():
     minio_client_mock = MagicMock()
     logger_mock = MagicMock()
 
-    with patch("core.minio_core.minio_client", minio_client_mock), patch("core.minio_core.logger", logger_mock):
+    with (patch("core.minio_core.minio_client", minio_client_mock),
+          patch("core.minio_core.logger", logger_mock)):
         upload_file_to_bucket(bucket_name, file_path, object_name)
 
         minio_client_mock.fput_object.assert_called_once_with(bucket_name, object_name, file_path)
-        logger_mock.info.assert_called_once_with("File %s uploaded to bucket %.", file_path, bucket_name)
+        logger_mock.info.assert_called_once_with("File %s uploaded to bucket %.",
+                                                 file_path, bucket_name)
 
 
 def test_upload_file_to_bucket_s3_error():
@@ -183,7 +191,11 @@ def test_upload_file_to_bucket_s3_error():
         "response"
     )
 
-    with patch("core.minio_core.minio_client", minio_client_mock), patch("core.minio_core.logger", logger_mock):
+    with (patch(
+            "core.minio_core.minio_client",
+            minio_client_mock),
+            patch("core.minio_core.logger",
+                  logger_mock)):
         minio_client_mock.fput_object.side_effect = test_error
 
         with pytest.raises(S3Error) as excinfo:
@@ -202,14 +214,22 @@ def test_upload_bytes_to_bucket_success():
     mock_minio_client = MagicMock()
     patched_logger = MagicMock()
 
-    with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger", patched_logger):
+    with (patch(
+            "core.minio_core.minio_client",
+            mock_minio_client),
+            patch("core.minio_core.logger",
+                    patched_logger)):
         # Act
         upload_bytes_to_bucket(bucket_name, data, object_name)
 
         # Assert
         mock_minio_client.put_object.assert_called_once()
-        mock_minio_client.put_object.assert_called_with(bucket_name, object_name, data, len(data.getvalue()))
-        patched_logger.info.assert_called_once_with(f"Bytes uploaded to bucket {bucket_name} as {object_name}.")
+        mock_minio_client.put_object.assert_called_with(bucket_name,
+                                                        object_name,
+                                                        data,
+                                                        len(data.getvalue()))
+        patched_logger.info.assert_called_once_with(
+            f"Bytes uploaded to bucket {bucket_name} as {object_name}.")
 
 
 def test_upload_bytes_to_bucket_s3_error():
@@ -221,7 +241,8 @@ def test_upload_bytes_to_bucket_s3_error():
     mock_minio_client = MagicMock()
     patched_logger = MagicMock()
 
-    with patch("core.minio_core.minio_client", mock_minio_client), patch("core.minio_core.logger", patched_logger):
+    with (patch("core.minio_core.minio_client", mock_minio_client),
+          patch("core.minio_core.logger", patched_logger)):
         mock_minio_client.put_object.side_effect = S3Error(
             "ERR",
             "Upload error",
@@ -247,8 +268,10 @@ def test_download_file_success():
     with patch("core.minio_core.minio_client", mock_minio_client):
         with patch("core.minio_core.logger.info") as mock_logger:
             download_file_from_bucket(bucket_name, object_name, file_path)
-            mock_minio_client.fget_object.assert_called_once_with(bucket_name, object_name, file_path)
-            mock_logger.assert_called_once_with(f"File {file_path} downloaded from bucket {bucket_name}.")
+            mock_minio_client.fget_object.assert_called_once_with(bucket_name,
+                                                                  object_name, file_path)
+            mock_logger.assert_called_once_with(f"File {file_path} "
+                                                f"downloaded from bucket {bucket_name}.")
 
 
 def test_download_file_s3_error():
