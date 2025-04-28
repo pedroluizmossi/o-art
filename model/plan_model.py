@@ -71,8 +71,8 @@ class Plan(PlanParameters, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
     )
     updated_at: Optional[datetime] = Field(
-        sa_column=Column(DateTime(timezone=True), nullable=True),
-        default=None
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+        default_factory=lambda: datetime.now(timezone.utc),
     )
 
 class PlanCreate(PlanParameters):

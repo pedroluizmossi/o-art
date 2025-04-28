@@ -1,0 +1,500 @@
+[
+{
+  "name": "FREE",
+  "description": "Free plan",
+  "price": 0,
+  "is_active": true,
+  "model_parameters": {
+    "FLUX": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "HIDREAM": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "ILLUSTRIOUS": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "PONY": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD15": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD20": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD21": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD30": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD35": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SDXL": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    }
+  },
+  "type_parameters": {
+    "AUDIO": {
+      "allowed": true
+    },
+    "IMAGE": {
+      "allowed": true
+    },
+    "TEXT": {
+      "allowed": true
+    },
+    "VIDEO": {
+      "allowed": true
+    }
+  },
+  "segment_parameters": {
+    "IMAGE_TO_IMAGE": {
+      "allowed": true
+    },
+    "IMAGE_TO_VIDEO": {
+      "allowed": true
+    },
+    "TEXT_TO_IMAGE": {
+      "allowed": true
+    },
+    "TEXT_TO_VIDEO": {
+      "allowed": true
+    },
+    "UPSCALE": {
+      "allowed": true
+    }
+  }
+},
+  {
+  "name": "PREMIUM",
+  "description": "Premium plan",
+  "price": 25,
+  "is_active": true,
+  "model_parameters": {
+    "FLUX": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "HIDREAM": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "ILLUSTRIOUS": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "PONY": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD15": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD20": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD21": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD30": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SD35": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    },
+    "SDXL": {
+      "ALLOWED": true,
+      "CFG": 7.5,
+      "HEIGHT": 2048,
+      "SAMPLERS": [
+        "DPM_2",
+        "DPM_2_KARRAS",
+        "DPM_2_A",
+        "DPM_2_A_KARRAS",
+        "DPM_2_M",
+        "DPM_2_M_KARRAS",
+        "DPM_2_M_SDE_KARRAS",
+        "EULER",
+        "EULER_A",
+        "HEUN",
+        "LMS"
+      ],
+      "SEED": 0,
+      "STEPS": 20,
+      "WIDTH": 2048
+    }
+  },
+  "type_parameters": {
+    "AUDIO": {
+      "allowed": true
+    },
+    "IMAGE": {
+      "allowed": true
+    },
+    "TEXT": {
+      "allowed": true
+    },
+    "VIDEO": {
+      "allowed": true
+    }
+  },
+  "segment_parameters": {
+    "IMAGE_TO_IMAGE": {
+      "allowed": true
+    },
+    "IMAGE_TO_VIDEO": {
+      "allowed": true
+    },
+    "TEXT_TO_IMAGE": {
+      "allowed": true
+    },
+    "TEXT_TO_VIDEO": {
+      "allowed": true
+    },
+    "UPSCALE": {
+      "allowed": true
+    }
+  }
+}
+]
