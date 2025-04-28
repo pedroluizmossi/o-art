@@ -1,6 +1,5 @@
 import os
 
-
 def get_env_variable(var_name: str, default_value: str = None) -> str:
     """
     Get an environment variable value provided by the operating system or container runtime.
@@ -17,7 +16,7 @@ def get_env_variable(var_name: str, default_value: str = None) -> str:
     """
     value = os.getenv(var_name, default_value)
     if value is None and default_value is None:
-        pass
+        raise ValueError(f"Environment variable {var_name} is required.")
     return value
 
 

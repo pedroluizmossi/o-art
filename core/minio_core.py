@@ -33,11 +33,12 @@ def create_bucket_if_missing(bucket_name: str):
     try:
         if not minio_client.bucket_exists(bucket_name):
             minio_client.make_bucket(bucket_name)
-            logger.info(f"Bucket S% created successfully.", bucket_name)
+            logger.info(f"Bucket %s created successfully.", bucket_name)
         else:
-            logger.info(f"Bucket S% already exists.", bucket_name)
+            logger.info(f"Bucket %s already exists.", bucket_name)
     except S3Error as e:
         logger.error(f"Error creating bucket: %", e)
+        raise e
 
 def create_default_bucket():
     """
@@ -67,9 +68,9 @@ def upload_file_to_bucket(bucket_name: str, file_path: str, object_name: str):
     """
     try:
         minio_client.fput_object(bucket_name, object_name, file_path)
-        logger.info(f"File S% uploaded to bucket S%.", file_path, bucket_name)
+        logger.info(f"File %s uploaded to bucket %.", file_path, bucket_name)
     except S3Error as e:
-        logger.error(f"Error uploading file: S%", e)
+        logger.error(f"Error uploading file: %", e)
         raise e
 
 
