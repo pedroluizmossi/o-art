@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -17,7 +17,7 @@ from service.plan_service import (
 
 logger = setup_logger(__name__)
 
-async def get_all_plans_handler() -> List[Plan]:
+async def get_all_plans_handler() -> list[Plan]:
     """
     Handler to retrieve all plans.
     """

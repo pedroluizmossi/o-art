@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, Response, status
 
@@ -28,13 +27,14 @@ router_metadata = {
     "description": "Plan management endpoints.",
 }
 
-@router.get("/", response_model=List[Plan])
-async def get_plans(
-):
+@router.get("/", response_model=list[Plan])
+async def get_plans():
     """
     Lists all available plans.
     """
-    return await get_all_plans_handler()
+    plans_raw = await get_all_plans_handler()
+    plans = [Plan.model_validate(plan) for plan in plans_raw]
+    return plans
 
 @router.get("/{plan_id}", response_model=Plan)
 async def get_plan(
@@ -43,7 +43,8 @@ async def get_plan(
     """
     Returns a specific plan by its ID.
     """
-    plan = await get_plan_by_id_handler(plan_id)
+    plan_raw = await get_plan_by_id_handler(plan_id)
+    plan = Plan.model_validate(plan_raw)
     return plan
 
 @router.post("/", response_model=Plan, status_code=status.HTTP_201_CREATED)
@@ -73,5 +74,6 @@ async def update_plan(
     """
     Updates a specific plan by its ID.
     """
-    plan = await update_plan_handler(plan_id, plan_update_data)
+    plan_raw = await update_plan_handler(plan_id, plan_update_data)
+    plan = Plan.model_validate(plan_raw)
     return plan

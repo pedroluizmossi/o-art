@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable.">
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/auth_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/model_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/model_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/workflow_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/workflow_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/plan_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/plan_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/workflow_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core/test_config_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core/test_config_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core/test_minio_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core/test_minio_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/service/test_workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/service/test_workflow_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/plan_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/plan_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/plan_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/plan_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/plan_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/plan_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -338,7 +332,7 @@
       <workItem from="1745730172926" duration="3981000" />
       <workItem from="1745763403361" duration="31872000" />
       <workItem from="1745807060967" duration="50000" />
-      <workItem from="1745807121625" duration="2417000" />
+      <workItem from="1745807121625" duration="3414000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -676,7 +670,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745808537048</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules.">
+      <option name="closed" value="true" />
+      <created>1745809783639</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1745809783639</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -694,7 +696,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python." />
     <MESSAGE value="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;" />
     <MESSAGE value="Refactor and clean up codebase for consistency and readability&#10;&#10;Applied formatting improvements across multiple modules to enhance code consistency and readability. Resolved redundant logic, improved exception handling, and adhered to best practices in method and error definitions. Also added PyLint and Ruff configuration files for static analysis support." />
     <MESSAGE value="Refactor imports across modules for consistency&#10;&#10;Reorganized imports to align with PEP 8 guidelines by grouping standard library, third-party, and local module imports. Addressed unused or redundant imports, ensuring improved readability and maintainability." />
@@ -719,7 +720,8 @@
     <MESSAGE value="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints." />
     <MESSAGE value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
     <MESSAGE value="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable." />
+    <MESSAGE value="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -796,7 +798,7 @@
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745808641586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745810489813" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core_test_download_file_s3_error.coverage" NAME="pytest for test_minio_core.test_download_file_s3_error Coverage Results" MODIFIED="1745805164120" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_workflow_service.coverage" NAME="pytest for test_workflow_service Coverage Results" MODIFIED="1745806340413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
@@ -804,7 +806,7 @@
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_metric_core.coverage" NAME="pytest for test_metric_core Coverage Results" MODIFIED="1745805979158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_user_service.coverage" NAME="pytest for test_user_service Coverage Results" MODIFIED="1745806585882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_db_core.coverage" NAME="pytest for test_db_core Coverage Results" MODIFIED="1745806919671" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
-    <SUITE FILE_PATH="coverage/o_art$.coverage" NAME=" Coverage Results" MODIFIED="1745808953599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/o_art$.coverage" NAME=" Coverage Results" MODIFIED="1745809644119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>
