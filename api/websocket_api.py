@@ -10,6 +10,11 @@ router = APIRouter(
     tags=["websocket"],
 )
 
+### tags_metadata -> resources/openapi_tags_metadata.py
+router_metadata = {
+    "name": "websocket",
+    "description": "WebSocket endpoints for real-time updates.",
+}
 
 async def queue_status_updater(websocket: WebSocket, user_id: Optional[str] = None):
     await websocket.accept()

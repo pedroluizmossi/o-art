@@ -16,6 +16,11 @@ router = APIRouter(
     tags=["image"],
 )
 
+### tags_metadata -> resources/openapi_tags_metadata.py
+router_metadata = {
+    "name": "image",
+    "description": "Image generation endpoints.",
+}
 
 class GenerateImageRequest(BaseModel):
     workflow_id: UUID = Field(

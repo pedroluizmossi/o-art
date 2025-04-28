@@ -20,12 +20,17 @@ logger = setup_logger(__name__)
 router = APIRouter(
     prefix="/model",
     tags=["model"],
+    dependencies=[Depends(auth.authenticated())],
 )
 
+### tags_metadata -> resources/openapi_tags_metadata.py
+router_metadata = {
+    "name": "model",
+    "description": "API for managing models.",
+}
 
 @router.get("/", response_model=List[Model])
 async def get_models(
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Lists all available models.
@@ -35,7 +40,6 @@ async def get_models(
 @router.get("/{model_id}", response_model=Model)
 async def get_model(
     model_id: uuid.UUID,
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Returns a specific model by its ID.
@@ -46,7 +50,6 @@ async def get_model(
 @router.post("/", response_model=Model, status_code=status.HTTP_201_CREATED)
 async def create_model(
     model_data: ModelCreate,
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Creates a new model.
@@ -56,7 +59,6 @@ async def create_model(
 @router.delete("/{model_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_model(
     model_id: uuid.UUID,
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Deletes a specific model by its ID.
@@ -68,7 +70,6 @@ async def delete_model(
 async def update_model(
     model_id: uuid.UUID,
     model_update_data: ModelUpdate,
-    access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),
 ):
     """
     Updates a specific model by its ID.

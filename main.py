@@ -21,6 +21,7 @@ from model.workflow_model import Workflow
 from model.image_model import Image
 from model.model_model import Model
 from model.plan_model import Plan
+from resources.openapi_tags_metadata import tags_metadata
 
 load_dotenv()
 logger = setup_logger(__name__)
@@ -91,7 +92,7 @@ async def lifespan(app: FastAPI):
     _stop_subprocess(worker_process, "worker")
     _stop_subprocess(beat_process, "beat")
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, openapi_tags=tags_metadata)
 app.include_router(auth_router)
 app.include_router(webhook_router)
 app.include_router(image_router)

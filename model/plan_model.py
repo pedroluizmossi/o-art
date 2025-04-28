@@ -80,3 +80,15 @@ class PlanCreate(PlanParameters):
     PlanCreate model for creating a new plan.
     """
     pass
+
+class PlanUpdate(PlanParameters):
+    """
+    PlanUpdate model for updating an existing plan.
+    """
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    is_active: Optional[bool] = None
+    model_parameters: Optional[Parameters] = None
+    type_parameters: Optional[WorkflowType] = None
+    segment_parameters: Optional[WorkflowSegment] = None

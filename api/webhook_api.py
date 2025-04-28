@@ -17,6 +17,12 @@ router = APIRouter(
     tags=["webhook"],
 )
 
+### tags_metadata -> resources/openapi_tags_metadata.py
+router_metadata = {
+    "name": "webhook",
+    "description": "Webhook endpoints for external services.",
+}
+
 
 @router.post("/user")
 async def user_webhook(request: Request, session: AsyncSession = Depends(get_db_session)):

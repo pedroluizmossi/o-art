@@ -19,6 +19,11 @@ router = APIRouter(
     tags=["auth"],
 )
 
+### tags_metadata -> resources/openapi_tags_metadata.py
+router_metadata = {
+    "name": "auth",
+    "description": "Authentication endpoints.",
+}
 
 @router.get("/user")
 async def get_user(
