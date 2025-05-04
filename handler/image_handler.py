@@ -12,11 +12,75 @@ from core.logging_core import setup_logger
 from core.minio_core import upload_bytes_to_bucket
 from handler.workflow_handler import load_and_populate_workflow
 from model.image_model import Image
+from service.image_service import (
+    create_image,
+    get_all_images_by_user_id,
+    get_all_images_by_user_id_and_folder_id,
+)
 
 logger = setup_logger(__name__)
 WORKFLOW_DIR = os.path.join(os.path.dirname(__file__), "..", "comfy", "workflows")
 BUCKET_NAME = "default"
 FILE_EXTENSION = ".png"
+
+async def create_image_handler(
+        url: Image.url,
+        workflow_id: Image.workflow_id,
+        user_id: Image.user_id,
+        user_folder_id: Image.user_folder_id,
+        parameters: Image.parameters,
+) -> Image:
+    """
+    Handler to create a new image record in the database.
+    """
+    try:
+        async with get_db_session() as session:
+            image = Image(
+                session=session,
+                url=url,
+                workflow_id=workflow_id,
+                user_id=user_id,
+                user_folder_id=user_folder_id,
+                parameters=parameters
+            )
+            await create_image(session, image)
+            return image
+    except Exception as e:
+        logger.error(f"Error creating image: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error") from e
+
+
+async def get_all_images_by_user_id_handler(user_id: uuid.UUID) -> list[Image]:
+    """
+    Handler to get all images for a specific user.
+    """
+    try:
+        async with get_db_session() as session:
+            images = await get_all_images_by_user_id(session, user_id)
+            return images
+    except Exception as e:
+        logger.error(f"Error retrieving images for user {user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error") from e
+
+async def get_all_images_by_user_id_and_folder_id_handler(
+    user_id: uuid.UUID, folder_id: uuid.UUID
+) -> list[Image]:
+    """
+    Handler to get all images for a specific user and folder.
+    """
+    try:
+        async with get_db_session() as session:
+            images = await get_all_images_by_user_id_and_folder_id(session, user_id, folder_id)
+            return images
+    except Exception as e:
+        logger.error(f"Error retrieving images for user {user_id} in folder {folder_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error") from e
 
 async def save_output_images_to_bucket(object_name: str, node_id: str, images: list[bytes]) -> None:
     if isinstance(images, list) and images and isinstance(images[0], bytes):
@@ -34,7 +98,8 @@ async def save_output_images_to_bucket(object_name: str, node_id: str, images: l
         raise ValueError("Output images are not valid bytes list.")
 
 async def handle_generate_image(
-    user_id: str, job_id: str, workflow_id: uuid.UUID, params: dict[str, Any]
+    user_id: uuid.UUID, folder_id: uuid.UUID, job_id: str, workflow_id: uuid.UUID, params: dict[
+            str, Any]
 ) -> Optional[dict[str, list[bytes]]]:
     logger.info(
         f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_id}"
@@ -47,7 +112,7 @@ async def handle_generate_image(
             workflow_id,
             params
         )
-        workflow_outputs = await execute_workflow(user_id, job_id, populated_workflow)
+        workflow_outputs = await execute_workflow(str(user_id), job_id, populated_workflow)
 
         if not workflow_outputs:
             logger.warning(
@@ -63,26 +128,27 @@ async def handle_generate_image(
             output_images = workflow_outputs[output_node_id]
             try:
                 await save_output_images_to_bucket(object_name, output_node_id, output_images)
-                image = Image(
-                    url=f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}",
+                url = f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}"
+                await create_image_handler(
+                    url=url,
                     workflow_id=workflow_id,
                     user_id=user_id,
-                    parameters=params,
+                    user_folder_id=folder_id,
+                    parameters=params
                 )
-                async with get_db_session() as session:
-                    session.add(image)
-                    await session.commit()
-                    await session.refresh(image)
                 logger.info(
-                    f"Image saved successfully for job {job_id}: {image.id}"
+                    f"Image created successfully for job {job_id} in node {output_node_id}."
                 )
                 return {output_node_id: output_images}
-            except ValueError:
-                logger.warning(
-                    f"Designated output node {output_node_id} for job {job_id} "
-                    f"did not contain valid image data."
+            except ValueError as e:
+                logger.error(
+                    f"Error saving output images to bucket for job {job_id} "
+                    f"in node {output_node_id}."
                 )
-
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail="Failed: Unable to save output images.",
+                ) from e
         logger.warning(
             f"Designated output node {output_node_id} not found or had no images for job {job_id}. "
             f"Searching other."

@@ -59,6 +59,29 @@ async def get_all_images_by_user_id(session: AsyncSession, user_id: UUID) -> lis
             detail=f"Error retrieving images for user {user_id}",
         ) from e
 
+async def get_all_images_by_user_id_and_folder_id(
+    session: AsyncSession, user_id: UUID, folder_id: UUID
+) -> list[Image]:
+    """Retrieves all images for a specific user and folder from the database."""
+    try:
+        statement = (
+            select(Image)
+            .where(Image.user_id == user_id)
+            .where(Image.user_folder_id == folder_id)
+        )
+        images = await session.exec(statement)
+        images = images.all()
+        return images
+    except Exception as e:
+        logger.exception("Error retrieving images for user %s in folder %s: %s",
+                         user_id, folder_id, e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving images for user {user_id} in folder {folder_id}",
+        ) from e
+
+
+
 async def get_image_by_id(session: AsyncSession, image_id: UUID) -> Optional[Image]:
     """Retrieves an image by its ID."""
     try:

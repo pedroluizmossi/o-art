@@ -7,7 +7,9 @@ from pydantic import BaseModel, Field
 
 from api.auth_api import auth
 from core.logging_core import setup_logger
-from handler.image_handler import handle_generate_image
+from handler.image_handler import (
+    handle_generate_image,
+)
 
 logger = setup_logger(__name__)
 
@@ -27,6 +29,11 @@ class GenerateImageRequest(BaseModel):
         ...,
         description="ID of the workflow to be used to generate the image.",
     )
+    folder_id: UUID | None = Field(
+        default=None,
+        description="ID of the folder to save the image in. "
+                    "If not provided, the image will not be saved.",
+    )
     parameters: dict[str, Any] = Field(
         default_factory=dict,
         description="Parameters to fill the workflow "
@@ -39,12 +46,14 @@ async def generate(
     request_data: GenerateImageRequest,
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),  # noqa: B008
 ):
-    user_id = str(access_token_info["id"])
+    user_id = access_token_info["id"]
     job_id = str(uuid4())
+    folder_id = request_data.folder_id
 
     try:
         image_data = await handle_generate_image(
             user_id=user_id,
+            folder_id=folder_id,
             job_id=job_id,
             workflow_id=request_data.workflow_id,
             params=request_data.parameters,
