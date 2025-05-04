@@ -185,12 +185,14 @@ class TestUpdateWorkflow:
 
     @pytest.mark.asyncio
     async def test_update_workflow_not_found(self, mock_session, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id',
-                   side_effect=WorkflowNotFound(sample_workflow_id)):
-            with pytest.raises(WorkflowNotFound):
-                await update_workflow(mock_session,
-                                      sample_workflow_id,
-                                      {"name": "Updated Name"})
+        with (
+            patch(
+                "service.workflow_service.get_workflow_by_id",
+                side_effect=WorkflowNotFound(sample_workflow_id),
+            ),
+            pytest.raises(WorkflowNotFound),
+        ):
+            await update_workflow(mock_session, sample_workflow_id, {"name": "Updated Name"})
 
     @pytest.mark.asyncio
     async def test_update_workflow_exception(self,
@@ -225,10 +227,14 @@ class TestDeleteWorkflow:
 
     @pytest.mark.asyncio
     async def test_delete_workflow_not_found(self, mock_session, sample_workflow_id):
-        with patch('service.workflow_service.get_workflow_by_id',
-                   side_effect=WorkflowNotFound(sample_workflow_id)):
-            with pytest.raises(WorkflowNotFound):
-                await delete_workflow(mock_session, sample_workflow_id)
+        with (
+            patch(
+                "service.workflow_service.get_workflow_by_id",
+                side_effect=WorkflowNotFound(sample_workflow_id),
+            ),
+            pytest.raises(WorkflowNotFound),
+        ):
+            await delete_workflow(mock_session, sample_workflow_id)
 
     @pytest.mark.asyncio
     async def test_delete_workflow_exception(self,

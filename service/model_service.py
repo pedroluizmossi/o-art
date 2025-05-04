@@ -64,7 +64,8 @@ async def get_model_by_id(session: AsyncSession, model_id: UUID) -> Optional[Mod
         logger.exception("Error retrieving model by ID %s: %s", model_id, e)
         raise e
 
-async def update_model(session: AsyncSession, model_id: UUID, model_update_data: dict) -> Optional[Model]:
+async def update_model(session: AsyncSession,
+                       model_id: UUID, model_update_data: dict) -> Optional[Model]:
     """Updates an existing model identified by model_id with data from model_update_data."""
     try:
         model = await get_model_by_id(session, model_id)

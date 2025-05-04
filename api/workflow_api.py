@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, Response, status
 
@@ -29,7 +28,7 @@ router_metadata = {
 }
 
 
-@router.get("/", response_model=List[Workflow])
+@router.get("/", response_model=list[Workflow])
 async def get_workflows(
 ):
     """

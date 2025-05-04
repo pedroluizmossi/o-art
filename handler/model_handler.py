@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -17,7 +17,7 @@ from service.model_service import (
 
 logger = setup_logger(__name__)
 
-async def get_all_models_handler() -> List[Model]:
+async def get_all_models_handler() -> list[Model]:
     """
     Handler to retrieve all models.
     """
@@ -25,11 +25,11 @@ async def get_all_models_handler() -> List[Model]:
         async with get_db_session() as session:
             models = await get_all_models(session)
         return models
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving models",
-        )
+        ) from e
 
 async def get_model_by_id_handler(model_id: UUID) -> Optional[Model]:
     """
@@ -40,17 +40,17 @@ async def get_model_by_id_handler(model_id: UUID) -> Optional[Model]:
         async with get_db_session() as session:
             model = await get_model_by_id(session, model_id)
         return model
-    except ModelNotFound:
+    except ModelNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Model with ID %s not found." % model_id,
-        )
+            detail=("Model with ID %s not found.", model_id),
+        ) from e
     except Exception as e:
         logger.exception("Unhandled error retrieving model %s: %s", model_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error retrieving model with ID %s" % model_id,
-        )
+            detail=("Error retrieving model with ID %s", model_id),
+        ) from e
 
 async def create_model_handler(model_data: ModelCreate) -> Model:
     """
@@ -61,17 +61,19 @@ async def create_model_handler(model_data: ModelCreate) -> Model:
             model = await create_model(session, model_data)
         return model
     except ValueError as e:
-        logger.exception("Validation error creating model %s: %s", getattr(model_data, "name", ""), e)
+        logger.exception("Validation error creating model %s: %s",
+                         getattr(model_data, "name", ""), e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Validation error: %s" % str(e),
-        )
+            detail=("Validation error: %s", str(e)),
+        ) from e
     except Exception as e:
-        logger.exception("Error creating model %s: %s", getattr(model_data, "name", ""), e)
+        logger.exception("Error creating model %s: %s",
+                         getattr(model_data, "name", ""), e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating model",
-        )
+        ) from e
 
 async def update_model_handler(model_id: UUID, model_update_data: ModelUpdate) -> Optional[Model]:
     """
@@ -82,23 +84,23 @@ async def update_model_handler(model_id: UUID, model_update_data: ModelUpdate) -
         async with get_db_session() as session:
             model = await update_model(session, model_id, model_update_data)
         return model
-    except ModelNotFound:
+    except ModelNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Model with ID %s not found." % model_id,
-        )
+            detail=("Model with ID %s not found.", model_id),
+        ) from e
     except ValueError as e:
         logger.exception("Validation error updating model %s: %s", model_id, e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Validation error: %s" % str(e),
-        )
+            detail=("Validation error: %s", str(e)),
+        ) from e
     except Exception as e:
         logger.exception("Error updating model %s: %s", model_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error updating model",
-        )
+        ) from e
 
 async def delete_model_handler(model_id: UUID) -> None:
     """
@@ -107,14 +109,14 @@ async def delete_model_handler(model_id: UUID) -> None:
     try:
         async with get_db_session() as session:
             await delete_model(session, model_id)
-    except ModelNotFound:
+    except ModelNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Model with ID %s not found." % model_id,
-        )
+            detail=("Model with ID %s not found.", model_id),
+        ) from e
     except Exception as e:
         logger.exception("Error deleting model %s: %s", model_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error deleting model",
-        )
+        ) from e

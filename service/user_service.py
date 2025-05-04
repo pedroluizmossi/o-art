@@ -50,7 +50,8 @@ async def get_user_by_id(session: AsyncSession, user_id: UUID) -> Optional[User]
         raise e
 
 
-async def update_user(session: AsyncSession, user_id: UUID, user_update_data: dict) -> Optional[User]:
+async def update_user(session: AsyncSession,
+                      user_id: UUID, user_update_data: dict) -> Optional[User]:
     """Updates an existing user identified by user_id with data from user_update_data."""
     try:
         user = await get_user_by_id(session, user_id)

@@ -28,11 +28,11 @@ async def get_all_workflows_handler() -> list[Workflow]:
         async with get_db_session() as session:
             workflows = await get_all_workflows(session)
         return workflows
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving workflows",
-        )
+        ) from e
 
 async def get_workflow_by_id_handler(workflow_id: UUID) -> Optional[Workflow]:
     """
@@ -43,17 +43,17 @@ async def get_workflow_by_id_handler(workflow_id: UUID) -> Optional[Workflow]:
         async with get_db_session() as session:
             workflow = await get_workflow_by_id(session, workflow_id)
         return workflow
-    except WorkflowNotFound:
+    except WorkflowNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Workflow with ID %s not found." % workflow_id,
-        )
+            detail=("Workflow with ID %s not found.", workflow_id),
+        ) from e
     except Exception as e:
         logger.exception("Unhandled error retrieving workflow %s: %s", workflow_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error retrieving workflow with ID %s" % workflow_id,
-        )
+            detail=("Error retrieving workflow with ID %s", workflow_id),
+        ) from e
 
 
 async def create_workflow_handler(workflow_data: WorkflowCreate) -> Workflow:
@@ -65,13 +65,16 @@ async def create_workflow_handler(workflow_data: WorkflowCreate) -> Workflow:
             workflow = await create_workflow(session, workflow_data)
         return workflow
     except Exception as e:
-        logger.exception("Unhandled error creating workflow %s: %s", getattr(workflow_data, "name", ""), e)
+        logger.exception("Unhandled error creating workflow %s: %s",
+                         getattr(workflow_data, "name", ""), e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating workflow",
-        )
+        ) from e
 
-async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data: WorkflowUpdate) -> Optional[Workflow]:
+async def update_workflow_handler(
+        workflow_id: Workflow.id,
+        workflow_update_data: WorkflowUpdate) -> Optional[Workflow]:
     """
     Handler to update a workflow by its ID.
     """
@@ -80,23 +83,23 @@ async def update_workflow_handler(workflow_id: Workflow.id, workflow_update_data
         async with get_db_session() as session:
             workflow = await update_workflow(session, workflow_id, workflow_update_data)
         return workflow
-    except WorkflowNotFound:
+    except WorkflowNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Workflow with ID {workflow_id} not found.",
-        )
+        ) from e
     except ValueError as ve:
         logger.error("Validation error updating workflow %s: %s", workflow_id, ve)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Validation error: {ve}",
-        )
+        ) from ve
     except Exception as e:
         logger.exception("Unhandled error updating workflow %s: %s", workflow_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error updating workflow",
-        )
+        ) from e
 
 async def delete_workflow_handler(workflow_id: Workflow.id) -> None:
     """
@@ -105,17 +108,17 @@ async def delete_workflow_handler(workflow_id: Workflow.id) -> None:
     try:
         async with get_db_session() as session:
             await delete_workflow(session, workflow_id)
-    except WorkflowNotFound:
+    except WorkflowNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Workflow with ID {workflow_id} not found.",
-        )
+        ) from e
     except Exception as e:
         logger.exception("Unhandled error deleting workflow %s: %s", workflow_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error deleting workflow",
-        )
+        ) from e
 
 def replace_placeholders(obj, workflow_params, params):
     """Função recursiva para substituir placeholders em qualquer estrutura."""
@@ -161,7 +164,9 @@ def validate_workflow_params(workflow_params: dict, user_params: dict):
 
 
 
-async def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str, Any]) -> (dict[str, Any], str):
+async def load_and_populate_workflow(
+        workflow_id: Workflow.id,
+        params: dict[str, Any]) -> (dict[str, Any], str):
     """
     Load a workflow from the database and populate it with parameters.
     :param workflow_id:
@@ -201,7 +206,8 @@ async def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str,
                 )
             else:
                 logger.warning(
-                    "Multiple nodes tagged with '{{output_node_id}}' found in workflow '%s'. Using the first one: %s",
+                    "Multiple nodes tagged with '{{output_node_id}}' "
+                    "found in workflow '%s'. Using the first one: %s",
                     workflow_id,
                     output_node_id,
                 )
@@ -210,7 +216,8 @@ async def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str,
 
     if not output_node_id:
         logger.warning(
-            "No node explicitly marked with '{{output_node_id}}' in workflow '%s'. Will look for SaveImage nodes.",
+            "No node explicitly marked with '{{output_node_id}}' "
+            "in workflow '%s'. Will look for SaveImage nodes.",
             workflow_id,
         )
         if save_image_nodes:
@@ -218,11 +225,13 @@ async def load_and_populate_workflow(workflow_id: Workflow.id, params: dict[str,
             logger.info("Using first SaveImage node as output: Node %s", output_node_id)
         else:
             logger.error(
-                "No '{{output_node_id}}' placeholder and no SaveImage nodes found in workflow '%s'. Cannot determine output.",
+                "No '{{output_node_id}}' placeholder and no "
+                "SaveImage nodes found in workflow '%s'. Cannot determine output.",
                 workflow_id,
             )
             raise ValueError(
-                f"Workflow '{workflow_id}' does not define an output node ('{{output_node_id}}' or SaveImage type)."
+                f"Workflow '{workflow_id}' does not define an output node ('{{output_node_id}}'"
+                f" or SaveImage type)."
             )
 
     return populated_workflow_dict, output_node_id

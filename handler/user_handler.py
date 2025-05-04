@@ -61,7 +61,8 @@ async def handle_user_webhook(payload: dict, session: AsyncSession):
                 logger.info(f"User update handled via service: {updated_user.id}")
             else:
                 logger.info(
-                    f"User update handled via service for {user_id}, but user not found or no changes."
+                    f"User update handled via service for {user_id}, "
+                    f"but user not found or no changes."
                 )
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -111,7 +112,7 @@ async def get_user_by_id_handler(user_id: UUID) -> User:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error retrieving user.",
-        )
+        ) from e
 
 async def get_all_users_handler() -> list[User]:
     """
@@ -126,7 +127,7 @@ async def get_all_users_handler() -> list[User]:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error retrieving all users.",
-        )
+        ) from e
 
 def construct_user_model_data(user: dict) -> User:
     user_id = UUID(user["id"])
@@ -172,14 +173,16 @@ async def create_user_handler(user_data: User) -> User:
             user = await create_user(session, user_data)
         return user
     except ValueError as e:
-        logger.exception("Validation error creating user %s: %s", getattr(user_data, "email", ""), e)
+        logger.exception("Validation error creating user %s: %s",
+                         getattr(user_data, "email", ""), e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Validation error: %s" % str(e),
-        )
+            detail=("Validation error: %s", str(e)),
+        ) from e
     except Exception as e:
-        logger.exception("Error creating user %s: %s", getattr(user_data, "email", ""), e)
+        logger.exception("Error creating user %s: %s",
+                         getattr(user_data, "email", ""), e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating user",
-        )
+        ) from e

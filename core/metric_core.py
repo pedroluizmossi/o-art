@@ -24,7 +24,8 @@ class InfluxDBWriter:
 
             if not all([self.token, self.org, self.url, self.bucket]):
                 logger.error(
-                    "Missing one or more InfluxDB environment variables (TOKEN, ORG, URL, BUCKET). Metrics will be disabled."
+                    "Missing one or more InfluxDB environment variables "
+                    "(TOKEN, ORG, URL, BUCKET). Metrics will be disabled."
                 )
                 self.enabled = False
             else:
@@ -74,10 +75,12 @@ class InfluxDBWriter:
                         # allows processing other fields if desired.
                         # If strict type checking is required, raise ValueError here.
                         logger.warning(
-                            f"Unsupported field type for key '{field_key}': {type(field_value)}. Skipping field."
+                            f"Unsupported field type for key '{field_key}': {type(field_value)}. "
+                            f"Skipping field."
                         )
                         # Or raise ValueError:
-                        # raise ValueError(f"Field type for '{field_key}' is not supported: {type(field_value)}")
+                        # raise ValueError(f"Field type for '{field_key}' is not supported:
+                        # {type(field_value)}")
 
                 # Set timestamp with nanosecond precision
                 point = point.time(time.time_ns(), WritePrecision.NS)
@@ -85,7 +88,8 @@ class InfluxDBWriter:
                 # Write the point to InfluxDB
                 write_api.write(bucket=self.bucket, record=point)
                 logger.debug(
-                    f"Successfully wrote point to measurement '{measurement}' in bucket '{self.bucket}'."
+                    f"Successfully wrote point to measurement '{measurement}' "
+                    f"in bucket '{self.bucket}'."
                 )
 
         except ValueError as ve:  # Catch specific ValueError from field type check if raised

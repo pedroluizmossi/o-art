@@ -265,13 +265,13 @@ def test_download_file_success():
     file_path = "test-path"
 
     mock_minio_client = MagicMock()
-    with patch("core.minio_core.minio_client", mock_minio_client):
-        with patch("core.minio_core.logger.info") as mock_logger:
-            download_file_from_bucket(bucket_name, object_name, file_path)
-            mock_minio_client.fget_object.assert_called_once_with(bucket_name,
-                                                                  object_name, file_path)
-            mock_logger.assert_called_once_with(f"File {file_path} "
-                                                f"downloaded from bucket {bucket_name}.")
+    with patch("core.minio_core.minio_client", mock_minio_client), \
+         patch("core.minio_core.logger.info") as mock_logger:
+        download_file_from_bucket(bucket_name, object_name, file_path)
+        mock_minio_client.fget_object.assert_called_once_with(bucket_name, object_name, file_path)
+        mock_logger.assert_called_once_with(f"File {file_path} "
+                                            f"downloaded from bucket {bucket_name}.")
+
 
 
 def test_download_file_s3_error():
@@ -289,9 +289,9 @@ def test_download_file_s3_error():
         "response"
     )
 
-    with patch("core.minio_core.minio_client", mock_minio_client):
-        with patch("core.minio_core.logger.error") as mock_logger:
-            with pytest.raises(S3Error):
-                download_file_from_bucket(bucket_name, object_name, file_path)
-            mock_logger.assert_called_once()
-            assert "Error downloading file:" in mock_logger.call_args[0][0]
+    with patch("core.minio_core.minio_client", mock_minio_client), \
+         patch("core.minio_core.logger.error") as mock_logger, \
+         pytest.raises(S3Error):
+        download_file_from_bucket(bucket_name, object_name, file_path)
+        mock_logger.assert_called_once()
+        assert "Error downloading file:" in mock_logger.call_args[0][0]

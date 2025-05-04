@@ -29,7 +29,7 @@ async def create_image(session: AsyncSession, image_data: Image) -> Image:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating image",
-        )
+        ) from e
 
 async def get_all_images(session: AsyncSession) -> list[Image]:
     """Retrieves all images from the database."""
@@ -43,7 +43,7 @@ async def get_all_images(session: AsyncSession) -> list[Image]:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving all images",
-        )
+        ) from e
 
 async def get_all_images_by_user_id(session: AsyncSession, user_id: UUID) -> list[Image]:
     """Retrieves all images for a specific user from the database."""
@@ -57,7 +57,7 @@ async def get_all_images_by_user_id(session: AsyncSession, user_id: UUID) -> lis
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving images for user {user_id}",
-        )
+        ) from e
 
 async def get_image_by_id(session: AsyncSession, image_id: UUID) -> Optional[Image]:
     """Retrieves an image by its ID."""
@@ -71,4 +71,4 @@ async def get_image_by_id(session: AsyncSession, image_id: UUID) -> Optional[Ima
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving image with ID {image_id}",
-        )
+        ) from e

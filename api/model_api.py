@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, Response, status
 
@@ -28,7 +27,7 @@ router_metadata = {
     "description": "API for managing models.",
 }
 
-@router.get("/", response_model=List[Model])
+@router.get("/", response_model=list[Model])
 async def get_models(
 ):
     """

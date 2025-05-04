@@ -30,7 +30,7 @@ async def get_all_plans_handler() -> list[Plan]:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving plans",
-        )
+        ) from e
 
 async def get_plan_by_id_handler(plan_id: UUID) -> Optional[Plan]:
     """
@@ -41,17 +41,17 @@ async def get_plan_by_id_handler(plan_id: UUID) -> Optional[Plan]:
         async with get_db_session() as session:
             plan = await get_plan_by_id(session, plan_id)
         return plan
-    except PlanNotFound:
+    except PlanNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Plan with ID %s not found." % plan_id,
-        )
+            detail=("Plan with ID %s not found.", plan_id),
+        ) from e
     except Exception as e:
         logger.exception("Unhandled error retrieving plan %s: %s", plan_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error retrieving plan with ID %s" % plan_id,
-        )
+            detail=("Error retrieving plan with ID %s", plan_id),
+        ) from e
 
 async def create_plan_handler(plan_data: PlanCreate) -> Plan:
     """
@@ -65,14 +65,14 @@ async def create_plan_handler(plan_data: PlanCreate) -> Plan:
         logger.exception("Validation error creating plan %s: %s", getattr(plan_data, "name", ""), e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Validation error: %s" % str(e),
-        )
+            detail=("Validation error: %s", str(e)),
+        ) from e
     except Exception as e:
         logger.exception("Error creating plan %s: %s", getattr(plan_data, "name", ""), e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error creating plan",
-        )
+        ) from e
 
 async def update_plan_handler(plan_id: UUID, plan_update_data: PlanUpdate) -> Optional[Plan]:
     """
@@ -83,23 +83,23 @@ async def update_plan_handler(plan_id: UUID, plan_update_data: PlanUpdate) -> Op
         async with get_db_session() as session:
             plan = await update_plan(session, plan_id, plan_update_data)
         return plan
-    except PlanNotFound:
+    except PlanNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Plan with ID %s not found." % plan_id,
-        )
+            detail=("Plan with ID %s not found.", plan_id),
+        ) from e
     except ValueError as e:
         logger.exception("Validation error updating plan %s: %s", plan_id, e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Validation error: %s" % str(e),
-        )
+            detail=("Validation error: %s", str(e)),
+        ) from e
     except Exception as e:
         logger.exception("Error updating plan %s: %s", plan_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error updating plan",
-        )
+        ) from e
 
 async def delete_plan_handler(plan_id: UUID) -> None:
     """
@@ -108,14 +108,14 @@ async def delete_plan_handler(plan_id: UUID) -> None:
     try:
         async with get_db_session() as session:
             await delete_plan(session, plan_id)
-    except PlanNotFound:
+    except PlanNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Plan with ID %s not found." % plan_id,
-        )
+            detail=("Plan with ID %s not found.", plan_id),
+        ) from e
     except Exception as e:
         logger.exception("Error deleting plan %s: %s", plan_id, e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error deleting plan",
-        )
+        ) from e

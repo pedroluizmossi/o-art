@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel
@@ -56,5 +56,5 @@ class WorkflowUpdate(BaseModel):
     model_id: Optional[UUID] = None
     workflow_type: Optional[WorkflowType] = None
     workflow_segment: Optional[WorkflowSegment] = None
-    workflow_json: Optional[Dict] = None
-    parameters: Optional[Dict] = None
+    workflow_json: Optional[dict] = None
+    parameters: Optional[dict] = None
