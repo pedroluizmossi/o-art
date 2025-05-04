@@ -14,6 +14,7 @@ from handler.workflow_handler import load_and_populate_workflow
 from model.image_model import Image
 from service.image_service import (
     create_image,
+    delete_image,
     get_all_images_by_user_id,
     get_all_images_by_user_id_and_folder_id,
 )
@@ -78,6 +79,19 @@ async def get_all_images_by_user_id_and_folder_id_handler(
             return images
     except Exception as e:
         logger.error(f"Error retrieving images for user {user_id} in folder {folder_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error") from e
+
+async def delete_image_handler(image_id: uuid.UUID) -> None:
+    """
+    Handler to delete an image by its ID.
+    """
+    try:
+        async with get_db_session() as session:
+            await delete_image(session, image_id)
+    except Exception as e:
+        logger.error(f"Error deleting image {image_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error") from e

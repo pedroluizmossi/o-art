@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Add user folder management support&#10;&#10;Implemented the `UserFolder` model, related service, and handler layers to enable folder management functionality. Introduced CRUD operations for user folders, updated relevant models, and ensured logging and exception handling for robust error tracing and debugging.">
-      <change afterPath="$PROJECT_DIR$/api/user_image_api.py" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Add user image management functionality&#10;&#10;Introduced endpoints, handlers, and services for managing user images, including retrieval by user and folder. Improved workflow to associate images with folders during generation and enhanced exception handling and logging for robust error tracing.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/image_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/user_image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/user_image_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/auth_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/auth_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handler/image_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/image_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service/image_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/image_service.py" afterDir="false" />
@@ -335,7 +335,7 @@
       <workItem from="1745763403361" duration="31872000" />
       <workItem from="1745807060967" duration="50000" />
       <workItem from="1745807121625" duration="3414000" />
-      <workItem from="1746324459604" duration="13482000" />
+      <workItem from="1746324459604" duration="16316000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -697,7 +697,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746372577748</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Add user image management functionality&#10;&#10;Introduced endpoints, handlers, and services for managing user images, including retrieval by user and folder. Improved workflow to associate images with folders during generation and enhanced exception handling and logging for robust error tracing.">
+      <option name="closed" value="true" />
+      <created>1746376822225</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1746376822225</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -715,7 +723,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor imports across modules for consistency&#10;&#10;Reorganized imports to align with PEP 8 guidelines by grouping standard library, third-party, and local module imports. Addressed unused or redundant imports, ensuring improved readability and maintainability." />
     <MESSAGE value="&quot;Refactor logging and formatting across multiple modules.&#10;&#10;Standardized logging by replacing f-strings with parameterized log messages for improved performance and consistency. Improved code readability by fixing formatting issues, including line breaks, indentation, and redundant logic. Updated configurations to enhance maintainability and enforced better logging practices.&quot;" />
     <MESSAGE value="Use modern `dict` type hints across the codebase&#10;&#10;Replaced `Dict` type hints with modern `dict` syntax for improved consistency and readability. This change aligns with Python 3.9+ typing conventions and simplifies type annotations throughout the project. Updated multiple files to adhere to this standard." />
     <MESSAGE value="Fix dependency function calls by removing redundant parentheses&#10;&#10;Removed unnecessary parentheses from `Depends(auth.authenticated)` in `image_api.py` and `auth_api.py`. This fixes potential issues with function injection and aligns with FastAPI's expected usage." />
@@ -740,7 +747,8 @@
     <MESSAGE value="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules." />
     <MESSAGE value="Refactor for Python 3.9+ compatibility and improved error logging&#10;&#10;Updated type hints to Python 3.9+ style, replaced `Dict` and `List` with native types, and added exception chaining (`from e`) for better error traceability. Standardized logging messages and improved format consistency across modules. These changes enhance code readability, debugging, and alignment with modern Python practices." />
     <MESSAGE value="Add user folder management support&#10;&#10;Implemented the `UserFolder` model, related service, and handler layers to enable folder management functionality. Introduced CRUD operations for user folders, updated relevant models, and ensured logging and exception handling for robust error tracing and debugging." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add user folder management support&#10;&#10;Implemented the `UserFolder` model, related service, and handler layers to enable folder management functionality. Introduced CRUD operations for user folders, updated relevant models, and ensured logging and exception handling for robust error tracing and debugging." />
+    <MESSAGE value="Add user image management functionality&#10;&#10;Introduced endpoints, handlers, and services for managing user images, including retrieval by user and folder. Improved workflow to associate images with folders during generation and enhanced exception handling and logging for robust error tracing." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add user image management functionality&#10;&#10;Introduced endpoints, handlers, and services for managing user images, including retrieval by user and folder. Improved workflow to associate images with folders during generation and enhanced exception handling and logging for robust error tracing." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -817,7 +825,7 @@
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1746376093803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1746379315807" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core_test_download_file_s3_error.coverage" NAME="pytest for test_minio_core.test_download_file_s3_error Coverage Results" MODIFIED="1745805164120" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_workflow_service.coverage" NAME="pytest for test_workflow_service Coverage Results" MODIFIED="1745806340413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />

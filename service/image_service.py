@@ -95,3 +95,26 @@ async def get_image_by_id(session: AsyncSession, image_id: UUID) -> Optional[Ima
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving image with ID {image_id}",
         ) from e
+
+async def delete_image(session: AsyncSession, image_id: UUID) -> bool:
+    """Deletes an image by its ID."""
+    try:
+        image = await get_image_by_id(session, image_id)
+        if image is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Image with ID {image_id} not found",
+            )
+        await session.delete(image)
+        await session.commit()
+        logger.info("Image deleted successfully: %s", image_id)
+        return True
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        await session.rollback()
+        logger.exception("Error deleting image %s: %s", image_id, e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error deleting image with ID {image_id}",
+        ) from e
