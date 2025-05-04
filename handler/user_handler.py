@@ -8,6 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from core.db_core import get_db_session
 from core.fief_core import FiefHttpClient
 from core.logging_core import setup_logger
+from handler.user_folder_handler import create_user_folder_handler
 from model.enum.fief_type_webhook import FiefTypeWebhook
 from model.user_model import User
 from service.user_service import (
@@ -21,6 +22,41 @@ from service.user_service import (
 logger = setup_logger(__name__)
 
 MISSING_USER_ID_ERROR = "Webhook payload missing user ID in 'data'."
+
+async def create_user_handler(user_data: User) -> User:
+    """
+    Handler to create a new user.
+    """
+    try:
+        async with get_db_session() as session:
+            try:
+                user = await create_user(session, user_data)
+                await create_user_folder_handler(
+                    user_id=user.id,
+                    name="Default",
+                )
+                return user
+            except Exception as e:
+                await session.rollback()
+                logger.error(f"Error creating user: {e}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal Server Error") from e
+
+    except ValueError as e:
+        logger.exception("Validation error creating user %s: %s",
+                         getattr(user_data, "email", ""), e)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=("Validation error: %s", str(e)),
+        ) from e
+    except Exception as e:
+        logger.exception("Error creating user %s: %s",
+                         getattr(user_data, "email", ""), e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating user",
+        ) from e
 
 async def handle_user_webhook(payload: dict, session: AsyncSession):
     """
@@ -50,9 +86,11 @@ async def handle_user_webhook(payload: dict, session: AsyncSession):
         user_model_data = {k: v for k, v in user_model_data.items() if v is not None}
 
         if webhook_type == FiefTypeWebhook.USER_CREATED.value:
-            user = User(**user_model_data)
-            created_user = await create_user(session, user)
-            logger.info(f"User creation handled via service: {created_user.id}")
+            user = await create_user_handler(user_model_data)
+            if user:
+                logger.info(f"User creation handled via service: {user.id}")
+            else:
+                logger.info(f"User creation handled via service for {user_id}, but user not found.")
             return Response(status_code=status.HTTP_204_NO_CONTENT)
 
         elif webhook_type == FiefTypeWebhook.USER_UPDATED.value:
@@ -162,27 +200,3 @@ async def sync_users_handler() -> None:
     except Exception as e:
         logger.error(f"An error occurred while syncing users: {str(e)}")
         raise
-
-
-async def create_user_handler(user_data: User) -> User:
-    """
-    Handler to create a new user.
-    """
-    try:
-        async with get_db_session() as session:
-            user = await create_user(session, user_data)
-        return user
-    except ValueError as e:
-        logger.exception("Validation error creating user %s: %s",
-                         getattr(user_data, "email", ""), e)
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=("Validation error: %s", str(e)),
-        ) from e
-    except Exception as e:
-        logger.exception("Error creating user %s: %s",
-                         getattr(user_data, "email", ""), e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating user",
-        ) from e
