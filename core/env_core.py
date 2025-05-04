@@ -17,7 +17,7 @@ def get_env_variable(var_name: str, default_value: str = None) -> str:
     """
     value = os.getenv(var_name, default_value)
     if value is None and default_value is None:
-        pass
+        raise ValueError(f"Environment variable {var_name} is required.")
     return value
 
 
@@ -31,6 +31,8 @@ class Envs:
     FIEF_CLIENT_ID = "FIEF_CLIENT_ID" # nosec B105
     FIEF_CLIENT_SECRET = "FIEF_CLIENT_SECRET" # nosec B105
     FIEF_USER_WEBHOOK_SECRET = "FIEF_USER_WEBHOOK_SECRET" # nosec B105
+    FIEF_API_URL = "FIEF_API_URL" # nosec B105
+    FIEF_API_USER_TOKEN = "FIEF_API_USER_TOKEN" # nosec B105
 
     # Database
     POSTGRES_URL = "POSTGRES_URL" # nosec B105

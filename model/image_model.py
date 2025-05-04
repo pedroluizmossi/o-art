@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from sqlalchemy import Enum as SqlEnum
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -16,8 +15,10 @@ class Image(SQLModel, table=True):
     user_id: UUID = Field(foreign_key="users.id", nullable=False)
     parameters: Optional[dict] = Field(default=None, sa_column=Column(JSONB))
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), sa_column=Column(DateTime(timezone=True))
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True))
     )
     updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), sa_column=Column(DateTime(timezone=True))
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True))
     )

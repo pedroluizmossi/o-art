@@ -4,29 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Migrate to async SQLAlchemy sessions and improve database handling.&#10;&#10;Replaced synchronous `Session` with `AsyncSession` throughout the codebase to enable non-blocking database operations. Updated function signatures, adjusted workflow, user, and image models for consistent datetime handling, and refactored services for better async support. Improved error handling and logging for critical operations.">
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules.">
+      <change beforePath="$PROJECT_DIR$/.idea/ruff.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ruff.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/workflow_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/workflow_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/workflow_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/workflow_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/workflow_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/workflow_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/workflow_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/auth_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/auth_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/image_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/image_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/model_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/model_api.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="0" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="FastAPI main" />
         <option value="FastAPI test_main" />
-        <option value="Python Script" />
         <option value="SQL File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -60,43 +68,68 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Docker.docker-compose.yaml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;FastAPI.art.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_user_handler.py.executor&quot;: &quot;Coverage&quot;,
-    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for test_user_handler.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Worker.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/pedro/PycharmProjects/o-art/service&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Docker.docker-compose.yaml: Compose Deployment.executor": "Run",
+    "FastAPI.art.executor": "Run",
+    "Python tests.Python tests for test_config_core.test_load_config_file_invalid_format.executor": "Run",
+    "Python tests.Python tests for test_metric_core.test_influxdbwriter_write_data_success.executor": "Run",
+    "Python tests.Python tests for test_minio_core.test_create_default_bucket_s3_error.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor": "Run",
+    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor": "Run",
+    "Python tests.Python tests in test_celery_core.py.executor": "Run",
+    "Python tests.Python tests in test_config_core.py.executor": "Run",
+    "Python tests.Python tests in test_db_core.py (1).executor": "Run",
+    "Python tests.Python tests in test_db_core.py.executor": "Run",
+    "Python tests.Python tests in test_env_core.py.executor": "Coverage",
+    "Python tests.Python tests in test_metric_core.py.executor": "Run",
+    "Python tests.Python tests in test_minio_core.py.executor": "Run",
+    "Python tests.Python tests in test_security_util.py.executor": "Run",
+    "Python tests.Python tests in test_user_handler.py.executor": "Coverage",
+    "Python tests.Python tests in test_user_service.py.executor": "Run",
+    "Python tests.Python tests in test_workflow_service.py.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for test_config_core.executor": "Run",
+    "Python tests.pytest for test_db_core.executor": "Run",
+    "Python tests.pytest for test_metric_core.executor": "Run",
+    "Python tests.pytest for test_minio_core.executor": "Run",
+    "Python tests.pytest for test_minio_core.test_download_file_s3_error.executor": "Run",
+    "Python tests.pytest for test_user_handler.executor": "Run",
+    "Python tests.pytest for test_user_service.executor": "Run",
+    "Python tests.pytest for test_workflow_service.executor": "Run",
+    "Python.Worker.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "feature/0.0.1",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/pedro/PycharmProjects/o-art/tests/core",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "aDefault",
+    "settings.editor.selected.configurable": "com.koxudaxi.ruff.RuffConfigurable",
+    "settings.editor.splitter.proportion": "0.28409094",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/service" />
       <recent name="$PROJECT_DIR$/handler" />
-      <recent name="$PROJECT_DIR$/api" />
+      <recent name="$PROJECT_DIR$/service" />
       <recent name="$PROJECT_DIR$/resources/postgres" />
-      <recent name="$PROJECT_DIR$/model" />
+      <recent name="$PROJECT_DIR$/model/map" />
+      <recent name="$PROJECT_DIR$/model/enum" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests/core" />
+      <recent name="$PROJECT_DIR$/tests/utils" />
+      <recent name="$PROJECT_DIR$/model/map" />
       <recent name="C:\Users\pedro\PycharmProjects\art\core" />
       <recent name="C:\Users\pedro\PycharmProjects\art\api" />
     </key>
@@ -149,7 +182,7 @@
       </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_user_handler.test_handle_user_webhook_unknown_type" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests in test_db_core.py (1)" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="art" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -161,23 +194,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_user_handler.test_handle_user_webhook_unknown_type&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_db_core.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_user_handler.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests in test_db_core.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="art" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/core" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_user_handler.py&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/core/test_db_core.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
@@ -197,13 +230,13 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for test_user_handler" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for test_db_core" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="art" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/Scripts/python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/core" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -211,7 +244,25 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_user_handler&quot;" />
+      <option name="_new_target" value="&quot;test_db_core&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_user_service" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="art" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/service" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_user_service&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -219,18 +270,19 @@
       <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
       <item itemvalue="FastAPI.art" />
       <item itemvalue="Python.Worker" />
-      <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
-      <item itemvalue="Python tests.Python tests in test_user_handler.py" />
+      <item itemvalue="Python tests.Python tests in test_db_core.py (1)" />
+      <item itemvalue="Python tests.Python tests in test_db_core.py" />
       <item itemvalue="Python tests.Python tests in tests" />
-      <item itemvalue="Python tests.pytest for test_user_handler" />
+      <item itemvalue="Python tests.pytest for test_db_core" />
+      <item itemvalue="Python tests.pytest for test_user_service" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
-        <item itemvalue="Python tests.pytest for test_user_handler" />
         <item itemvalue="Python tests.Python tests in tests" />
-        <item itemvalue="Python tests.Python tests in test_user_handler.py" />
-        <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
+        <item itemvalue="Python tests.pytest for test_user_service" />
+        <item itemvalue="Python tests.pytest for test_db_core" />
+        <item itemvalue="Python tests.Python tests in test_db_core.py" />
       </list>
     </recent_temporary>
   </component>
@@ -288,6 +340,10 @@
       <workItem from="1745466863879" duration="279000" />
       <workItem from="1745699516225" duration="40000" />
       <workItem from="1745699570083" duration="16264000" />
+      <workItem from="1745730172926" duration="3981000" />
+      <workItem from="1745763403361" duration="31872000" />
+      <workItem from="1745807060967" duration="50000" />
+      <workItem from="1745807121625" duration="3414000" />
     </task>
     <task id="LOCAL-00001" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Implemented a FastAPI app with an endpoint to generate images using a custom queue-based processing system. Added supporting files including `docker-compose.yaml` for infrastructure (Postgres, Redis, MinIO), a configuration file, and example HTTP tests. Initial project structure and dependencies were established, alongside IDE-specific configurations.">
       <option name="closed" value="true" />
@@ -561,7 +617,79 @@
       <option name="project" value="LOCAL" />
       <updated>1745714585743</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Update workflow API to support partial updates with patch.&#10;&#10;Replaced `WorkflowCreate` with `WorkflowUpdate` for update operations, allowing partial updates of workflows. Adjusted the API route to use `PATCH` and updated the handler to accommodate the new model. Refactored related components to ensure compatibility with optional fields and unset values.">
+      <option name="closed" value="true" />
+      <created>1745730370005</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1745730370005</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling.">
+      <option name="closed" value="true" />
+      <created>1745733287139</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1745733287139</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Add plan management system with model and API integration&#10;&#10;Introduced a new &quot;Plan&quot; model and API to manage subscription plans and their parameters. Added support for mapping model, workflow type, and workflow segment parameters, with validation for each. Updated the core application and various models to integrate the plan system, ensuring compatibility with existing components. Removed redundant server validation checks in `comfy_core`.">
+      <option name="closed" value="true" />
+      <created>1745781491425</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1745781491425</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Add user sync and Fief API client integration  &#10;&#10;Introduced user synchronization from Fief API with the new `FiefHttpClient`. Added handlers for retrieving, syncing, and creating users, along with support for initial data setup. Refactored code to decouple user and database logic, enhancing modularity and maintainability.">
+      <option name="closed" value="true" />
+      <created>1745798964524</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1745798964524</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Add plan management system with seeding and CRUD services&#10;&#10;Introduced a `Plan` management system for handling subscription plans, including model updates, CRUD operations, and JSON-based seeding. Added the `plan_service.py` for plan-related logic and integrated the `plans.json` file for initializing data. Updated initial data handling to include plan seeding and ensured compatibility with existing workflows.">
+      <option name="closed" value="true" />
+      <created>1745801848228</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1745801848228</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints.">
+      <option name="closed" value="true" />
+      <created>1745803918540</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1745803918540</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging.">
+      <option name="closed" value="true" />
+      <created>1745807266556</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1745807266556</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable.">
+      <option name="closed" value="true" />
+      <created>1745808537048</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1745808537048</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules.">
+      <option name="closed" value="true" />
+      <created>1745809783639</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1745809783639</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -579,15 +707,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor user and ComfyUI handlers to improve modularity and error handling&#10;&#10;Revised user management to utilize service layer for create, update, and delete operations. Enhanced error handling and logging in ComfyUI workflows and improved maintainability by refactoring shared components. Applied input validations and adjusted datetime handling for consistency across the codebase." />
-    <MESSAGE value="&quot;Refactor logging and add log cleanup logic&quot;&#10;&#10;Revised logging setup to support configuration-driven parameters and improve modularity. Added a log cleanup mechanism to manage log file retention based on configurable limits. Enhanced error handling in logging and log cleanup functions for better reliability and maintainability." />
-    <MESSAGE value="Add .pylintrc configuration file to disable specific checks&#10;&#10;This configuration disables docstring and naming checks to streamline linting for the current codebase. It also sets a minimum score threshold of 8.0 and outputs results in JSON format." />
-    <MESSAGE value="Refactor user webhook handling and improve workflow execution.&#10;&#10;Refactored user webhook processing for better readability and fixed inconsistent logging. Adjusted workflow execution functions in `comfy_core` to enhance error handling, add missing validations, and clean up logging statements. Removed duplicated logic and addressed minor formatting issues across files." />
-    <MESSAGE value="Standardize formatting and fix indentations in codebase&#10;&#10;Improved code readability by standardizing formatting, fixing inconsistent indentations, and removing unnecessary imports. These changes ensure better code style adherence and maintainability without altering functionality." />
-    <MESSAGE value="Simplify logging statements and remove unused code.&#10;&#10;Replaced formatted string literals with standardized logging placeholders across the codebase to improve consistency and clarity in log messages. Additionally, removed the unused `cleanup_old_logs` function from `logging_core.py` to reduce dead code." />
-    <MESSAGE value="    Update .pylintrc to include import-error in ignored rules&#10;&#10;    Added import-error to the list of ignored pylint rules to prevent unnecessary warnings related to imports. This ensures smoother linting for cases where imports may fail due to environment-specific configurations." />
-    <MESSAGE value="Refactor logging and add log cleanup utility.&#10;&#10;Replaced f-strings in logging calls with parameterized log messages for consistency and efficiency. Added a `cleanup_old_logs` function to manage log file retention, ensuring only the most recent logs are retained." />
-    <MESSAGE value="Use placeholders in log messages to enhance consistency&#10;&#10;Replaced f-strings with placeholder-based logging across the codebase to improve performance and ensure consistency. This approach defers string formatting until log messages are actually emitted, conforming to best practices for logging in Python." />
     <MESSAGE value="&quot;Standardize logging and fix formatting issues&#10;&#10;Replaced f-strings with parameterized logging for consistency and performance improvements. Fixed inconsistencies in indentation, formatting, and unused imports for better code readability and maintainability.&quot;" />
     <MESSAGE value="Refactor and clean up codebase for consistency and readability&#10;&#10;Applied formatting improvements across multiple modules to enhance code consistency and readability. Resolved redundant logic, improved exception handling, and adhered to best practices in method and error definitions. Also added PyLint and Ruff configuration files for static analysis support." />
     <MESSAGE value="Refactor imports across modules for consistency&#10;&#10;Reorganized imports to align with PEP 8 guidelines by grouping standard library, third-party, and local module imports. Addressed unused or redundant imports, ensuring improved readability and maintainability." />
@@ -604,7 +723,16 @@
     <MESSAGE value="Refactor image handling and improve workflow execution.&#10;&#10;Streamlined workflow parameter validation, added image saving to MinIO buckets, and integrated a database for image metadata persistence. Introduced robust error handling, optimized seed generation, and enhanced modularity with a new `image_service.py`. Updated workflows JSON to include new &quot;Flux Dev&quot; workflow configuration." />
     <MESSAGE value="Refactor workflow handling and enhance API structure.&#10;&#10;Introduced error handling improvements with custom exceptions and better HTTP responses. Added WorkflowBase and WorkflowCreate models for reusability and streamlined the creation/update logic. Removed redundant files, cleaned up `.gitignore`, and refactored workflows API for improved clarity and modularity." />
     <MESSAGE value="Migrate to async SQLAlchemy sessions and improve database handling.&#10;&#10;Replaced synchronous `Session` with `AsyncSession` throughout the codebase to enable non-blocking database operations. Updated function signatures, adjusted workflow, user, and image models for consistent datetime handling, and refactored services for better async support. Improved error handling and logging for critical operations." />
-    <option name="LAST_COMMIT_MESSAGE" value="Migrate to async SQLAlchemy sessions and improve database handling.&#10;&#10;Replaced synchronous `Session` with `AsyncSession` throughout the codebase to enable non-blocking database operations. Updated function signatures, adjusted workflow, user, and image models for consistent datetime handling, and refactored services for better async support. Improved error handling and logging for critical operations." />
+    <MESSAGE value="Update workflow API to support partial updates with patch.&#10;&#10;Replaced `WorkflowCreate` with `WorkflowUpdate` for update operations, allowing partial updates of workflows. Adjusted the API route to use `PATCH` and updated the handler to accommodate the new model. Refactored related components to ensure compatibility with optional fields and unset values." />
+    <MESSAGE value="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling." />
+    <MESSAGE value="Add plan management system with model and API integration&#10;&#10;Introduced a new &quot;Plan&quot; model and API to manage subscription plans and their parameters. Added support for mapping model, workflow type, and workflow segment parameters, with validation for each. Updated the core application and various models to integrate the plan system, ensuring compatibility with existing components. Removed redundant server validation checks in `comfy_core`." />
+    <MESSAGE value="Add user sync and Fief API client integration  &#10;&#10;Introduced user synchronization from Fief API with the new `FiefHttpClient`. Added handlers for retrieving, syncing, and creating users, along with support for initial data setup. Refactored code to decouple user and database logic, enhancing modularity and maintainability." />
+    <MESSAGE value="Add plan management system with seeding and CRUD services&#10;&#10;Introduced a `Plan` management system for handling subscription plans, including model updates, CRUD operations, and JSON-based seeding. Added the `plan_service.py` for plan-related logic and integrated the `plans.json` file for initializing data. Updated initial data handling to include plan seeding and ensured compatibility with existing workflows." />
+    <MESSAGE value="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints." />
+    <MESSAGE value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
+    <MESSAGE value="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable." />
+    <MESSAGE value="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor for Python 3.9+ compatibility and logging improvements&#10;&#10;Standardized imports, updated type hints to Python 3.9+ style, and resolved deprecation warnings in Pydantic. Enhanced logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding exception chaining for better debugging. Simplified validation logic and improved code consistency across modules." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -669,14 +797,27 @@
           <line>1348</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1745716468488" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1746315335651" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core_test_download_file_s3_error.coverage" NAME="pytest for test_minio_core.test_download_file_s3_error Coverage Results" MODIFIED="1745805164120" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_workflow_service.coverage" NAME="pytest for test_workflow_service Coverage Results" MODIFIED="1745806340413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core.coverage" NAME="pytest for test_minio_core Coverage Results" MODIFIED="1745805156401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_metric_core.coverage" NAME="pytest for test_metric_core Coverage Results" MODIFIED="1745805979158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_user_service.coverage" NAME="pytest for test_user_service Coverage Results" MODIFIED="1745806585882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
+    <SUITE FILE_PATH="coverage/o_art$pytest_for_test_db_core.coverage" NAME="pytest for test_db_core Coverage Results" MODIFIED="1745806919671" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
+    <SUITE FILE_PATH="coverage/o_art$.coverage" NAME=" Coverage Results" MODIFIED="1745809644119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/art$pytest_for_test_user_handler.coverage" NAME="pytest for test_user_handler Coverage Results" MODIFIED="1744974797612" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

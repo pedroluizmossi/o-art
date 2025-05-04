@@ -1,9 +1,11 @@
+from dotenv import load_dotenv
 from fief_client import FiefAsync
 
 from core.config_core import Config
 from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
 
+load_dotenv()
 # Set up the logger for this module
 logger = setup_logger(__name__)
 

@@ -12,4 +12,3 @@ class Model(Enum):
     HIDREAM = "HIDREAM"
     PONY = "PONY"
     ILLUSTRIOUS = "ILLUSTRIOUS"
-
