@@ -80,6 +80,27 @@ async def update_user(session: AsyncSession,
         logger.exception("Error updating user %s: %s", user_id, e)
         raise e
 
+async def user_update_profile_image_url(
+    session: AsyncSession, user_id: UUID, image_url: str
+) -> Optional[User]:
+    """Updates the profile image URL of a user."""
+    try:
+        user = await get_user_by_id(session, user_id)
+        if not user:
+            logger.warning("User with ID %s not found for profile image update.", user_id)
+            return None
+
+        user.profile_image_url = image_url
+        user.updated_at = datetime.now(timezone.utc)
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+        logger.info("User profile image updated successfully: %s", user_id)
+        return user
+    except Exception as e:
+        await session.rollback()
+        logger.exception("Error updating profile image for user %s: %s", user_id, e)
+        raise e
 
 async def delete_user(session: AsyncSession, user_id: UUID) -> bool:
     """Deletes a user by their ID. Returns True if deleted, False otherwise."""

@@ -4,12 +4,14 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from api.auth_api import router as auth_router
 from api.image_api import router as image_router
 from api.model_api import router as model_router
 from api.plan_api import router as plan_router
 from api.scalar_docs_api import router as scalar_docs_router
+from api.user_api import router as user_router
 from api.user_folder_api import router as user_folder_router
 from api.user_image_api import router as user_image_router
 from api.webhook_api import router as webhook_router
@@ -93,6 +95,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, openapi_tags=tags_metadata)
 app.include_router(auth_router)
+app.include_router(user_router)
 app.include_router(user_folder_router)
 app.include_router(user_image_router)
 app.include_router(webhook_router)
@@ -102,3 +105,11 @@ app.include_router(model_router)
 app.include_router(plan_router)
 app.include_router(websocket_router)
 app.include_router(scalar_docs_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace "*" with specific origins for better security
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)

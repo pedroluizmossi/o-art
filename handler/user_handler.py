@@ -1,3 +1,4 @@
+from typing import BinaryIO
 from uuid import UUID
 
 from fastapi import HTTPException, Response, status
@@ -8,6 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from core.db_core import get_db_session
 from core.fief_core import FiefHttpClient
 from core.logging_core import setup_logger
+from core.minio_core import default_bucket_name, upload_bytes_to_bucket
 from handler.user_folder_handler import create_user_folder_handler
 from model.enum.fief_type_webhook import FiefTypeWebhook
 from model.user_model import User
@@ -17,11 +19,59 @@ from service.user_service import (
     get_all_users,
     get_user_by_id,
     update_user,
+    user_update_profile_image_url,
 )
 
 logger = setup_logger(__name__)
 
 MISSING_USER_ID_ERROR = "Webhook payload missing user ID in 'data'."
+BUCKET_NAME = default_bucket_name
+
+async def get_user_by_id_handler(user_id: UUID) -> User:
+    """
+    Handler to retrieve a user by their ID.
+    """
+    try:
+        async with get_db_session() as session:
+            user = await get_user_by_id(session, user_id)
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"User with ID {user_id} not found.",
+                )
+            return user
+    except Exception as e:
+        logger.exception(f"Error retrieving user by ID {user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error retrieving user.",
+        ) from e
+
+async def user_update_profile_image_url_handler(
+        user_id: UUID,
+        data: BinaryIO,
+        filename: str,
+) -> User:
+    """
+    Handler to update the user's profile image URL.
+    """
+    try:
+        object_name = f"{user_id}/profile_images/{filename}"
+        upload_bytes_to_bucket(BUCKET_NAME, data, object_name)
+        async with get_db_session() as session:
+            user = await user_update_profile_image_url(session, user_id, object_name)
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"User with ID {user_id} not found.",
+                )
+            return user
+    except Exception as e:
+        logger.exception(f"Error updating profile image URL for user {user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error updating profile image URL.",
+        ) from e
 
 async def create_user_handler(user_data: User) -> User:
     """

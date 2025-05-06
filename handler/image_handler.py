@@ -9,7 +9,7 @@ from fastapi import HTTPException, status
 from comfy.comfy_core import ComfyUIError, execute_workflow
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
-from core.minio_core import upload_bytes_to_bucket
+from core.minio_core import default_bucket_name, upload_bytes_to_bucket
 from handler.workflow_handler import load_and_populate_workflow
 from model.image_model import Image
 from service.image_service import (
@@ -21,7 +21,7 @@ from service.image_service import (
 
 logger = setup_logger(__name__)
 WORKFLOW_DIR = os.path.join(os.path.dirname(__file__), "..", "comfy", "workflows")
-BUCKET_NAME = "default"
+BUCKET_NAME = default_bucket_name
 FILE_EXTENSION = ".png"
 
 async def create_image_handler(

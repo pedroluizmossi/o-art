@@ -16,7 +16,7 @@ class User(SQLModel, table=True):
     email_verified: bool = False
     is_active: bool = True
     plan_id: Optional[UUID] = Field(default=None, foreign_key="plans.id")
-
+    profile_image_url: Optional[str] = Field(default=None)
     created_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), nullable=False),
         default_factory=lambda: datetime.now(timezone.utc),
