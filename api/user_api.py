@@ -23,7 +23,8 @@ async def get_me(
     user = await get_user_by_id_handler(access_token_info["id"])
     return user
 
-@router.put("/me/profile_image")
+
+@router.put("/me/profileImage")
 async def update_profile_image(
     data: UploadFile,
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),  # noqa: B008

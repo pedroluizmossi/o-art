@@ -26,6 +26,8 @@ logger = setup_logger(__name__)
 
 MISSING_USER_ID_ERROR = "Webhook payload missing user ID in 'data'."
 BUCKET_NAME = default_bucket_name
+PROFILE_IMAGE_SIZE = 512 * 1024  # 512 KB
+
 
 async def get_user_by_id_handler(user_id: UUID) -> User:
     """
@@ -57,7 +59,7 @@ async def user_update_profile_image_url_handler(
     """
     try:
         object_name = f"{user_id}/profile_images/{filename}"
-        upload_bytes_to_bucket(BUCKET_NAME, data, object_name)
+        upload_bytes_to_bucket(BUCKET_NAME, data, object_name, PROFILE_IMAGE_SIZE)
         async with get_db_session() as session:
             user = await user_update_profile_image_url(session, user_id, object_name)
             if not user:
@@ -66,6 +68,12 @@ async def user_update_profile_image_url_handler(
                     detail=f"User with ID {user_id} not found.",
                 )
             return user
+    except ValueError as e:
+        logger.exception(f"Validation error updating profile image URL for user {user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=("Validation error: %s", str(e)),
+        ) from e
     except Exception as e:
         logger.exception(f"Error updating profile image URL for user {user_id}: {e}")
         raise HTTPException(

@@ -75,7 +75,12 @@ def upload_file_to_bucket(bucket_name: str, file_path: str, object_name: str):
         raise e
 
 
-def upload_bytes_to_bucket(bucket_name: str, data: BinaryIO, object_name: str):
+def upload_bytes_to_bucket(
+        bucket_name: str,
+        data: BinaryIO,
+        object_name: str,
+        data_max_size: int = 10 * 1024 * 1024 # 10 MB
+):
     """
     Upload bytes to a specified bucket in MinIO.
 
@@ -83,7 +88,14 @@ def upload_bytes_to_bucket(bucket_name: str, data: BinaryIO, object_name: str):
         bucket_name (str): Name of the target bucket.
         data (BinaryIO): Binary stream to upload.
         object_name (str): Object name to use in MinIO.
+        :param bucket_name: Bucket name to upload to.
+        :param data: Binary stream to upload.
+        :param object_name: Object name to use in MinIO.
+        :param data_max_size: Maximum size of the data in bytes. Default is 10 MB.
     """
+    if not binary_size_check(data, data_max_size):
+        logger.error("Data size exceeds the maximum limit of % bytes.", data_max_size)
+        raise ValueError(f"Data size exceeds the maximum limit of {data_max_size} bytes.")
     try:
         pos = data.tell()
         data.seek(0, 2)
@@ -110,3 +122,21 @@ def download_file_from_bucket(bucket_name: str, object_name: str, file_path: str
     except S3Error as e:
         logger.error("Error downloading file: %", e)
         raise e
+
+
+def binary_size_check(file: BinaryIO, max_size: int) -> bool:
+    """
+    Check if the size of a binary file exceeds a specified maximum size.
+
+    Args:
+        file (BinaryIO): The binary file to check.
+        max_size (int): The maximum allowed size in bytes.
+
+    Returns:
+        bool: True if the file size is within the limit, False otherwise.
+    """
+    pos = file.tell()
+    file.seek(0, 2)
+    size = file.tell()
+    file.seek(pos)
+    return size <= max_size
