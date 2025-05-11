@@ -8,10 +8,10 @@ import websockets
 from PIL import Image
 from pydantic.v1 import UUID4
 
-from comfy.config import server_address
-from comfy.connection import get_history, queue_prompt
-from comfy.exceptions import ComfyUIError
-from comfy.preview import export_preview_queue
+from core.comfy.config import server_address
+from core.comfy.connection import get_history, queue_prompt
+from core.comfy.exceptions import ComfyUIError
+from core.comfy.preview import export_preview_queue
 from core.logging_core import setup_logger
 from utils.security_util import safe_urlopen
 

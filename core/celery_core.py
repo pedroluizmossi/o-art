@@ -2,7 +2,7 @@ import asyncio
 
 from celery import Celery
 
-from comfy.comfy_core import check_queue_task, preview_queue_cleanup
+from core.comfy.comfy_core import check_queue_task, preview_queue_cleanup
 from core.config_core import Config
 
 config_instance = Config()

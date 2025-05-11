@@ -19,7 +19,7 @@ expire_old_previews_queue_time: timedelta = timedelta(seconds=60)
 # Check server configuration
 if not server_address:
     logger.critical("ComfyUI server address not configured.")
-    from comfy.exceptions import ComfyUIError
+    from core.comfy.exceptions import ComfyUIError
     raise ComfyUIError(
         "ComfyUI server address not configured. Did you forget to pay the server bill again?"
     )

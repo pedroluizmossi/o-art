@@ -7,7 +7,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from PIL import Image
 
 from api.auth_api import base_fief
-from comfy.comfy_core import get_preview_queue, get_queue
+from core.comfy.comfy_core import get_preview_queue, get_queue
 from core.logging_core import setup_logger
 
 logger = setup_logger(__name__)

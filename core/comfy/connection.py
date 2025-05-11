@@ -7,8 +7,8 @@ from typing import Any, Optional
 
 import websockets
 
-from comfy.config import server_address
-from comfy.exceptions import ComfyUIError
+from core.comfy.config import server_address
+from core.comfy.exceptions import ComfyUIError
 from core.logging_core import setup_logger
 from utils.security_util import safe_urlopen
 

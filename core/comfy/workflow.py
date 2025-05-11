@@ -1,9 +1,9 @@
 from typing import Any, Optional
 
-from comfy.config import metric
-from comfy.connection import get_queue, ws_connect
-from comfy.exceptions import ComfyUIError
-from comfy.images import get_images
+from core.comfy.config import metric
+from core.comfy.connection import get_queue, ws_connect
+from core.comfy.exceptions import ComfyUIError
+from core.comfy.images import get_images
 from core.logging_core import setup_logger
 
 logger = setup_logger(__name__)

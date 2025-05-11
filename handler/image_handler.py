@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 from fastapi import HTTPException, status
 
-from comfy.comfy_core import ComfyUIError, execute_workflow
+from core.comfy.comfy_core import ComfyUIError, execute_workflow
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
 from core.minio_core import default_bucket_name, upload_bytes_to_bucket

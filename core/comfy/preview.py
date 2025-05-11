@@ -4,8 +4,8 @@ from uuid import UUID
 
 from PIL import Image
 
-from comfy.config import expire_old_previews_queue_time, metric, preview_queue
-from comfy.exceptions import ComfyUIError
+from core.comfy.config import expire_old_previews_queue_time, metric, preview_queue
+from core.comfy.exceptions import ComfyUIError
 from core.logging_core import setup_logger
 
 logger = setup_logger(__name__)
