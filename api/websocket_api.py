@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, WebSocket
 
-from handler.websocket_handler import preview_updater, queue_status_updater, user_acess_token
+from handler.websocket_handler import preview_updater, queue_status_updater, user_access_token
 
 router = APIRouter(
     prefix="/websocket",
@@ -21,7 +21,7 @@ async def websocket_endpoint(
     """
     WebSocket endpoint to send queue status updates to the client.
     """
-    user_id = await user_acess_token(websocket)
+    user_id = await user_access_token(websocket)
     await queue_status_updater(websocket, user_id)
 
 
@@ -32,5 +32,5 @@ async def preview_endpoint(
     """
     WebSocket endpoint to send preview updates to the client.
     """
-    user_id = await user_acess_token(websocket)
+    user_id = await user_access_token(websocket)
     await preview_updater(websocket, user_id)

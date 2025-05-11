@@ -28,7 +28,7 @@ async def queue_status_updater(websocket: WebSocket, user_id: Optional[UUID] = N
         await websocket.send_json({"status": "error", "message": str(e)})
 
 async def preview_updater(websocket: WebSocket, user_id: Optional[UUID] = None):
-    # Removed await websocket.accept() here
+    await websocket.accept()
     last_preview = None
     try:
         while True:
@@ -46,19 +46,17 @@ async def preview_updater(websocket: WebSocket, user_id: Optional[UUID] = None):
     except Exception as e:
         await websocket.send_json({"status": "error", "message": str(e)})
 
-async def user_acess_token(websocket: WebSocket):
+async def user_access_token(websocket: WebSocket):
     """
     Validate the access token from the WebSocket headers.
     """
     access_token_info = websocket.headers.get("access_token")
     if not access_token_info:
-        await websocket.send_json({"status": "error", "message": "Missing access token"})
         await websocket.close(code=4000)
         return None
     try:
         access_token_info = base_fief.validate_access_token(access_token_info)
     except Exception:
-        await websocket.send_json({"status": "error", "message": "Invalid access token"})
         await websocket.close(code=4000)
         return None
     user_id = access_token_info["id"]

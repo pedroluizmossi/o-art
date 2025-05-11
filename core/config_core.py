@@ -16,7 +16,7 @@ class Config:
     def __init__(self, config_file=DEFAULT_CONFIG_FILE_PATH):
         self.config = configparser.ConfigParser()
         self.config_file = config_file
-        self._load_config()  # Tornar privado para indicar uso interno
+        self._load_config()
 
     def _load_config(self):
         """
