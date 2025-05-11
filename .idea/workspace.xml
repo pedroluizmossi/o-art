@@ -4,15 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Remove unused `get_user_by_id_handler` function.&#10;&#10;The `get_user_by_id_handler` function was removed as it is no longer being used in the codebase. This cleanup improves maintainability by eliminating dead code.">
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided.">
+      <change afterPath="$PROJECT_DIR$/comfy/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comfy/connection.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comfy/exceptions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comfy/images.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comfy/preview.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comfy/workflow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/user_folder_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/user_folder_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/websocket_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/websocket_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comfy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/celery_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/celery_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/config_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/config_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/websocket_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/websocket_handler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,58 +79,58 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Docker.docker-compose.yaml: Compose Deployment.executor": "Run",
-    "FastAPI.art.executor": "Run",
-    "Python tests.Python tests for test_config_core.test_load_config_file_invalid_format.executor": "Run",
-    "Python tests.Python tests for test_metric_core.test_influxdbwriter_write_data_success.executor": "Run",
-    "Python tests.Python tests for test_minio_core.test_create_default_bucket_s3_error.executor": "Run",
-    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor": "Run",
-    "Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor": "Run",
-    "Python tests.Python tests for test_workflow_service.TestDeleteWorkflow.test_delete_workflow_not_found.executor": "Run",
-    "Python tests.Python tests for test_workflow_service.TestUpdateWorkflow.test_update_workflow_not_found.executor": "Run",
-    "Python tests.Python tests in test_celery_core.py.executor": "Run",
-    "Python tests.Python tests in test_config_core.py.executor": "Run",
-    "Python tests.Python tests in test_db_core.py (1).executor": "Run",
-    "Python tests.Python tests in test_db_core.py.executor": "Run",
-    "Python tests.Python tests in test_env_core.py.executor": "Coverage",
-    "Python tests.Python tests in test_metric_core.py.executor": "Run",
-    "Python tests.Python tests in test_minio_core.py.executor": "Run",
-    "Python tests.Python tests in test_security_util.py.executor": "Run",
-    "Python tests.Python tests in test_user_handler.py.executor": "Coverage",
-    "Python tests.Python tests in test_user_service.py.executor": "Run",
-    "Python tests.Python tests in test_workflow_service.py.executor": "Run",
-    "Python tests.Python tests in tests.executor": "Run",
-    "Python tests.pytest for test_config_core.executor": "Run",
-    "Python tests.pytest for test_db_core.executor": "Run",
-    "Python tests.pytest for test_metric_core.executor": "Run",
-    "Python tests.pytest for test_minio_core.executor": "Run",
-    "Python tests.pytest for test_minio_core.test_download_file_s3_error.executor": "Run",
-    "Python tests.pytest for test_user_handler.executor": "Run",
-    "Python tests.pytest for test_user_service.executor": "Run",
-    "Python tests.pytest for test_workflow_service.executor": "Run",
-    "Python.Worker.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feature/0.0.2",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/home/pedro/PycharmProjects/o-art/api",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "preferences.sourceCode",
-    "settings.editor.splitter.proportion": "0.28409094",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Docker.docker-compose.yaml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;FastAPI.art.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_config_core.test_load_config_file_invalid_format.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_metric_core.test_influxdbwriter_write_data_success.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_minio_core.test_create_default_bucket_s3_error.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_user_handler.test_handle_user_webhook_user_created.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_workflow_service.TestDeleteWorkflow.test_delete_workflow_not_found.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_workflow_service.TestUpdateWorkflow.test_update_workflow_not_found.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_celery_core.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_config_core.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_db_core.py (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_db_core.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_env_core.py.executor&quot;: &quot;Coverage&quot;,
+    &quot;Python tests.Python tests in test_metric_core.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_minio_core.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_security_util.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_user_handler.py.executor&quot;: &quot;Coverage&quot;,
+    &quot;Python tests.Python tests in test_user_service.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_workflow_service.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_config_core.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_db_core.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_metric_core.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_minio_core.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_minio_core.test_download_file_s3_error.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_user_handler.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_user_service.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for test_workflow_service.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Worker.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/0.0.2&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/pedro/PycharmProjects/o-art/api&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;,
+    &quot;settings.editor.splitter.proportion&quot;: &quot;0.28409094&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/api" />
@@ -349,15 +350,8 @@
       <workItem from="1746912041352" duration="1006000" />
       <workItem from="1746914432961" duration="7935000" />
       <workItem from="1746932432524" duration="2041000" />
-      <workItem from="1746934480574" duration="6161000" />
-    </task>
-    <task id="LOCAL-00002" summary="Add FastAPI app with image generation and infrastructure setup&#10;&#10;Introduced a FastAPI application with endpoints for image generation, user authentication, and webhook processing using modular routers. Added Docker Compose configuration for supporting infrastructure (InfluxDB, Redis, MinIO, Postgres) and included configuration management and environment variable handling utilities. Enhanced the project with a user model, request validation, and InfluxDB integration for logging.">
-      <option name="closed" value="true" />
-      <created>1744777367264</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1744777367264</updated>
+      <workItem from="1746934480574" duration="7228000" />
+      <workItem from="1746987301861" duration="538000" />
     </task>
     <task id="LOCAL-00003" summary="Refactor and enhance prompt handling and logging features&#10;&#10;Refactored `comfy_core` to improve error handling, logging, and modularization for prompt execution and image generation. Introduced `logging_core` for centralized log management with rotation and cleanup. Updated `config.ini` and `config_core` to include logging configurations.">
       <option name="closed" value="true" />
@@ -743,7 +737,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746932168273</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided.">
+      <option name="closed" value="true" />
+      <created>1746940880479</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1746940880480</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -761,7 +763,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Create workflow and image models with supporting enums  &#10;&#10;Added Workflow and Image models, providing schema definitions for database operations. Introduced supporting enums (Model, WorkflowType, and WorkflowSegment) to categorize workflow types and related segments. Updated main.py and related configurations to integrate the models. Additionally, fixed paths and updated IDE settings for consistency." />
     <MESSAGE value="Add workflow models and enums for database integration&#10;&#10;Introduced new database models for workflows and images, along with enums for workflow types, segments, and model types. Updated `main.py` to include these models and adjusted related configurations and dependencies." />
     <MESSAGE value="Add Workflow and Image models with enums and integrate into the project.  &#10;&#10;1. **`workflow_model.py`:** Added Workflow schema for database interactions.  &#10;2. **`image_model.py`:** Added Image schema with workflow and user relationships.  &#10;3. **Enums:** Created `Model`, `WorkflowType`, and `WorkflowSegment` for workflow and image classification.  &#10;4. **`main.py`:** Imported new models for database use.  &#10;5. **Fixes:** Corrected paths in JSON and `docker-compose.yaml`.  &#10;6. **IDE configs:** Updated IDE settings for Python SDK and consistent paths.  &#10;7. **`comfy_core.py`:** Removed redundant lines." />
     <MESSAGE value="1. **`comfy/workflows/Flux-SVDQ-base.json`:** Removed obsolete workflow file.&#10;2. **`model/workflow_model.py`:** Added `model_id` field for database relationship.&#10;3. **`model/enum`:** Standardized enum values to uppercase for all workflow and model types.&#10;4. **`handler/image_handler.py`:** Enhanced image processing by integrating MinIO for image uploads.&#10;5. **`core/minio_core.py`:** Introduced MinIO utility functions for bucket and file operations.&#10;6. **`requirements.txt`:** Added `minio` dependency for S3-compatible operations.&#10;7. **`model/model_model.py`:** Added new database model for managing ML models.&#10;8. **`.idea/workspace.xml`:** Updated IDE config for accuracy in commit message handling and project settings.&#10;9. **`service/model_service.py`:** Added service to handle database operations for models." />
@@ -786,7 +787,8 @@
     <MESSAGE value="Add user profile image upload and update functionality&#10;&#10;Implemented API endpoint for updating user profile images, including integration with MinIO for image storage. Enhanced `user_service` and `user_handler` to support this feature with proper error handling and logging. Updated routing, middleware, and OpenAPI metadata for seamless functionality." />
     <MESSAGE value="Add WebSocket handlers for queue and preview updates&#10;&#10;Introduced specialized WebSocket handlers to provide real-time queue and preview updates. Refactored `websocket_api` to integrate the new handlers and token validation. Enhanced `comfy_core` with support for preview image queues, improving asynchronous image handling and user-specific previews." />
     <MESSAGE value="Remove unused `get_user_by_id_handler` function.&#10;&#10;The `get_user_by_id_handler` function was removed as it is no longer being used in the codebase. This cleanup improves maintainability by eliminating dead code." />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove unused `get_user_by_id_handler` function.&#10;&#10;The `get_user_by_id_handler` function was removed as it is no longer being used in the codebase. This cleanup improves maintainability by eliminating dead code." />
+    <MESSAGE value="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided." />
+    <option name="LAST_COMMIT_MESSAGE" value="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -863,7 +865,7 @@
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1746940507862" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1746940705633" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core_test_download_file_s3_error.coverage" NAME="pytest for test_minio_core.test_download_file_s3_error Coverage Results" MODIFIED="1745805164120" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_workflow_service.coverage" NAME="pytest for test_workflow_service Coverage Results" MODIFIED="1745806340413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />
