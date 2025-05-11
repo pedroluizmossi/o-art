@@ -190,26 +190,6 @@ async def handle_user_webhook(payload: dict, session: AsyncSession):
             detail="Internal server error processing user webhook.",
         ) from e
 
-async def get_user_by_id_handler(user_id: UUID) -> User:
-    """
-    Handler to retrieve a user by their ID.
-    """
-    try:
-        async with get_db_session() as session:
-            user = await get_user_by_id(session, user_id)
-            if not user:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"User with ID {user_id} not found.",
-                )
-            return user
-    except Exception as e:
-        logger.exception(f"Error retrieving user by ID {user_id}: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error retrieving user.",
-        ) from e
-
 async def get_all_users_handler() -> list[User]:
     """
     Handler to retrieve all users.
