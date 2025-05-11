@@ -4,9 +4,13 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
+from io import BytesIO
 from typing import Any, Optional
+from uuid import UUID
 
 import websockets
+from PIL import Image
+from pydantic.v1 import UUID4
 
 from core.config_core import Config
 from core.logging_core import setup_logger
@@ -20,7 +24,7 @@ server_address = config_instance.get("ComfyUI", "server", default="127.0.0.1:818
 metric = InfluxDBWriter()
 
 unsafe_ssl_context = ssl._create_unverified_context()
-
+preview_queue = asyncio.Queue()
 
 class ComfyUIError(Exception):
     """Custom exception for ComfyUI related errors."""
@@ -221,10 +225,15 @@ async def get_images(
                         raise
                     except Exception as inner_e:
                         logger.error("Error processing WebSocket message: %s", inner_e)
+                else:
+                    bytesio = BytesIO(out[8:])
+                    preview_image = Image.open(bytesio)
+                    user_id = UUID4(client_id)
+                    await export_preview_queue(user_id, preview_image)
+                    continue
 
             except asyncio.TimeoutError as e:
-                logger.error("WebSocket receive timeout while waiting for prompt %s",
-                             prompt_id)
+                logger.error("WebSocket receive timeout while waiting for prompt %s", prompt_id)
                 raise ComfyUIError(f"WebSocket receive timeout for prompt {prompt_id}") from e
             except websockets.exceptions.ConnectionClosedOK as e:
                 logger.warning(
@@ -431,3 +440,31 @@ async def execute_workflow(
             await ws.close()
             logger.info("WebSocket connection closed for user %s (job: %s)",
                         user_id, job_id)
+
+async def export_preview_queue(user_id: UUID, preview_image: Image.Image):
+    try:
+        await preview_queue.put({
+            "user_id": user_id,
+            "image": preview_image,
+        })
+        logger.debug("Preview image added to queue.")
+    except Exception as e:
+        logger.error("Error adding preview image to queue: %s", e)
+        raise ComfyUIError(f"Error adding preview image to queue: {e}") from e
+
+async def get_preview_queue(user_id: UUID) -> Optional[Image.Image]:
+    try:
+        preview_image = None
+        while not preview_queue.empty():
+            preview_image = await preview_queue.get()
+            if preview_image["user_id"] == user_id:
+                preview_image = preview_image["image"]
+                break
+            else:
+                await preview_queue.put(preview_image)
+        if preview_image:
+            logger.debug("Latest preview image retrieved from queue.")
+        return preview_image
+    except Exception as e:
+        logger.error("Error retrieving preview image from queue: %s", e)
+        raise ComfyUIError(f"Error retrieving preview image from queue: {e}") from e
