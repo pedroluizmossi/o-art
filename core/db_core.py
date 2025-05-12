@@ -8,6 +8,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.env_core import Envs, get_env_variable
 from core.logging_core import setup_logger
+from model.plan_model_model import PlanModel  # noqa
+from model.plan_workflow_model import PlanWorkflow  # noqa
 
 load_dotenv()
 

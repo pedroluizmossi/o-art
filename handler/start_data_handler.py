@@ -12,11 +12,6 @@ async def initial_data():
     Initialize the database with initial data.
     """
     try:
-        await sync_users_handler()
-    except Exception as e:
-        logger.error(f"Error syncing users: {e}")
-        raise e
-    try:
         async with get_db_session() as session:
             await seed_model_from_json(session, RESOURCE_POSTGRES_PATH + MODELS_JSON_PATH)
             await seed_workflow_from_json(session, RESOURCE_POSTGRES_PATH + WORKFLOWS_JSON_PATH)
@@ -25,4 +20,9 @@ async def initial_data():
             logger.info("Initial data loaded successfully.")
     except Exception as e:
         logger.error(f"Error loading initial data: {e}")
+        raise e
+    try:
+        await sync_users_handler()
+    except Exception as e:
+        logger.error(f"Error syncing users: {e}")
         raise e

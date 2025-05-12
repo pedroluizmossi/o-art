@@ -11,6 +11,7 @@ from service.plan_service import (
     create_plan,
     delete_plan,
     get_all_plans,
+    get_first_plan_by_price,
     get_plan_by_id,
     update_plan,
 )
@@ -118,4 +119,19 @@ async def delete_plan_handler(plan_id: UUID) -> None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error deleting plan",
+        ) from e
+
+async def get_first_plan_by_price_handler(price: float = 0) -> Optional[Plan]:
+    """
+    Handler to retrieve the first plan by its price.
+    """
+    try:
+        async with get_db_session() as session:
+            plan = await get_first_plan_by_price(session, price)
+        return plan
+    except Exception as e:
+        logger.exception("Error retrieving plan by price %s: %s", price, e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving plan by price",
         ) from e
