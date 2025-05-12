@@ -114,12 +114,14 @@ async def save_output_images_to_bucket(object_name: str, node_id: str, images: l
         raise ValueError("Output images are not valid bytes list.")
 
 async def handle_generate_image(
-    user_id: uuid.UUID, folder_id: uuid.UUID, job_id: str, workflow_id: uuid.UUID, params: dict[
-            str, Any]
+    user_id: uuid.UUID,
+        folder_id: uuid.UUID,
+        job_id: str,
+        workflow_id: uuid.UUID,
+        params: dict[str, Any]
 ) -> Optional[dict[str, list[bytes]]]:
-    logger.info(
-        f"Handling image generation for user {user_id}, job {job_id}, workflow {workflow_id}"
-    )
+    logger.info(f"Handling image generation for user {user_id}, "
+                f"job {job_id}, workflow {workflow_id}")
     logger.debug(f"Received parameters: {params}")
     object_name = f"{user_id}/{job_id}"
 
@@ -134,61 +136,20 @@ async def handle_generate_image(
         workflow_outputs = await execute_workflow(str(user_id), job_id, populated_workflow)
 
         if not workflow_outputs:
-            logger.warning(
-                f"Workflow {workflow_id} executed for job {job_id} "
-                f"but returned no outputs from ComfyUI."
-            )
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail="Image generation failed: No output received from ComfyUI backend.",
             )
 
-        if output_node_id in workflow_outputs:
-            output_images = workflow_outputs[output_node_id]
-            try:
-                await save_output_images_to_bucket(object_name, output_node_id, output_images)
-                url = f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}"
-                await create_image_handler(
-                    url=url,
-                    workflow_id=workflow_id,
-                    user_id=user_id,
-                    user_folder_id=folder_id,
-                    parameters=params
-                )
-                logger.info(
-                    f"Image created successfully for job {job_id} in node {output_node_id}."
-                )
-                return {output_node_id: output_images}
-            except ValueError as e:
-                logger.error(
-                    f"Error saving output images to bucket for job {job_id} "
-                    f"in node {output_node_id}."
-                )
-                raise HTTPException(
-                    status_code=status.HTTP_502_BAD_GATEWAY,
-                    detail="Failed: Unable to save output images.",
-                ) from e
-        logger.warning(
-            f"Designated output node {output_node_id} not found or had no images for job {job_id}. "
-            f"Searching other."
-        )
-        for node_id, images in workflow_outputs.items():
-            try:
-                await save_output_images_to_bucket(object_name, node_id, images)
-                logger.info(
-                    f"Found image output in fallback node {node_id} for job {job_id}. "
-                    f"Returning this output."
-                )
-                return {node_id: images}
-            except ValueError:
-                continue
-
-        logger.error(
-            f"No image output found in any node for job {job_id} with workflow {workflow_id}."
-        )
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Image generation failed: ComfyUI backend did not produce any image output.",
+        return await process_output_images(
+            object_name,
+            job_id,
+            workflow_id,
+            workflow_outputs,
+            output_node_id,
+            folder_id,
+            user_id,
+            params
         )
     except HTTPException:
         raise
@@ -199,16 +160,90 @@ async def handle_generate_image(
             detail=f"Workflow or parameter error: {e}",
         ) from e
     except ComfyUIError as e:
-        logger.error(f"ComfyUI backend error for job {job_id}: {e}")
-        if e.status_code == 400:
-            detail = f"ComfyUI validation error: {e.details or str(e)}"
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from e
-        else:
-            detail = f"ComfyUI backend failed: {e}"
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail) from e
+        handle_comfyui_error(e, job_id)
     except Exception as e:
         logger.exception(f"Unexpected error in handle_generate_image for job {job_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error during image generation: " + str(e),
         ) from e
+
+
+async def process_output_images(
+    object_name: str,
+    job_id: str,
+    workflow_id: uuid.UUID,
+    workflow_outputs: dict[str, list[bytes]],
+    output_node_id: Optional[str],
+    folder_id: uuid.UUID,
+    user_id: uuid.UUID,
+    params: dict[str, Any],
+) -> Optional[dict[str, list[bytes]]]:
+    if output_node_id in workflow_outputs:
+        return await get_output_images(
+            object_name,
+            output_node_id,
+            workflow_outputs,
+            job_id,
+            workflow_id,
+            folder_id,
+            user_id,
+            params
+        )
+
+    logger.warning(f"Designated output node {output_node_id} not found or had no images for job "
+                   f"{job_id}. Searching fallback nodes.")
+    for node_id, _images in workflow_outputs.items():
+        try:
+            return await get_output_images(
+                object_name,
+                node_id,
+                workflow_outputs,
+                job_id,
+                workflow_id,
+                folder_id,
+                user_id,
+                params
+            )
+        except ValueError:
+            continue
+
+    logger.error(f"No image output found in any node for job {job_id} with workflow {workflow_id}.")
+    raise HTTPException(
+        status_code=status.HTTP_502_BAD_GATEWAY,
+        detail="Image generation failed: ComfyUI backend did not produce any image output.",
+    )
+
+
+async def get_output_images(
+    object_name: str,
+    node_id: str,
+    workflow_outputs: dict[str, list[bytes]],
+    job_id: str,
+    workflow_id: uuid.UUID,
+    folder_id: uuid.UUID,
+    user_id: uuid.UUID,
+    params: dict[str, Any],
+) -> dict[str, list[bytes]]:
+    output_images = workflow_outputs[node_id]
+    await save_output_images_to_bucket(object_name, node_id, output_images)
+    url = f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}"
+    await create_image_handler(
+        url=url,
+        workflow_id=workflow_id,
+        user_id=user_id,
+        user_folder_id=folder_id,
+        parameters=params,
+    )
+    logger.info(f"Image created successfully for job {job_id} in node {node_id}.")
+    return {node_id: output_images}
+
+
+def handle_comfyui_error(e: ComfyUIError, job_id: str):
+    logger.error(f"ComfyUI backend error for job {job_id}: {e}")
+    if e.status_code == 400:
+        detail = f"ComfyUI validation error: {e.details or str(e)}"
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from e
+    else:
+        detail = f"ComfyUI backend failed: {e}"
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail) from e
