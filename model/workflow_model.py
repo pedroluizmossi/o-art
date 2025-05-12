@@ -3,7 +3,7 @@ from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel
-from sqlalchemy import DateTime
+from sqlalchemy import JSON, DateTime
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import validates
@@ -12,6 +12,7 @@ from sqlmodel import Column, Field, SQLModel
 from model.enum.model_type import Model
 from model.enum.workflow_segment_type import WorkflowSegment
 from model.enum.workflow_type import Workflow as WorkflowType
+from model.map.model_parameter_mapping import ParameterDetail
 
 
 class WorkflowBase(SQLModel):
@@ -26,7 +27,10 @@ class WorkflowBase(SQLModel):
         sa_column=Column("workflow_segment", SqlEnum(WorkflowSegment))
     )
     workflow_json: dict = Field(sa_column=Column(JSONB))
-    parameters: dict = Field(default_factory=dict, sa_column=Column(JSONB))
+    parameters: ParameterDetail = Field(
+        sa_column=Column(JSON, nullable=False),
+        default_factory=ParameterDetail
+    )
 
     @validates("name")
     def validate_name(self, key, value):

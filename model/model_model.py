@@ -2,13 +2,13 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime
+from sqlalchemy import JSON, DateTime
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import validates
 from sqlmodel import Column, Field, SQLModel
 
 from model.enum.model_type import Model as ModelType
+from model.map.model_parameter_mapping import ParameterDetail
 
 
 class ModelBase(SQLModel):
@@ -17,7 +17,10 @@ class ModelBase(SQLModel):
     description: Optional[str] = Field(default=None, nullable=True)
     os_path: str = Field(index=True, nullable=False)
     model: ModelType = Field(sa_column=Column("model", SqlEnum(ModelType)))
-    parameters: dict = Field(default_factory=dict, sa_column=Column(JSONB))
+    parameters: ParameterDetail = Field(
+        sa_column=Column(JSON, nullable=False),
+        default_factory=ParameterDetail
+    )
 
     @validates("name")
     def validate_name(self, key, value):

@@ -1,4 +1,5 @@
 import random
+from uuid import UUID
 
 import pydantic
 from pydantic import BaseModel, Field, field_validator
@@ -20,18 +21,37 @@ class ParameterDetail(BaseModel):
         default=None,
         description="Negative prompt to be used for the model"
     )
-    WIDTH: int | None = Field(default=None, description="Width in pixels")
-    HEIGHT: int | None = Field(default=None, description="Height in pixels")
-    SAMPLERS: list[Sampler] | None = Field(default=None, description="List of supported samplers")
-    STEPS: int | None = Field(default=None, description="Number of steps for the model to run")
-    CFG: float | None = Field(default=None, description="Classifier-Free Guidance scale")
+    WIDTH: int | None = Field(
+        default=None,
+        description="Width in pixels",
+        examples=[512, 768, 1024, 1536, 2048]
+    )
+    HEIGHT: int | None = Field(
+        default=None,
+        description="Height in pixels",
+        examples=[512, 768, 1024, 1536, 2048]
+    )
+    SAMPLERS: list[Sampler] | None = Field(
+        default=None,
+        description="List of supported samplers"
+    )
+    STEPS: int | None = Field(
+        default=None,
+        description="Number of steps for the model to run",
+        examples=[10, 20, 30]
+    )
+    CFG: float | None = Field(
+        default=None,
+        description="Classifier-Free Guidance scale",
+        examples=[1.0,6.0,7.5]
+    )
     SEED: int | None = Field(
         default_factory=lambda: random.randint(1, 2**32 - 1),
         description="Random seed for reproducibility"
     )
-    MODEL_ID: Model | None = Field(
+    MODEL_ID: UUID | None = Field(
         default=None,
-        description="Model ID to be used for the generation"
+        description="UUID of the model to be used"
     )
 
     @field_validator("POSITIVE_PROMPT")
@@ -60,26 +80,23 @@ class ParameterDetail(BaseModel):
             raise ValueError("The list of samplers cannot be empty.")
         return value
 
-
-_DEFAULT_WIDTH = 1024
-_DEFAULT_HEIGHT = 1024
-
-
 _example_mapping = {
     model.name: {
         "ALLOWED": True,
-        "WIDTH": _DEFAULT_WIDTH,
-        "HEIGHT": _DEFAULT_HEIGHT,
+        "POSITIVE_PROMPT": "A beautiful landscape",
+        "NEGATIVE_PROMPT": "A blurry image",
+        "WIDTH": 1024,
+        "HEIGHT": 1024,
         "SAMPLERS": [
             sampler.name for sampler in Sampler
         ],
         "STEPS": 20,
         "CFG": 7.5,
-        "SEED": 0
+        "SEED": 0,
+        "MODEL_ID": None
     }
     for model in Model
 }
-
 
 class Parameters(pydantic.RootModel[dict[Model, ParameterDetail]]):
     """

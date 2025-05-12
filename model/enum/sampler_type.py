@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Sampler(Enum):
+class Sampler(str, Enum):
     """
     Enumeração de samplers suportados.
     """
