@@ -149,8 +149,8 @@
       },
       "27": {
         "inputs": {
-          "width": 768,
-          "height": 1360,
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
           "batch_size": 1
         },
         "class_type": "EmptySD3LatentImage",
@@ -162,8 +162,8 @@
         "inputs": {
           "max_shift": 1.15,
           "base_shift": 0.5,
-          "width": 768,
-          "height": 1360,
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
           "model": [
             "45",
             0
@@ -206,7 +206,9 @@
     },
     "parameters": {
       "POSITIVE_PROMPT": "Dog",
-      "SEED": 66
+      "SEED": 66,
+      "HEIGHT": 1024,
+      "WIDTH": 1024
     }
   },
   {
@@ -403,8 +405,8 @@
       },
       "38": {
         "inputs": {
-          "width": 1024,
-          "height": 1024,
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
           "aspect_ratio": "3:2 landscape 1216x832",
           "swap_dimensions": "Off",
           "upscale_factor": 1,
@@ -419,6 +421,8 @@
     "parameters": {
       "POSITIVE_PROMPT": "Dog",
       "SEED": 66,
+      "HEIGHT": 1024,
+      "WIDTH": 1024,
       "MODEL_PATH": "FLUX1/flux_fp8.safetensors"
     }
   }

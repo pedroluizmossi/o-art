@@ -11,6 +11,7 @@ from core.comfy.comfy_core import ComfyUIError, execute_workflow
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
 from core.minio_core import default_bucket_name, upload_bytes_to_bucket
+from handler.user_handler import get_user_by_id_handler
 from handler.workflow_handler import load_and_populate_workflow
 from model.image_model import Image
 from service.image_service import (
@@ -123,9 +124,12 @@ async def handle_generate_image(
     object_name = f"{user_id}/{job_id}"
 
     try:
+        user = await get_user_by_id_handler(user_id)
+        plan_id = user.plan_id
         populated_workflow, output_node_id = await load_and_populate_workflow(
             workflow_id,
-            params
+            params,
+            plan_id
         )
         workflow_outputs = await execute_workflow(str(user_id), job_id, populated_workflow)
 
