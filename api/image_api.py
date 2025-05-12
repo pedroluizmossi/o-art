@@ -68,7 +68,15 @@ async def generate(
                 status_code=500,
                 detail="Failed to generate image or workflow did not produce expected output.",
             ) from None
-
+    except ValueError as err:
+        logger.error(
+            f"Value error while generating image for user {user_id} "
+            f"with workflow {request_data.workflow_id}: {err}"
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=str(err),
+        ) from err
     except FileNotFoundError as err:
         raise HTTPException(
             status_code=404,

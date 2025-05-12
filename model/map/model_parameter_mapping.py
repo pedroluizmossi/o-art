@@ -1,3 +1,5 @@
+import random
+
 import pydantic
 from pydantic import BaseModel, Field, field_validator
 
@@ -6,21 +8,50 @@ from model.enum.sampler_type import Sampler
 
 
 class ParameterDetail(BaseModel):
-    ALLOWED: bool = Field(
-        default=True,
+    ALLOWED: bool | None = Field(
+        default=None,
         description="Whether the model is allowed to be used in this plan"
     )
-    WIDTH: int = Field(..., gt=0, description="Width in pixels")
-    HEIGHT: int = Field(..., gt=0, description="Height in pixels")
-    SAMPLERS: list[Sampler] = Field(..., description="List of supported samplers")
-    STEPS: int = Field(default=20, gt=0, description="Number of steps for the model to run")
-    CFG: float = Field(default=7.5, gt=0, description="Classifier-Free Guidance scale")
-    SEED: int = Field(default=0, description="Random seed for reproducibility")
+    POSITIVE_PROMPT: str | None = Field(
+        default=None,
+        description="Prompt to be used for the model"
+    )
+    NEGATIVE_PROMPT: str | None = Field(
+        default=None,
+        description="Negative prompt to be used for the model"
+    )
+    WIDTH: int | None = Field(default=None, description="Width in pixels")
+    HEIGHT: int | None = Field(default=None, description="Height in pixels")
+    SAMPLERS: list[Sampler] | None = Field(default=None, description="List of supported samplers")
+    STEPS: int | None = Field(default=None, description="Number of steps for the model to run")
+    CFG: float | None = Field(default=None, description="Classifier-Free Guidance scale")
+    SEED: int | None = Field(
+        default_factory=lambda: random.randint(1, 2**32 - 1),
+        description="Random seed for reproducibility"
+    )
+    MODEL_ID: Model | None = Field(
+        default=None,
+        description="Model ID to be used for the generation"
+    )
 
-    @field_validator("STEPS", "CFG", "SEED", "WIDTH", "HEIGHT")
-    def validate_positive(cls, value: int) -> int:
+    @field_validator("POSITIVE_PROMPT")
+    def validate_prompts(cls, value: str) -> str:
+        if value is None or not value.strip():
+            raise ValueError("Positive prompt cannot be empty.")
+        return value
+
+    @field_validator("WIDTH", "HEIGHT")
+    def validate_dimensions(cls, value: int) -> int:
+        if value is not None and value <= 0:
+            raise ValueError("Width and height must be positive integers.")
+        return value
+    
+    @field_validator("SEED")
+    def validate_seed(cls, value: int) -> int:
         if value < 0:
-            raise ValueError("The value must be greater than or equal to zero.")
+            raise ValueError("Seed must be a non-negative integer or 0 for random generation.")
+        if value == 0 or value is None:
+            value = random.randint(1, 2**32 - 1)
         return value
 
     @field_validator("SAMPLERS")

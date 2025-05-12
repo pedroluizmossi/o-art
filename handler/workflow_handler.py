@@ -1,5 +1,4 @@
 import json
-import random
 import re
 from typing import Any, Optional
 from uuid import UUID
@@ -8,6 +7,7 @@ from fastapi import HTTPException, status
 
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
+from model.map.model_parameter_mapping import ParameterDetail
 from model.workflow_model import Workflow, WorkflowCreate, WorkflowUpdate
 from service.workflow_service import (
     WorkflowNotFound,
@@ -120,28 +120,46 @@ async def delete_workflow_handler(workflow_id: Workflow.id) -> None:
             detail="Error deleting workflow",
         ) from e
 
-def replace_placeholders(obj, workflow_params, params):
-    """Função recursiva para substituir placeholders em qualquer estrutura."""
-    validate_workflow_params(workflow_params, params)
-    # Validate and set the seed if not provided or invalid (0) generate a random one.
-    params['seed'] = get_valid_seed(params.get('seed'))
+def replace_placeholders(obj, workflow_params, params, user_params_detail=None):
+    """
+    Replace placeholders in the workflow template with actual parameter values.
+    Validate the parameters against the expected workflow parameters.
+    """
+    if user_params_detail is None:
+        validate_workflow_params(workflow_params, params)
+        try:
+            user_params_detail = ParameterDetail(**params)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Invalid parameters: {e}",
+            ) from e
+
+    def get_param_value(key):
+        try:
+            return getattr(user_params_detail, key)
+        except AttributeError:
+            return f"{{{{{key}}}}}"
+
     if isinstance(obj, dict):
-        return {k: replace_placeholders(v,workflow_params, params) for k, v in obj.items()}
+        return {k: replace_placeholders(v, workflow_params, params, user_params_detail)
+                for k, v in obj.items()}
     elif isinstance(obj, list):
-        return [replace_placeholders(item,workflow_params, params) for item in obj]
+        return [replace_placeholders(item, workflow_params, params, user_params_detail)
+                for item in obj]
     elif isinstance(obj, str):
         match = re.fullmatch(r"\{\{(\w+)\}\}", obj)
         if match:
             key = match.group(1)
-            return params.get(key, obj)
+            return get_param_value(key)
         else:
-
             def replacer(m):
-                return str(params.get(m.group(1), m.group(0)))
-
+                key = m.group(1)
+                return str(get_param_value(key))
             return re.sub(r"\{\{(\w+)\}\}", replacer, obj)
     else:
         return obj
+
 
 def validate_workflow_params(workflow_params: dict, user_params: dict):
     """
@@ -151,18 +169,14 @@ def validate_workflow_params(workflow_params: dict, user_params: dict):
     :raise: HTTPException if there is any inconsistency
     """
     extra_keys = [k for k in user_params if k not in workflow_params]
-
     errors = []
     if extra_keys:
         errors.append(f"Unexpected parameters: {', '.join(extra_keys)}")
-
     if errors:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="; ".join(errors)
         )
-
-
 
 async def load_and_populate_workflow(
         workflow_id: Workflow.id,
@@ -235,13 +249,3 @@ async def load_and_populate_workflow(
             )
 
     return populated_workflow_dict, output_node_id
-
-def get_valid_seed(seed):
-    """
-    Validate and return a seed value if not provided or invalid (0) generate a random one.
-    :param seed:
-    :return:
-    """
-    if not seed or seed == 0:
-        return random.randint(1, 2**32 - 1)
-    return seed

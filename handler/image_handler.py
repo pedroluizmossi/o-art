@@ -5,6 +5,7 @@ import uuid
 from typing import Any, Optional
 
 from fastapi import HTTPException, status
+from pydantic import ValidationError
 
 from core.comfy.comfy_core import ComfyUIError, execute_workflow
 from core.db_core import get_db_session
@@ -185,8 +186,9 @@ async def handle_generate_image(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Image generation failed: ComfyUI backend did not produce any image output.",
         )
-
-    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:
+    except HTTPException:
+        raise
+    except (OSError, ValueError, KeyError, ValidationError, json.JSONDecodeError) as e:
         logger.error(f"Workflow definition or parameter error for job {job_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

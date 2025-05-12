@@ -4,13 +4,13 @@
     "description": "Flux SVDQ Ultra Fast",
     "os_path": "svdq-int4-flux.1-dev",
     "model_type": "FLUX",
-    "parameters": {"positive_prompt": "Dog", "seed": 66}
+    "parameters": {"POSITIVE_PROMPT": "Dog", "SEED": 66}
   },
   {
     "name": "Flux Dev",
     "description": "Flux Dev FP8",
     "model_type": "FLUX",
     "os_path": "FLUX1/flux1-dev-fp8-e4m3fn.safetensors",
-    "parameters": {"positive_prompt": "Cat", "seed": 66}
+    "parameters": {"POSITIVE_PROMPT": "Cat", "SEED": 66}
   }
 ]
