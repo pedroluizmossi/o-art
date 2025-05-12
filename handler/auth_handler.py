@@ -18,7 +18,6 @@ if not domain_address:
 
 fief = FiefAsync(
     domain_address,
-    # Pega segredos do ambiente
     get_env_variable(Envs.FIEF_CLIENT_ID),
     get_env_variable(Envs.FIEF_CLIENT_SECRET),
 )

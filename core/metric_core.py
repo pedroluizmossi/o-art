@@ -101,3 +101,18 @@ class InfluxDBWriter:
             logger.exception(f"Error writing data to InfluxDB measurement '{measurement}': {e}")
             # Consider re-raising the exception if the calling code needs to handle it
             # raise e
+
+    def write_metric(
+        self,
+        measurement: str,
+        tags: dict,
+        fields: dict,
+    ):
+        """
+        Write a metric to InfluxDB.
+        Args:
+            measurement (str): The measurement name in InfluxDB.
+            tags (dict): A dictionary of tags to add to the point.
+            fields (dict): A dictionary of fields to add to the point.
+        """
+        self.write_data(measurement, tags, fields)

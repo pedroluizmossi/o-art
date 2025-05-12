@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from fief_client import FiefAccessTokenInfo
+from fief_client.client import Fief
 from fief_client.integrations.fastapi import FiefAuth
 
 from handler.auth_handler import domain_address, fief
@@ -13,6 +14,11 @@ scheme = OAuth2AuthorizationCodeBearer(
 )
 
 auth = FiefAuth(fief, scheme)
+base_fief = Fief(
+    domain_address,
+    client_id=fief.client_id,
+    client_secret=fief.client_secret,
+)
 
 router = APIRouter(
     prefix="/auth",
@@ -31,3 +37,5 @@ async def get_user(
 ,
 ):
     return access_token_info
+
+
