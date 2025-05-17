@@ -4,13 +4,117 @@
     "description": "Flux SVDQ Ultra Fast",
     "os_path": "svdq-int4-flux.1-dev",
     "model_type": "FLUX",
-    "parameters": {"POSITIVE_PROMPT": "Dog", "SEED": 66}
+    "parameters": [
+      {
+        "name": "POSITIVE_PROMPT",
+        "type": "TEXT",
+        "default": "a photo of a cat",
+        "required": true,
+        "order": 1
+      },
+      {
+        "name": "NEGATIVE_PROMPT",
+        "type": "TEXT",
+        "default": "bad image",
+        "required": false,
+        "order": 2
+      },
+      {
+        "name": "WIDTH",
+        "type": "NUMBER",
+        "default": 512,
+        "required": true,
+        "order": 3
+      },
+      {
+        "name": "HEIGHT",
+        "type": "NUMBER",
+        "default": 512,
+        "required": true,
+        "order": 4
+      },
+      {
+        "name": "SEED",
+        "type": "NUMBER",
+        "default": 0,
+        "required": true,
+        "order": 5,
+        "randomize": true
+      },
+      {
+        "name": "STEPS",
+        "type": "NUMBER",
+        "default": 20,
+        "required": true,
+        "order": 6
+      },
+      {
+        "name": "CFG",
+        "type": "NUMBER",
+        "default": 7.5,
+        "required": true,
+        "order": 7
+      }
+    ]
   },
   {
     "name": "Flux Dev",
     "description": "Flux Dev FP8",
     "model_type": "FLUX",
     "os_path": "FLUX1/flux1-dev-fp8-e4m3fn.safetensors",
-    "parameters": {"POSITIVE_PROMPT": "Cat", "SEED": 66}
+    "parameters": [
+      {
+        "name": "POSITIVE_PROMPT",
+        "type": "TEXT",
+        "default": "a photo of a cat",
+        "required": true,
+        "order": 1
+      },
+      {
+        "name": "NEGATIVE_PROMPT",
+        "type": "TEXT",
+        "default": "bad image",
+        "required": false,
+        "order": 2
+      },
+      {
+        "name": "WIDTH",
+        "type": "NUMBER",
+        "default": 512,
+        "required": true,
+        "order": 3
+      },
+      {
+        "name": "HEIGHT",
+        "type": "NUMBER",
+        "default": 512,
+        "required": true,
+        "order": 4
+      },
+      {
+        "name": "SEED",
+        "type": "NUMBER",
+        "default": 0,
+        "required": true,
+        "order": 5,
+        "randomize": true,
+        "min_value": 0,
+        "max_value": 4294967296
+      },
+      {
+        "name": "STEPS",
+        "type": "NUMBER",
+        "default": 20,
+        "required": true,
+        "order": 6
+      },
+      {
+        "name": "CFG",
+        "type": "NUMBER",
+        "default": 7.5,
+        "required": true,
+        "order": 7
+      }
+    ]
   }
 ]
