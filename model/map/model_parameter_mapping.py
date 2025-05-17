@@ -4,6 +4,26 @@ from typing import Any
 from pydantic import BaseModel, Field, field_validator
 
 
+class ParameterDetailEnum(Enum):
+    randomize = "randomize"
+    min_value = "min_value"
+    max_value = "max_value"
+
+class ParameterDetalType(Enum):
+    """
+    Enum to represent the type of parameter.
+    """
+    TEXT = "TEXT"
+    TEXTAREA = "TEXTAREA"
+    SELECT = "SELECT"
+    NUMBER = "NUMBER"
+    BOOLEAN = "BOOLEAN"
+    IMAGE = "IMAGE"
+    FILE = "FILE"
+    JSON = "JSON"
+    IMAGE_UPLOAD = "IMAGE_UPLOAD"
+
+
 class ParameterDetail(BaseModel):
     """
     A class to represent the details of a parameter.
@@ -11,7 +31,10 @@ class ParameterDetail(BaseModel):
     name: str = Field(..., description="Name of the parameter")
     description: str = Field(default=None, description="Description of the parameter")
     example: Any = Field(default=None, description="Example value for the parameter")
-    type: str = Field(..., description="Type of the parameter")
+    type: ParameterDetalType = Field(
+        default=ParameterDetalType.TEXT,
+        description="Type of the parameter"
+    )
     default: Any = Field(..., description="Default value of the parameter")
     required: bool = Field(..., description="Whether the parameter is required")
     order: int = Field(
@@ -48,7 +71,3 @@ class ParameterDetail(BaseModel):
             raise ValueError("Randomize must be a boolean value")
         return v
 
-class ParameterDetailEnum(Enum):
-    randomize = "randomize"
-    min_value = "min_value"
-    max_value = "max_value"
