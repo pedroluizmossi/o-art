@@ -61,8 +61,15 @@
     "name": "Flux Dev",
     "description": "Flux Dev FP8",
     "model_type": "FLUX",
-    "os_path": "FLUX1/flux1-dev-fp8-e4m3fn.safetensors",
+    "os_path": "FLUX1/flux1-dev-fp8.safetensors",
     "parameters": [
+      {
+        "name": "MODEL_PATH",
+        "type": "TEXT",
+        "default": "FLUX1/flux1-dev-fp8.safetensors",
+        "required": true,
+        "order": 99
+      },
       {
         "name": "POSITIVE_PROMPT",
         "type": "TEXT",
