@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
 
+from sqlalchemy.orm import load_only
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -45,6 +46,26 @@ async def get_all_workflows(session: AsyncSession) -> list[Workflow]:
     """Retrieves all workflows from the database."""
     try:
         statement = select(Workflow)
+        workflows = await session.exec(statement)
+        workflows = workflows.all()
+        return workflows
+    except Exception as e:
+        logger.exception("Error retrieving all workflows: %s", e)
+        raise e
+
+async def get_all_workflows_simplified(session: AsyncSession) -> list[Workflow]:
+    """Retrieves all workflows from the database."""
+    try:
+        statement = select(Workflow).options(
+            load_only(
+                Workflow.id,
+                Workflow.name,
+                Workflow.description,
+                Workflow.model_type,
+                Workflow.model_id,
+                Workflow.created_at,
+            )
+        )
         workflows = await session.exec(statement)
         workflows = workflows.all()
         return workflows

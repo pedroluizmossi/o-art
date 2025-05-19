@@ -98,12 +98,12 @@ async def delete_image_handler(image_id: uuid.UUID) -> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error") from e
 
-async def save_output_images_to_bucket(object_name: str, node_id: str, images: list[bytes]) -> None:
+async def save_output_image_to_bucket(object_name: str, node_id: str, images: list[bytes]) -> None:
     if isinstance(images, list) and images and isinstance(images[0], bytes):
         logger.info(f"Saving output images to bucket for node {node_id}.")
         byte_stream = io.BytesIO()
-        for img in images:
-            byte_stream.write(img)
+        for image in images:
+            byte_stream.write(image)
         byte_stream.seek(0)
         upload_bytes_to_bucket(
             BUCKET_NAME,
@@ -226,16 +226,18 @@ async def get_output_images(
     params: dict[str, Any],
 ) -> dict[str, list[bytes]]:
     output_images = workflow_outputs[node_id]
-    await save_output_images_to_bucket(object_name, node_id, output_images)
-    url = f"{BUCKET_NAME}/{object_name}{FILE_EXTENSION}"
-    await create_image_handler(
-        url=url,
-        workflow_id=workflow_id,
-        user_id=user_id,
-        user_folder_id=folder_id,
-        parameters=params,
-    )
-    logger.info(f"Image created successfully for job {job_id} in node {node_id}.")
+    for index, image_bytes in enumerate(output_images):
+        object_name_with_index = f"{object_name}_{index}"
+        await save_output_image_to_bucket(object_name_with_index, node_id, [image_bytes])
+        url = f"{BUCKET_NAME}/{object_name_with_index}{FILE_EXTENSION}"
+        await create_image_handler(
+            url=url,
+            workflow_id=workflow_id,
+            user_id=user_id,
+            user_folder_id=folder_id,
+            parameters=params,
+        )
+        logger.info(f"Image {index} created successfully for job {job_id} in node {node_id}.")
     return {node_id: output_images}
 
 

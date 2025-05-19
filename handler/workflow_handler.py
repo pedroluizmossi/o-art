@@ -15,6 +15,7 @@ from service.workflow_service import (
     create_workflow,
     delete_workflow,
     get_all_workflows,
+    get_all_workflows_simplified,
     get_workflow_by_id,
     update_workflow,
 )
@@ -62,9 +63,9 @@ def validate_extra_params(params, allowed_params):
 
 def randomize_workflow_params(workflow_params, params):
     for param in workflow_params:
-        if param.get(ParameterDetailEnum.randomize):
-            min_value = param.get(ParameterDetailEnum.min_value)
-            max_value = param.get(ParameterDetailEnum.max_value)
+        if param.get(ParameterDetailEnum.randomize.name):
+            min_value = param.get(ParameterDetailEnum.min_value.name)
+            max_value = param.get(ParameterDetailEnum.max_value.name)
             if min_value is not None and max_value is not None:
                 params[param["name"]] = random.randint(min_value, max_value)
             else:
@@ -75,6 +76,7 @@ def randomize_workflow_params(workflow_params, params):
                         f"but no min_value or max_value defined."
                     ),
                 )
+    return params
 
 def create_placeholder_replacer(params, workflow_defaults):
     placeholder_pattern = re.compile(r"{{(.*?)}}")
@@ -108,7 +110,7 @@ async def replace_placeholders(obj, workflow_params, params, plan_id, workflow_m
         await handle_model_parameters(params, allowed_params, workflow_defaults)
 
     validate_extra_params(params, allowed_params)
-    randomize_workflow_params(workflow_params, params)
+    params = randomize_workflow_params(workflow_params, params)
 
     replacer = create_placeholder_replacer(params, workflow_defaults)
     return await process_object(obj, replacer)
@@ -195,6 +197,14 @@ async def get_all_workflows_handler() -> list[Workflow]:
     """
     async with get_db_session() as session:
         workflows = await get_all_workflows(session)
+    return workflows
+
+async def get_all_workflows_simplified_handler() -> list[Workflow]:
+    """
+    Get all workflows with simplified details.
+    """
+    async with get_db_session() as session:
+        workflows = await get_all_workflows_simplified(session)
     return workflows
 
 async def get_workflow_by_id_handler(

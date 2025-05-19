@@ -449,7 +449,7 @@
         "inputs": {
           "width": "{{WIDTH}}",
           "height": "{{HEIGHT}}",
-          "batch_size": 1
+          "batch_size": "{{BATCH_SIZE}}"
         },
         "class_type": "EmptyLatentImage",
         "_meta": {
@@ -468,7 +468,7 @@
       {
         "name": "MODEL_PATH",
         "type": "TEXT",
-        "default": null,
+        "default": "FLUX1/flux1-dev-fp8.safetensors",
         "required": false,
         "order": 98
       },
@@ -523,6 +523,13 @@
         "default": 7.5,
         "required": true,
         "order": 7
+      },
+      {
+        "name": "BATCH_SIZE",
+        "type": "NUMBER",
+        "default": 1,
+        "required": true,
+        "order": 8
       }
     ]
   }
