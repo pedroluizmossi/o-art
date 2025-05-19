@@ -41,7 +41,8 @@ class GenerateImageRequest(BaseModel):
     )
 
 
-@router.post("/generate", description="Generate an image using a workflow. Only the first image will be returned.")
+@router.post("/generate", description="Generate an image using a workflow. "
+                                      "Only the first image will be returned.")
 async def generate(
     request_data: GenerateImageRequest,
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),  # noqa: B008
