@@ -1,3 +1,4 @@
+import base64
 import io
 import json
 import os
@@ -128,7 +129,7 @@ async def handle_generate_image(
     try:
         user = await get_user_by_id_handler(user_id)
         plan_id = user.plan_id
-        populated_workflow, output_node_id = await load_and_populate_workflow(
+        populated_workflow, output_params = await load_and_populate_workflow(
             workflow_id,
             params,
             plan_id
@@ -141,16 +142,32 @@ async def handle_generate_image(
                 detail="Image generation failed: No output received from ComfyUI backend.",
             )
 
-        return await process_output_images(
-            object_name,
-            job_id,
-            workflow_id,
-            workflow_outputs,
-            output_node_id,
-            folder_id,
-            user_id,
-            params
-        )
+        processed_output_params = []
+
+        for param in output_params:
+            output_node_id = param.get("node_id")
+            if not output_node_id:
+                logger.warning(f"Output node ID not found for job {job_id}.")
+                continue
+            if output_node_id:
+                images = await process_output_images(
+                    object_name,
+                    job_id,
+                    workflow_id,
+                    workflow_outputs,
+                    output_node_id,
+                    folder_id,
+                    user_id,
+                    params,
+                )
+                for image_bytes in images[output_node_id]:
+                    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+                    processed_param = param.copy()
+                    processed_param["processed_image"] = image_base64
+                    processed_output_params.append(processed_param)
+
+        return processed_output_params
+
     except HTTPException:
         raise
     except (OSError, ValueError, KeyError, ValidationError, json.JSONDecodeError) as e:

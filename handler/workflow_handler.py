@@ -8,7 +8,10 @@ from fastapi import HTTPException, status
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
 from handler.model_handler import get_model_by_id_handler
-from model.map.model_parameter_mapping import ParameterDetailEnum
+from model.map.model_parameter_mapping import (
+    ParameterDetailEnum,
+    ParameterDetailInputOrOutputType,
+)
 from model.model_model import Model
 from model.workflow_model import Workflow, WorkflowCreate, WorkflowUpdate
 from service.workflow_service import (
@@ -66,8 +69,9 @@ def randomize_workflow_params(workflow_params, params):
         if param.get(ParameterDetailEnum.randomize.name):
             min_value = param.get(ParameterDetailEnum.min_value.name)
             max_value = param.get(ParameterDetailEnum.max_value.name)
-            if min_value is not None and max_value is not None:
-                params[param["name"]] = random.randint(min_value, max_value)
+            if min_value is not None and max_value is not None and param:
+                if param["name"] not in params or params[param["name"]] is None:
+                    params[param["name"]] = random.randint(min_value, max_value)
             else:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -139,27 +143,14 @@ async def load_and_populate_workflow(
         workflow_model_type=workflow.model_type.value
     )
 
-    output_node_id = next(
-        (node_id for node_id, node_data in populated_workflow_dict.items()
-         if node_data.get("_meta", {}).get("title") == "{{output_node_id}}"),
-        None
-    )
+    output_params = [
+        param
+        for param in workflow.parameters
+        if param.get(ParameterDetailEnum.input_or_output.name)
+        == ParameterDetailInputOrOutputType.OUTPUT.name
+    ]
 
-    if not output_node_id:
-        save_image_nodes = [
-            node_id for node_id, node_data in populated_workflow_dict.items()
-            if node_data.get("class_type") == "SaveImage"
-        ]
-        if save_image_nodes:
-            output_node_id = save_image_nodes[0]
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Workflow '{workflow_id}' does not define an output node."
-            )
-
-    return populated_workflow_dict, output_node_id
-
+    return populated_workflow_dict, output_params
 
 async def create_workflow_handler(
     workflow_data: WorkflowCreate,

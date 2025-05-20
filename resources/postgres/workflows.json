@@ -305,7 +305,7 @@
         },
         "class_type": "SaveImage",
         "_meta": {
-          "title": "Save Image - {{output_node_id}}"
+          "title": "Save Image - {{OUTPUT}}"
         }
       },
       "10": {
@@ -530,6 +530,15 @@
         "default": 1,
         "required": true,
         "order": 8
+      },
+      {
+        "name": "OUTPUT",
+        "type": "IMAGE",
+        "default": 1,
+        "required": true,
+        "order": 80,
+        "input_or_output": "OUTPUT",
+        "node_id": "9"
       }
     ]
   }
