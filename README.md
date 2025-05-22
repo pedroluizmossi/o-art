@@ -144,7 +144,7 @@ A API é organizada em torno de recursos principais, cada um com seus próprios 
 * **`core/`**: Módulos centrais do sistema.
     * **`comfy/`**: Lógica de integração com o `ComfyUI`.
         * `__init__.py`: Exporta funcionalidades dos submódulos.
-        * `comfy_core.py`: Agregador de funcionalidades (parece ser um ponto de exportação unificado).
+        * `comfy_core.py`: Agregador de funcionalidades.
         * `config.py`: Configurações específicas do ComfyUI (endereço do servidor, contexto SSL, fila de preview).
         * `connection.py`: Funções para conectar via WebSocket, enfileirar prompts, obter histórico e status da fila.
         * `exceptions.py`: Exceção customizada `ComfyUIError`.
