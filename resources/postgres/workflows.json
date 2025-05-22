@@ -97,7 +97,7 @@
       "17": {
         "inputs": {
           "scheduler": "sgm_uniform",
-          "steps": 30,
+          "steps": "{{STEPS}}",
           "denoise": 1,
           "model": [
             "30",
@@ -149,8 +149,8 @@
       },
       "27": {
         "inputs": {
-          "width": 768,
-          "height": 1360,
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
           "batch_size": 1
         },
         "class_type": "EmptySD3LatentImage",
@@ -162,8 +162,8 @@
         "inputs": {
           "max_shift": 1.15,
           "base_shift": 0.5,
-          "width": 768,
-          "height": 1360,
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
           "model": [
             "45",
             0
@@ -204,10 +204,60 @@
         }
       }
     },
-    "parameters": {
-      "POSITIVE_PROMPT": "Dog",
-      "SEED": 66
-    }
+    "parameters": [
+      {
+        "name": "POSITIVE_PROMPT",
+        "type": "TEXT",
+        "default": "a photo of a cat",
+        "required": true,
+        "order": 1
+      },
+      {
+        "name": "NEGATIVE_PROMPT",
+        "type": "TEXT",
+        "default": "bad image",
+        "required": false,
+        "order": 2
+      },
+      {
+        "name": "WIDTH",
+        "type": "NUMBER",
+        "default": 1024,
+        "required": true,
+        "order": 3
+      },
+      {
+        "name": "HEIGHT",
+        "type": "NUMBER",
+        "default": 1024,
+        "required": true,
+        "order": 4
+      },
+      {
+        "name": "SEED",
+        "type": "NUMBER",
+        "default": 0,
+        "required": true,
+        "order": 5,
+        "randomize": true,
+        "min_value": 0,
+        "max_value": 4294967296
+      },
+      {
+        "name": "STEPS",
+        "type": "NUMBER",
+        "default": 20,
+        "required": true,
+        "order": 6
+      },
+      {
+        "name": "CFG",
+        "type": "NUMBER",
+        "default": 7.5,
+        "required": true,
+        "order": 7
+      }
+    ]
   },
   {
     "name": "Flux Dev",
@@ -255,7 +305,7 @@
         },
         "class_type": "SaveImage",
         "_meta": {
-          "title": "Save Image - {{output_node_id}}"
+          "title": "Save Image - {{OUTPUT}}"
         }
       },
       "10": {
@@ -308,8 +358,8 @@
             0
           ],
           "latent_image": [
-            "38",
-            4
+            "40",
+            0
           ]
         },
         "class_type": "SamplerCustomAdvanced",
@@ -329,7 +379,7 @@
       "17": {
         "inputs": {
           "scheduler": "simple",
-          "steps": 30,
+          "steps": "{{STEPS}}",
           "denoise": 1,
           "model": [
             "30",
@@ -383,14 +433,8 @@
         "inputs": {
           "max_shift": 1.15,
           "base_shift": 0.5,
-          "width": [
-            "38",
-            0
-          ],
-          "height": [
-            "38",
-            1
-          ],
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
           "model": [
             "12",
             0
@@ -401,25 +445,101 @@
           "title": "ModelSamplingFlux"
         }
       },
-      "38": {
+      "40": {
         "inputs": {
-          "width": 1024,
-          "height": 1024,
-          "aspect_ratio": "3:2 landscape 1216x832",
-          "swap_dimensions": "Off",
-          "upscale_factor": 1,
-          "batch_size": 1
+          "width": "{{WIDTH}}",
+          "height": "{{HEIGHT}}",
+          "batch_size": "{{BATCH_SIZE}}"
         },
-        "class_type": "CR SDXL Aspect Ratio",
+        "class_type": "EmptyLatentImage",
         "_meta": {
-          "title": "🔳 CR SDXL Aspect Ratio"
+          "title": "Empty Latent Image"
         }
       }
     },
-    "parameters": {
-      "POSITIVE_PROMPT": "Dog",
-      "SEED": 66,
-      "MODEL_PATH": "FLUX1/flux_fp8.safetensors"
-    }
+    "parameters": [
+      {
+        "name": "MODEL_ID",
+        "type": "TEXT",
+        "default": null,
+        "required": true,
+        "order": 99
+      },
+      {
+        "name": "MODEL_PATH",
+        "type": "TEXT",
+        "default": "FLUX1/flux1-dev-fp8.safetensors",
+        "required": false,
+        "order": 98
+      },
+      {
+        "name": "POSITIVE_PROMPT",
+        "type": "TEXT",
+        "default": "a photo of a cat",
+        "required": true,
+        "order": 1
+      },
+      {
+        "name": "NEGATIVE_PROMPT",
+        "type": "TEXT",
+        "default": "bad image",
+        "required": false,
+        "order": 2
+      },
+      {
+        "name": "WIDTH",
+        "type": "NUMBER",
+        "default": 1024,
+        "required": true,
+        "order": 3
+      },
+      {
+        "name": "HEIGHT",
+        "type": "NUMBER",
+        "default": 1024,
+        "required": true,
+        "order": 4
+      },
+      {
+        "name": "SEED",
+        "type": "NUMBER",
+        "default": 0,
+        "required": true,
+        "order": 5,
+        "randomize": true,
+        "min_value": 0,
+        "max_value": 4294967296
+      },
+      {
+        "name": "STEPS",
+        "type": "NUMBER",
+        "default": 20,
+        "required": true,
+        "order": 6
+      },
+      {
+        "name": "CFG",
+        "type": "NUMBER",
+        "default": 7.5,
+        "required": true,
+        "order": 7
+      },
+      {
+        "name": "BATCH_SIZE",
+        "type": "NUMBER",
+        "default": 1,
+        "required": true,
+        "order": 8
+      },
+      {
+        "name": "OUTPUT",
+        "type": "IMAGE",
+        "default": 1,
+        "required": true,
+        "order": 80,
+        "input_or_output": "OUTPUT",
+        "node_id": "9"
+      }
+    ]
   }
 ]

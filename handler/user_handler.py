@@ -6,12 +6,15 @@ from pydantic import ValidationError
 from pydantic.v1.datetime_parse import parse_datetime
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from api.plan_api import get_plans
 from core.db_core import get_db_session
 from core.fief_core import FiefHttpClient
 from core.logging_core import setup_logger
 from core.minio_core import default_bucket_name, upload_bytes_to_bucket
+from handler.plan_handler import get_first_plan_by_price_handler
 from handler.user_folder_handler import create_user_folder_handler
 from model.enum.fief_type_webhook import FiefTypeWebhook
+from model.plan_model import Plan
 from model.user_model import User
 from service.user_service import (
     create_user,
@@ -88,6 +91,11 @@ async def create_user_handler(user_data: User) -> User:
     try:
         async with get_db_session() as session:
             try:
+                if user_data.plan_id is None:
+                    plan: Plan = await get_first_plan_by_price_handler()
+                    user_data.plan_id = plan.id
+                elif user_data.plan_id not in [plan.id for plan in await get_plans()]:
+                    raise ValueError("Invalid plan ID.")
                 user = await create_user(session, user_data)
                 await create_user_folder_handler(
                     user_id=user.id,

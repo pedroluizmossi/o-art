@@ -8,6 +8,7 @@ from handler.workflow_handler import (
     create_workflow_handler,
     delete_workflow_handler,
     get_all_workflows_handler,
+    get_all_workflows_simplified_handler,
     get_workflow_by_id_handler,
     update_workflow_handler,
 )
@@ -35,6 +36,14 @@ async def get_workflows(
     Lists all available workflows.
     """
     return await get_all_workflows_handler()
+
+@router.get("/simplified", response_model=list[Workflow])
+async def get_workflows_simplified(
+):
+    """
+    Lists all available workflows.
+    """
+    return await get_all_workflows_simplified_handler()
 
 @router.get("/{workflow_id}", response_model=Workflow)
 async def get_workflow(

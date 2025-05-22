@@ -15,7 +15,7 @@ logger = setup_logger(__name__)
 
 router = APIRouter(
     prefix="/user/image",
-    tags=["user","image"],
+    tags=["user"],
 )
 
 ### tags_metadata -> resources/openapi_tags_metadata.py

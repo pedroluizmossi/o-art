@@ -120,3 +120,16 @@ async def seed_plan_from_json(session, json_path):
             logger.info(f"Model '{name}' already exists. Skipping insertion.")
     await session.commit()
 
+async def get_first_plan_by_price(session: AsyncSession, price: float) -> Optional[Plan]:
+    """Retrieves the first plan with a specific price."""
+    try:
+        statement = select(Plan).where(Plan.price == price)
+        plan = await session.exec(statement)
+        plan = plan.first()
+        if not plan:
+            logger.warning("No plan found with price %s.", price)
+            return None
+        return plan
+    except Exception as e:
+        logger.exception("Error retrieving plan by price %s: %s", price, e)
+        raise e

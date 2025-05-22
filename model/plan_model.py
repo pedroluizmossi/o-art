@@ -6,7 +6,7 @@ from pydantic import field_validator
 from sqlalchemy import JSON, Column, DateTime
 from sqlmodel import Field, SQLModel
 
-from model.map.model_parameter_mapping import Parameters
+from model.map.model_parameter_mapping import ParameterDetail
 from model.map.segment_parameter_mapping import WorkflowSegment
 from model.map.type_parameter_mapping import WorkflowType
 
@@ -18,9 +18,9 @@ class PlanBase(SQLModel):
     is_active: bool = Field(default=True)
 
 class PlanParameters(PlanBase):
-    model_parameters: Parameters = Field(
+    parameters: list[ParameterDetail] = Field(
         sa_column=Column(JSON, nullable=False),
-        default_factory=Parameters
+        default_factory=ParameterDetail
     )
     type_parameters: WorkflowType = Field(
         sa_column=Column(JSON, nullable=False),
@@ -30,17 +30,6 @@ class PlanParameters(PlanBase):
         sa_column=Column(JSON, nullable=False),
         default_factory=WorkflowSegment
     )
-
-    @field_validator("model_parameters", mode="before")
-    def ensure_parameters_rootmodel(cls, v):
-        # Already a Parameters model
-        if isinstance(v, Parameters):
-            return v
-        # If value is a dict, wrap it in Parameters
-        if isinstance(v, dict):
-            return Parameters(root=v)
-        # If value is None or something unexpected, raise
-        raise TypeError("parameters must be a dict or Parameters instance")
 
     @field_validator("type_parameters", mode="before")
     def ensure_workflow_type_rootmodel(cls, v):
@@ -91,6 +80,6 @@ class PlanUpdate(PlanParameters):
     description: Optional[str] = None
     price: Optional[float] = None
     is_active: Optional[bool] = None
-    model_parameters: Optional[Parameters] = None
+    parameters: Optional[ParameterDetail] = None
     type_parameters: Optional[WorkflowType] = None
     segment_parameters: Optional[WorkflowSegment] = None

@@ -1,7 +1,10 @@
+import base64
+from io import BytesIO
 from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from fief_client import FiefAccessTokenInfo
 from pydantic import BaseModel, Field
 
@@ -41,9 +44,10 @@ class GenerateImageRequest(BaseModel):
     )
 
 
-@router.post("/generate")
+@router.post("/generate", description="Generate an image using a workflow. ")
 async def generate(
     request_data: GenerateImageRequest,
+    retrieve_image: bool = False,
     access_token_info: FiefAccessTokenInfo = Depends(auth.authenticated()),  # noqa: B008
 ):
     user_id = access_token_info["id"]
@@ -51,7 +55,7 @@ async def generate(
     folder_id = request_data.folder_id
 
     try:
-        image_data = await handle_generate_image(
+        images_data = await handle_generate_image(
             user_id=user_id,
             folder_id=folder_id,
             job_id=job_id,
@@ -59,10 +63,13 @@ async def generate(
             params=request_data.parameters,
         )
 
-        if image_data:
-            first_node_id = next(iter(image_data))
-            first_image_bytes = image_data[first_node_id][0]
-            return Response(content=first_image_bytes, media_type="image/png")
+        if images_data:
+            if retrieve_image:
+                image_bytes = images_data[0]["processed_image"]
+                if isinstance(image_bytes, str):
+                    image_bytes = base64.b64decode(image_bytes)
+                return StreamingResponse(BytesIO(image_bytes), media_type="image/png")
+            return images_data
         else:
             raise HTTPException(
                 status_code=500,

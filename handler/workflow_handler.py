@@ -1,4 +1,4 @@
-import json
+import random
 import re
 from typing import Any, Optional
 from uuid import UUID
@@ -7,245 +7,203 @@ from fastapi import HTTPException, status
 
 from core.db_core import get_db_session
 from core.logging_core import setup_logger
-from model.map.model_parameter_mapping import ParameterDetail
+from handler.model_handler import get_model_by_id_handler
+from model.map.model_parameter_mapping import (
+    ParameterDetailEnum,
+    ParameterDetailInputOrOutputType,
+)
+from model.model_model import Model
 from model.workflow_model import Workflow, WorkflowCreate, WorkflowUpdate
 from service.workflow_service import (
-    WorkflowNotFound,
     create_workflow,
     delete_workflow,
     get_all_workflows,
+    get_all_workflows_simplified,
     get_workflow_by_id,
     update_workflow,
 )
 
 logger = setup_logger(__name__)
 
-async def get_all_workflows_handler() -> list[Workflow]:
-    """
-    Handler to retrieve all workflows.
-    """
-    try:
-        async with get_db_session() as session:
-            workflows = await get_all_workflows(session)
-        return workflows
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error retrieving workflows",
-        ) from e
+def preprocess_workflow_params(workflow_params):
+    workflow_defaults = {p["name"]: p.get("default") for p in workflow_params}
+    allowed_params = set(workflow_defaults.keys())
+    return workflow_defaults, allowed_params
 
-async def get_workflow_by_id_handler(workflow_id: UUID) -> Optional[Workflow]:
-    """
-    Handler to retrieve a workflow by its ID.
-    Returns the workflow or raises an HTTP 404 if not found.
-    """
-    try:
-        async with get_db_session() as session:
-            workflow = await get_workflow_by_id(session, workflow_id)
-        return workflow
-    except WorkflowNotFound as e:
+async def handle_model_parameters(params, allowed_params, workflow_defaults):
+    model: Model = await get_model_by_id_handler(params["MODEL_ID"])
+    if model is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=("Workflow with ID %s not found.", workflow_id),
-        ) from e
-    except Exception as e:
-        logger.exception("Unhandled error retrieving workflow %s: %s", workflow_id, e)
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Model with ID {params['MODEL_ID']} not found.",
+        )
+    model_params = {param["name"]: param.get("default") for param in model.parameters}
+    allowed_params.update(model_params.keys())
+    workflow_defaults.update(model_params)
+
+    for param in model.parameters:
+        if param.get("randomize"):
+            min_value = param.get("min_value")
+            max_value = param.get("max_value")
+            if min_value is not None and max_value is not None:
+                params[param["name"]] = random.randint(min_value, max_value)
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        f"Model parameter '{param['name']}' has randomize=True "
+                        f"but no min_value or max_value defined."
+                    ),
+                )
+
+def validate_extra_params(params, allowed_params):
+    extra_params = set(params.keys()) - allowed_params
+    if extra_params:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=("Error retrieving workflow with ID %s", workflow_id),
-        ) from e
-
-
-async def create_workflow_handler(workflow_data: WorkflowCreate) -> Workflow:
-    """
-    Handler to create a new workflow.
-    """
-    try:
-        async with get_db_session() as session:
-            workflow = await create_workflow(session, workflow_data)
-        return workflow
-    except Exception as e:
-        logger.exception("Unhandled error creating workflow %s: %s",
-                         getattr(workflow_data, "name", ""), e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating workflow",
-        ) from e
-
-async def update_workflow_handler(
-        workflow_id: Workflow.id,
-        workflow_update_data: WorkflowUpdate) -> Optional[Workflow]:
-    """
-    Handler to update a workflow by its ID.
-    """
-    try:
-        workflow_update_data = workflow_update_data.model_dump(exclude_unset=True)
-        async with get_db_session() as session:
-            workflow = await update_workflow(session, workflow_id, workflow_update_data)
-        return workflow
-    except WorkflowNotFound as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Workflow with ID {workflow_id} not found.",
-        ) from e
-    except ValueError as ve:
-        logger.error("Validation error updating workflow %s: %s", workflow_id, ve)
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Validation error: {ve}",
-        ) from ve
-    except Exception as e:
-        logger.exception("Unhandled error updating workflow %s: %s", workflow_id, e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error updating workflow",
-        ) from e
-
-async def delete_workflow_handler(workflow_id: Workflow.id) -> None:
-    """
-    Handler to delete a workflow by its ID.
-    """
-    try:
-        async with get_db_session() as session:
-            await delete_workflow(session, workflow_id)
-    except WorkflowNotFound as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Workflow with ID {workflow_id} not found.",
-        ) from e
-    except Exception as e:
-        logger.exception("Unhandled error deleting workflow %s: %s", workflow_id, e)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error deleting workflow",
-        ) from e
-
-def replace_placeholders(obj, workflow_params, params, user_params_detail=None):
-    """
-    Replace placeholders in the workflow template with actual parameter values.
-    Validate the parameters against the expected workflow parameters.
-    """
-    if user_params_detail is None:
-        validate_workflow_params(workflow_params, params)
-        try:
-            user_params_detail = ParameterDetail(**params)
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Invalid parameters: {e}",
-            ) from e
-
-    def get_param_value(key):
-        try:
-            return getattr(user_params_detail, key)
-        except AttributeError:
-            return f"{{{{{key}}}}}"
-
-    if isinstance(obj, dict):
-        return {k: replace_placeholders(v, workflow_params, params, user_params_detail)
-                for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [replace_placeholders(item, workflow_params, params, user_params_detail)
-                for item in obj]
-    elif isinstance(obj, str):
-        match = re.fullmatch(r"\{\{(\w+)\}\}", obj)
-        if match:
-            key = match.group(1)
-            return get_param_value(key)
-        else:
-            def replacer(m):
-                key = m.group(1)
-                return str(get_param_value(key))
-            return re.sub(r"\{\{(\w+)\}\}", replacer, obj)
-    else:
-        return obj
-
-
-def validate_workflow_params(workflow_params: dict, user_params: dict):
-    """
-    Validate if the parameters provided by the user match those defined in the workflow.
-    :param workflow_params: Expected parameters from the workflow (from the database)
-    :param user_params: Parameters sent by the user (from the API)
-    :raise: HTTPException if there is any inconsistency
-    """
-    extra_keys = [k for k in user_params if k not in workflow_params]
-    errors = []
-    if extra_keys:
-        errors.append(f"Unexpected parameters: {', '.join(extra_keys)}")
-    if errors:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="; ".join(errors)
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Extra parameters provided: {', '.join(extra_params)}",
         )
 
+def randomize_workflow_params(workflow_params, params):
+    for param in workflow_params:
+        if param.get(ParameterDetailEnum.randomize.name):
+            min_value = param.get(ParameterDetailEnum.min_value.name)
+            max_value = param.get(ParameterDetailEnum.max_value.name)
+            if min_value is not None and max_value is not None and param:
+                if param["name"] not in params or params[param["name"]] is None:
+                    params[param["name"]] = random.randint(min_value, max_value)
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        f"Parameter '{param['name']}' has randomize=True "
+                        f"but no min_value or max_value defined."
+                    ),
+                )
+    return params
+
+def create_placeholder_replacer(params, workflow_defaults):
+    placeholder_pattern = re.compile(r"{{(.*?)}}")
+
+    def replacer(value):
+        def replace_match(match):
+            placeholder = match.group(1)
+            if placeholder in params:
+                return str(params[placeholder])
+            elif placeholder in workflow_defaults:
+                return str(workflow_defaults[placeholder])
+            return match.group(0)
+
+        return placeholder_pattern.sub(replace_match, value)
+
+    return replacer
+
+async def process_object(obj, replacer):
+    if isinstance(obj, dict):
+        return {key: await process_object(value, replacer) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [await process_object(item, replacer) for item in obj]
+    elif isinstance(obj, str):
+        return replacer(obj)
+    return obj
+
+async def replace_placeholders(obj, workflow_params, params, plan_id, workflow_model_type):
+    workflow_defaults, allowed_params = preprocess_workflow_params(workflow_params)
+
+    if "MODEL_ID" in params:
+        await handle_model_parameters(params, allowed_params, workflow_defaults)
+
+    validate_extra_params(params, allowed_params)
+    params = randomize_workflow_params(workflow_params, params)
+
+    replacer = create_placeholder_replacer(params, workflow_defaults)
+    return await process_object(obj, replacer)
+
 async def load_and_populate_workflow(
-        workflow_id: Workflow.id,
-        params: dict[str, Any]) -> (dict[str, Any], str):
+    workflow_id: UUID,
+    params: dict[str, Any],
+    plan_id: Optional[UUID] = None
+) -> tuple[dict[str, Any], str]:
     """
     Load a workflow from the database and populate it with parameters.
-    :param workflow_id:
-    :param params:
-    :return:
     """
     async with get_db_session() as session:
         workflow = await get_workflow_by_id(session, workflow_id)
     if not workflow:
-        logger.error("Workflow with ID %s not found.", workflow_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Workflow with ID {workflow_id} not found.",
         )
-    workflow_template = workflow.workflow_json
-    workflow_params = workflow.parameters
-    populated_workflow_dict = replace_placeholders(workflow_template, workflow_params, params)
 
-    logger.debug(
-        "Populated workflow for job %s: %s",
-        params.get("job_id", "N/A"),
-        json.dumps(populated_workflow_dict, indent=2),
+    populated_workflow_dict = await replace_placeholders(
+        obj=workflow.workflow_json,
+        workflow_params = workflow.parameters,
+        params=params,
+        plan_id=plan_id,
+        workflow_model_type=workflow.model_type.value
     )
 
-    output_node_id = None
-    save_image_nodes = []
-    for node_id, node_data in populated_workflow_dict.items():
-        if (
-            isinstance(node_data.get("_meta", {}).get("title"), str)
-            and "{{output_node_id}}" in node_data["_meta"]["title"]
-        ):
-            if output_node_id is None:
-                output_node_id = node_id
-                logger.info(
-                    "Designated output node '{{output_node_id}}' found: Node %s",
-                    node_id,
-                )
-            else:
-                logger.warning(
-                    "Multiple nodes tagged with '{{output_node_id}}' "
-                    "found in workflow '%s'. Using the first one: %s",
-                    workflow_id,
-                    output_node_id,
-                )
-        if node_data.get("class_type") == "SaveImage":
-            save_image_nodes.append(node_id)
+    output_params = [
+        param
+        for param in workflow.parameters
+        if param.get(ParameterDetailEnum.input_or_output.name)
+        == ParameterDetailInputOrOutputType.OUTPUT.name
+    ]
 
-    if not output_node_id:
-        logger.warning(
-            "No node explicitly marked with '{{output_node_id}}' "
-            "in workflow '%s'. Will look for SaveImage nodes.",
-            workflow_id,
-        )
-        if save_image_nodes:
-            output_node_id = save_image_nodes[0]
-            logger.info("Using first SaveImage node as output: Node %s", output_node_id)
-        else:
-            logger.error(
-                "No '{{output_node_id}}' placeholder and no "
-                "SaveImage nodes found in workflow '%s'. Cannot determine output.",
-                workflow_id,
-            )
-            raise ValueError(
-                f"Workflow '{workflow_id}' does not define an output node ('{{output_node_id}}'"
-                f" or SaveImage type)."
-            )
+    return populated_workflow_dict, output_params
 
-    return populated_workflow_dict, output_node_id
+async def create_workflow_handler(
+    workflow_data: WorkflowCreate,
+) -> Workflow:
+    """
+    Create a new workflow.
+    """
+    async with get_db_session() as session:
+        workflow = await create_workflow(session, workflow_data)
+    return workflow
+
+async def update_workflow_handler(
+    workflow_id: UUID,
+    workflow_data: WorkflowUpdate,
+) -> Workflow:
+    """
+    Update an existing workflow.
+    """
+    async with get_db_session() as session:
+        workflow = await update_workflow(session, workflow_id, workflow_data)
+    return workflow
+
+async def delete_workflow_handler(
+    workflow_id: UUID,
+) -> None:
+    """
+    Delete a workflow by ID.
+    """
+    async with get_db_session() as session:
+        await delete_workflow(session, workflow_id)
+
+async def get_all_workflows_handler() -> list[Workflow]:
+    """
+    Get all workflows.
+    """
+    async with get_db_session() as session:
+        workflows = await get_all_workflows(session)
+    return workflows
+
+async def get_all_workflows_simplified_handler() -> list[Workflow]:
+    """
+    Get all workflows with simplified details.
+    """
+    async with get_db_session() as session:
+        workflows = await get_all_workflows_simplified(session)
+    return workflows
+
+async def get_workflow_by_id_handler(
+    workflow_id: UUID,
+) -> Optional[Workflow]:
+    """
+    Get a workflow by ID.
+    """
+    async with get_db_session() as session:
+        workflow = await get_workflow_by_id(session, workflow_id)
+    return workflow

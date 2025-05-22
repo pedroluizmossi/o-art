@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided.">
-      <change afterPath="$PROJECT_DIR$/comfy/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/connection.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/exceptions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/images.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/preview.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comfy/workflow.py" afterDir="false" />
+    <list default="true" id="061ea5ed-5158-4b41-9f37-6b36b005802a" name="Changes" comment="Add PlanModel and PlanWorkflow models with related handlers&#10;&#10;Introduce `PlanModel` and `PlanWorkflow` associative tables to manage many-to-many relationships for plans. Add `get_first_plan_by_price` function and handler to retrieve plans by price, integrating it into user initialization flow. Slight adjustment to `sync_users_handler` in initialization for better error handling.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comfy/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comfy/comfy_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/comfy/comfy_core.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/workflow_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handler/workflow_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/map/model_parameter_mapping.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/plan_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/plan_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/postgres/models.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/postgres/models.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/postgres/plans.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/postgres/plans.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/postgres/workflows.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/postgres/workflows.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +34,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/0.0.1" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -116,35 +114,35 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/0.0.2&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/0.0.3&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/pedro/PycharmProjects/o-art/api&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/pedro/PycharmProjects/o-art/model&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.28409094&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model" />
       <recent name="$PROJECT_DIR$/api" />
       <recent name="$PROJECT_DIR$/handler" />
-      <recent name="$PROJECT_DIR$/model" />
       <recent name="$PROJECT_DIR$/service" />
       <recent name="$PROJECT_DIR$/resources/postgres" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/core" />
       <recent name="$PROJECT_DIR$/tests/core" />
       <recent name="$PROJECT_DIR$/tests/utils" />
       <recent name="$PROJECT_DIR$/model/map" />
       <recent name="C:\Users\pedro\PycharmProjects\art\core" />
-      <recent name="C:\Users\pedro\PycharmProjects\art\api" />
     </key>
   </component>
   <component name="RunManager" selected="FastAPI.art">
@@ -195,36 +193,36 @@
       </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_workflow_service.TestDeleteWorkflow.test_delete_workflow_not_found" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_user_handler.test_handle_user_webhook_unknown_type" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="art" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/service" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_workflow_service.TestDeleteWorkflow.test_delete_workflow_not_found&quot;" />
+      <option name="_new_target" value="&quot;test_user_handler.test_handle_user_webhook_unknown_type&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_workflow_service.TestUpdateWorkflow.test_update_workflow_not_found" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests in test_user_handler.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="art" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/service" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_workflow_service.TestUpdateWorkflow.test_update_workflow_not_found&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_user_handler.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
@@ -243,13 +241,13 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for test_user_service" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for test_user_handler" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="art" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/service" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/Scripts/python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -257,7 +255,7 @@
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_user_service&quot;" />
+      <option name="_new_target" value="&quot;test_user_handler&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -265,18 +263,18 @@
       <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
       <item itemvalue="FastAPI.art" />
       <item itemvalue="Python.Worker" />
-      <item itemvalue="Python tests.Python tests for test_workflow_service.TestDeleteWorkflow.test_delete_workflow_not_found" />
-      <item itemvalue="Python tests.Python tests for test_workflow_service.TestUpdateWorkflow.test_update_workflow_not_found" />
+      <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
+      <item itemvalue="Python tests.Python tests in test_user_handler.py" />
+      <item itemvalue="Python tests.pytest for test_user_handler" />
       <item itemvalue="Python tests.Python tests in tests" />
-      <item itemvalue="Python tests.pytest for test_user_service" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_workflow_service.TestDeleteWorkflow.test_delete_workflow_not_found" />
-        <item itemvalue="Python tests.Python tests for test_workflow_service.TestUpdateWorkflow.test_update_workflow_not_found" />
-        <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
+        <item itemvalue="Python tests.pytest for test_user_handler" />
         <item itemvalue="Python tests.Python tests in tests" />
-        <item itemvalue="Python tests.pytest for test_user_service" />
+        <item itemvalue="Python tests.Python tests in test_user_handler.py" />
+        <item itemvalue="Python tests.Python tests for test_user_handler.test_handle_user_webhook_unknown_type" />
+        <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
@@ -351,63 +349,11 @@
       <workItem from="1746914432961" duration="7935000" />
       <workItem from="1746932432524" duration="2041000" />
       <workItem from="1746934480574" duration="7228000" />
-      <workItem from="1746987301861" duration="538000" />
-    </task>
-    <task id="LOCAL-00003" summary="Refactor and enhance prompt handling and logging features&#10;&#10;Refactored `comfy_core` to improve error handling, logging, and modularization for prompt execution and image generation. Introduced `logging_core` for centralized log management with rotation and cleanup. Updated `config.ini` and `config_core` to include logging configurations.">
-      <option name="closed" value="true" />
-      <created>1744859366959</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1744859366959</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Refactor to modularize and enhance database and logging setup&#10;&#10;Separated database, logging, and InfluxDB functionalities into dedicated modules under the `core` directory for better organization and reusability. Updated user model with UUIDs and timestamps while introducing `User` as the primary table. Replaced the utility-based `metric_core` with an OOP-based `InfluxDBWriter` class to improve maintainability.">
-      <option name="closed" value="true" />
-      <created>1744861212667</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1744861212667</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Add user webhook handling and database interaction logic&#10;&#10;Introduced a `handle_user_webhook` function to process user-related webhooks and store user data in the database. Updated the `User` model with utility methods for database insertion and logging improvements. Refactored database session handling and included webhook type enumeration for better structure and scalability.">
-      <option name="closed" value="true" />
-      <created>1744862928295</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1744862928295</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Refactor handlers and APIs, add tests for user webhooks&#10;&#10;Refactored user handling logic to support CRUD operations for webhooks. Updated `Config` to dynamically determine the configuration file path. Split `/generate` route into a dedicated `image_api` module. Added comprehensive tests for user webhook handlers.">
-      <option name="closed" value="true" />
-      <created>1744975147178</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1744975147178</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Add WebSocket support and optimize queue handling logic&#10;&#10;Introduced a WebSocket API for real-time queue updates and adjusted queue filtering for better efficiency. Refactored authentication handler logic and enhanced image generation API with token-based user identification. Updated dependencies and removed redundant code for improved maintainability.">
-      <option name="closed" value="true" />
-      <created>1744992601810</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1744992601810</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Add InfluxDB metrics and refactor image generation logic&#10;&#10;Introduced InfluxDB metrics tracking in the `check_queue` function to monitor queue status. Refactored image generation to use a dedicated handler, improving structure and readability. Also added a background task for queue monitoring during app startup.">
-      <option name="closed" value="true" />
-      <created>1744996424117</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1744996424117</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Integrate Celery for queue handling and enhance logging setup&#10;&#10;Replaced manual queue checks with Celery for distributed task management, including worker and beat processes. Introduced Redis configuration support and updated the logging system to ensure UTF-8 encoding consistency. Adjusted main application lifecycle management to handle worker/beat subprocesses and improved log cleanup logic for better reliability.">
-      <option name="closed" value="true" />
-      <created>1745026501304</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1745026501304</updated>
+      <workItem from="1746987301861" duration="21668000" />
+      <workItem from="1747365618357" duration="3303000" />
+      <workItem from="1747407236983" duration="776000" />
+      <workItem from="1747439884891" duration="2112000" />
+      <workItem from="1747442003215" duration="6420000" />
     </task>
     <task id="LOCAL-00010" summary="Add workflow execution logic and enhance image generation API.&#10;&#10;Introduced a modular workflow execution system for ComfyUI, replacing static prompts with dynamic, parameterized workflows. Updated API to validate and handle user-specified workflows with error handling. Streamlined image generation logic into reusable functions, supporting placeholders in workflows for customization and flexibility.">
       <option name="closed" value="true" />
@@ -745,7 +691,63 @@
       <option name="project" value="LOCAL" />
       <updated>1746940880480</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="Add `workflow.py` for workflow execution and queue management&#10;&#10;Introduced `workflow.py` to enable ComfyUI workflows and queue handling. Includes functions for WebSocket-based workflow execution, queue metric logging, and error management. Refactored related code in `comfy_core` by moving primary workflow logic for improved modularity and maintainability.">
+      <option name="closed" value="true" />
+      <created>1746988240160</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1746988240160</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Refactor imports to use `core.comfy` module structure&#10;&#10;Updated all imports from `comfy` to `core.comfy` to align with the new folder structure. This change improves code organization and ensures consistency across the project.">
+      <option name="closed" value="true" />
+      <created>1746988589220</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1746988589220</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Refactor parameters handling and improve placeholder replacement&#10;&#10;Revised parameter validation and placeholder replacement logic in workflows for better extensibility and error handling. Introduced `ParameterDetail` and updated schemas to ensure flexibility and validation checks. Deprecated random seed generation and legacy placeholder replacement patterns in favor of structured approaches.">
+      <option name="closed" value="true" />
+      <created>1747009602663</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1747009602663</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Refactor parameter handling and improve type annotations.&#10;&#10;Replaced generic `dict` with `ParameterDetail` for parameters in models to enforce stricter type checks. Enhanced field metadata with examples for better documentation and updated `Sampler` enum to inherit from `str` for serialization consistency. Adjusted `MODEL_ID` to use `UUID` for improved clarity and validation.">
+      <option name="closed" value="true" />
+      <created>1747011860486</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1747011860486</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Refactor workflow handling with plan-based validation&#10;&#10;Replaced hardcoded workflow parameter validation with a flexible, plan-based approach. Added exception handling decorators for improved code reuse and clarity. Simplified and optimized placeholder replacement logic, ensuring compatibility with new plan-level constraints.">
+      <option name="closed" value="true" />
+      <created>1747018901161</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1747018901161</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Refactor image generation logic into smaller helper functions&#10;&#10;Extracted reusable logic into `process_output_images`, `get_output_images`, and `handle_comfyui_error` to improve modularity and readability. This also reduces code duplication and enhances error handling for image generation workflows.">
+      <option name="closed" value="true" />
+      <created>1747019353495</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1747019353495</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Add PlanModel and PlanWorkflow models with related handlers&#10;&#10;Introduce `PlanModel` and `PlanWorkflow` associative tables to manage many-to-many relationships for plans. Add `get_first_plan_by_price` function and handler to retrieve plans by price, integrating it into user initialization flow. Slight adjustment to `sync_users_handler` in initialization for better error handling.">
+      <option name="closed" value="true" />
+      <created>1747023192626</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1747023192626</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -763,19 +765,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add workflow models and enums for database integration&#10;&#10;Introduced new database models for workflows and images, along with enums for workflow types, segments, and model types. Updated `main.py` to include these models and adjusted related configurations and dependencies." />
-    <MESSAGE value="Add Workflow and Image models with enums and integrate into the project.  &#10;&#10;1. **`workflow_model.py`:** Added Workflow schema for database interactions.  &#10;2. **`image_model.py`:** Added Image schema with workflow and user relationships.  &#10;3. **Enums:** Created `Model`, `WorkflowType`, and `WorkflowSegment` for workflow and image classification.  &#10;4. **`main.py`:** Imported new models for database use.  &#10;5. **Fixes:** Corrected paths in JSON and `docker-compose.yaml`.  &#10;6. **IDE configs:** Updated IDE settings for Python SDK and consistent paths.  &#10;7. **`comfy_core.py`:** Removed redundant lines." />
-    <MESSAGE value="1. **`comfy/workflows/Flux-SVDQ-base.json`:** Removed obsolete workflow file.&#10;2. **`model/workflow_model.py`:** Added `model_id` field for database relationship.&#10;3. **`model/enum`:** Standardized enum values to uppercase for all workflow and model types.&#10;4. **`handler/image_handler.py`:** Enhanced image processing by integrating MinIO for image uploads.&#10;5. **`core/minio_core.py`:** Introduced MinIO utility functions for bucket and file operations.&#10;6. **`requirements.txt`:** Added `minio` dependency for S3-compatible operations.&#10;7. **`model/model_model.py`:** Added new database model for managing ML models.&#10;8. **`.idea/workspace.xml`:** Updated IDE config for accuracy in commit message handling and project settings.&#10;9. **`service/model_service.py`:** Added service to handle database operations for models." />
-    <MESSAGE value="Remove unused workflow and JSON schema, add MinIO integration&#10;&#10;Eliminated the outdated `Flux-SVDQ-base.json` workflow and introduced MinIO integration for handling image uploads. Enhanced project functionality by adding `model_model.py` for database schema, updated enums for consistent formatting, and improved various file handlers." />
-    <MESSAGE value="Refactor workflow handling and enhance error handling.&#10;&#10;Replaced generic exceptions with FastAPI's `HTTPException` for improved error responses in `workflow_service.py`. Updated workflow logic to use UUIDs and adjusted image-related handlers accordingly. Simplified `.gitignore` and removed redundant workspace configurations." />
-    <MESSAGE value="Refactor image handling and improve workflow execution.&#10;&#10;Streamlined workflow parameter validation, added image saving to MinIO buckets, and integrated a database for image metadata persistence. Introduced robust error handling, optimized seed generation, and enhanced modularity with a new `image_service.py`. Updated workflows JSON to include new &quot;Flux Dev&quot; workflow configuration." />
-    <MESSAGE value="Refactor workflow handling and enhance API structure.&#10;&#10;Introduced error handling improvements with custom exceptions and better HTTP responses. Added WorkflowBase and WorkflowCreate models for reusability and streamlined the creation/update logic. Removed redundant files, cleaned up `.gitignore`, and refactored workflows API for improved clarity and modularity." />
-    <MESSAGE value="Migrate to async SQLAlchemy sessions and improve database handling.&#10;&#10;Replaced synchronous `Session` with `AsyncSession` throughout the codebase to enable non-blocking database operations. Updated function signatures, adjusted workflow, user, and image models for consistent datetime handling, and refactored services for better async support. Improved error handling and logging for critical operations." />
-    <MESSAGE value="Update workflow API to support partial updates with patch.&#10;&#10;Replaced `WorkflowCreate` with `WorkflowUpdate` for update operations, allowing partial updates of workflows. Adjusted the API route to use `PATCH` and updated the handler to accommodate the new model. Refactored related components to ensure compatibility with optional fields and unset values." />
-    <MESSAGE value="Add model management API with validation and CRUD operations&#10;&#10;Introduced a new &quot;model&quot; API for handling models, including CRUD endpoints and database integration. Added validation for the &quot;name&quot; field in both models and workflows to ensure the field is not empty. Refactored related components, such as handlers and services, to support the new API and enhance functionality with proper error handling." />
-    <MESSAGE value="Add plan management system with model and API integration&#10;&#10;Introduced a new &quot;Plan&quot; model and API to manage subscription plans and their parameters. Added support for mapping model, workflow type, and workflow segment parameters, with validation for each. Updated the core application and various models to integrate the plan system, ensuring compatibility with existing components. Removed redundant server validation checks in `comfy_core`." />
-    <MESSAGE value="Add user sync and Fief API client integration  &#10;&#10;Introduced user synchronization from Fief API with the new `FiefHttpClient`. Added handlers for retrieving, syncing, and creating users, along with support for initial data setup. Refactored code to decouple user and database logic, enhancing modularity and maintainability." />
-    <MESSAGE value="Add plan management system with seeding and CRUD services&#10;&#10;Introduced a `Plan` management system for handling subscription plans, including model updates, CRUD operations, and JSON-based seeding. Added the `plan_service.py` for plan-related logic and integrated the `plans.json` file for initializing data. Updated initial data handling to include plan seeding and ensured compatibility with existing workflows." />
     <MESSAGE value="Add tag-based OpenAPI metadata and plan management handlers&#10;&#10;Introduced OpenAPI tags metadata for better API documentation organization. Added plan management handlers with full CRUD operations and refactored existing APIs to incorporate centralized metadata definitions. Removed redundant authentication dependencies from individual API endpoints." />
     <MESSAGE value="Remove obsolete tests and improve logging in minio_core.&#10;&#10;Removed outdated user handler tests and replaced static test cases with relevant config, env, and celery core tests. Additionally, fixed string formatting placeholders in minio_core log messages and handled S3 errors with raised exceptions for better debugging." />
     <MESSAGE value="Fix imports, logging, and update type hints for Python 3.9+ compatibility&#10;&#10;Standardized imports across modules, updating order and removing unnecessary ones. Adjusted type hints to align with Python 3.9+ syntax (e.g., `list[]`, `dict[]`) and resolved deprecation warnings in Pydantic validations. Improved logging by replacing f-strings with parameterized messages, fixing format placeholders, and adding proper exception chaining where applicable." />
@@ -788,7 +777,20 @@
     <MESSAGE value="Add WebSocket handlers for queue and preview updates&#10;&#10;Introduced specialized WebSocket handlers to provide real-time queue and preview updates. Refactored `websocket_api` to integrate the new handlers and token validation. Enhanced `comfy_core` with support for preview image queues, improving asynchronous image handling and user-specific previews." />
     <MESSAGE value="Remove unused `get_user_by_id_handler` function.&#10;&#10;The `get_user_by_id_handler` function was removed as it is no longer being used in the codebase. This cleanup improves maintainability by eliminating dead code." />
     <MESSAGE value="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided." />
-    <option name="LAST_COMMIT_MESSAGE" value="Enhance preview queue management and clean up WebSocket code&#10;&#10;Introduced preview queue expiration and cleanup mechanisms in `comfy_core` to improve resource management and prevent stale data. Fixed WebSocket handler to ensure proper token validation and added support for user-specific preview updates. Refactored `user_folder_api` endpoints to default to access token user ID when `user_id` is not provided." />
+    <MESSAGE value="Add `workflow.py` for workflow execution and queue management&#10;&#10;Introduced `workflow.py` to enable ComfyUI workflows and queue handling. Includes functions for WebSocket-based workflow execution, queue metric logging, and error management. Refactored related code in `comfy_core` by moving primary workflow logic for improved modularity and maintainability." />
+    <MESSAGE value="Refactor imports to use `core.comfy` module structure&#10;&#10;Updated all imports from `comfy` to `core.comfy` to align with the new folder structure. This change improves code organization and ensures consistency across the project." />
+    <MESSAGE value="Refactor imports to align with core.comfy module structure&#10;&#10;Updated imports to use the `core.comfy` structure for consistency with the new folder organization. Adjusted related IDE configuration, error handling, and metadata formats to improve project organization and maintainability." />
+    <MESSAGE value="Refactor parameters handling and improve placeholder replacement&#10;&#10;Revised parameter validation and placeholder replacement logic in workflows for better extensibility and error handling. Introduced `ParameterDetail` and updated schemas to ensure flexibility and validation checks. Deprecated random seed generation and legacy placeholder replacement patterns in favor of structured approaches." />
+    <MESSAGE value="Refactor parameter handling and improve type annotations.&#10;&#10;Replaced generic `dict` with `ParameterDetail` for parameters in models to enforce stricter type checks. Enhanced field metadata with examples for better documentation and updated `Sampler` enum to inherit from `str` for serialization consistency. Adjusted `MODEL_ID` to use `UUID` for improved clarity and validation." />
+    <MESSAGE value="Refactor workflow handlers and parameter validation logic&#10;&#10;Streamlined workflow handler implementations by introducing a generic exception handling decorator, reducing boilerplate code. Enhanced placeholder replacement and parameter validation with support for user-specific plans. Improved robustness in identifying output nodes in workflows, ensuring reliable workflow execution." />
+    <MESSAGE value="Refactor workflow handling with plan-based validation&#10;&#10;Replaced hardcoded workflow parameter validation with a flexible, plan-based approach. Added exception handling decorators for improved code reuse and clarity. Simplified and optimized placeholder replacement logic, ensuring compatibility with new plan-level constraints." />
+    <MESSAGE value="Refactor image generation logic into smaller helper functions&#10;&#10;Extracted reusable logic into `process_output_images`, `get_output_images`, and `handle_comfyui_error` to improve modularity and readability. This also reduces code duplication and enhances error handling for image generation workflows." />
+    <MESSAGE value="Add PlanModel and PlanWorkflow models with related handlers&#10;&#10;Introduce `PlanModel` and `PlanWorkflow` associative tables to manage many-to-many relationships for plans. Add `get_first_plan_by_price` function and handler to retrieve plans by price, integrating it into user initialization flow. Slight adjustment to `sync_users_handler` in initialization for better error handling." />
+    <MESSAGE value="Remove redundant model parameters from plans.json.&#10;&#10;Simplified `plans.json` by removing extensive `model_parameters` fields, replacing them with an empty `parameters` array. This change reduces file clutter and improves maintainability. Adjusted additional configuration files and refactored tests to align with updated handler and data workflows." />
+    <MESSAGE value="Simplify plan configuration in `plans.json`&#10;&#10;Removed redundant `model_parameters` in favor of streamlined `" />
+    <MESSAGE value="Reduce redundancy in parameters and streamline code&#10;&#10;Simplified the JSON structure by replacing repetitive model parameter definitions with a generic &quot;parameters&quot; array. Updated workflow handler to validate and process randomized and default parameter configurations dynamically. These changes enhance maintainability and reduce clutter across plans, models, and workflows." />
+    <MESSAGE value="Refactor workflow and parameter handling logic&#10;&#10;Removed redundant exception handling decorators and restructured workflow handling functions for clarity. Simplified parameter validation and introduced `replace_placeholders` enhancements to support randomization logic. Updated `ParameterDetail` model to provide a cleaner and more modular parameter definition, removing unnecessary complexity." />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor workflow and parameter handling logic&#10;&#10;Removed redundant exception handling decorators and restructured workflow handling functions for clarity. Simplified parameter validation and introduced `replace_placeholders` enhancements to support randomization logic. Updated `ParameterDetail` model to provide a cleaner and more modular parameter definition, removing unnecessary complexity." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -853,11 +855,6 @@
           <line>1348</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py</url>
-          <line>59</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -865,7 +862,7 @@
     <SUITE FILE_PATH="coverage/art$art.coverage" NAME="art Coverage Results" MODIFIED="1745089034899" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_config_core.coverage" NAME="pytest for test_config_core Coverage Results" MODIFIED="1745805367667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/art$Worker.coverage" NAME="Worker Coverage Results" MODIFIED="1745013748926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\Users\pedro\PycharmProjects\art" />
-    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1746940705633" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/o_art$art.coverage" NAME="art Coverage Results" MODIFIED="1747448070001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/art$.coverage" NAME=" Coverage Results" MODIFIED="1744975086376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_minio_core_test_download_file_s3_error.coverage" NAME="pytest for test_minio_core.test_download_file_s3_error Coverage Results" MODIFIED="1745805164120" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/core" />
     <SUITE FILE_PATH="coverage/o_art$pytest_for_test_workflow_service.coverage" NAME="pytest for test_workflow_service Coverage Results" MODIFIED="1745806340413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/service" />

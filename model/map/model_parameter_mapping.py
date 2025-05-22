@@ -1,109 +1,91 @@
-import random
-from uuid import UUID
+from enum import Enum
+from typing import Any
 
-import pydantic
 from pydantic import BaseModel, Field, field_validator
 
-from model.enum.model_type import Model
-from model.enum.sampler_type import Sampler
+
+class ParameterDetailEnum(Enum):
+    randomize = "randomize"
+    min_value = "min_value"
+    max_value = "max_value"
+    input_or_output = "input_or_output"
+
+class ParameterDetailType(Enum):
+    """
+    Enum to represent the type of parameter.
+    """
+    TEXT = "TEXT"
+    TEXT_AREA = "TEXT_AREA"
+    SELECT = "SELECT"
+    NUMBER = "NUMBER"
+    BOOLEAN = "BOOLEAN"
+    IMAGE = "IMAGE"
+    FILE = "FILE"
+    JSON = "JSON"
+    IMAGE_UPLOAD = "IMAGE_UPLOAD"
+    BASE64 = "BASE64"
+
+class ParameterDetailInputOrOutputType(Enum):
+    """
+    Enum to represent the type of parameter for input or output.
+    """
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"
 
 
 class ParameterDetail(BaseModel):
-    ALLOWED: bool | None = Field(
-        default=None,
-        description="Whether the model is allowed to be used in this plan"
-    )
-    POSITIVE_PROMPT: str | None = Field(
-        default=None,
-        description="Prompt to be used for the model"
-    )
-    NEGATIVE_PROMPT: str | None = Field(
-        default=None,
-        description="Negative prompt to be used for the model"
-    )
-    WIDTH: int | None = Field(
-        default=None,
-        description="Width in pixels",
-        examples=[512, 768, 1024, 1536, 2048]
-    )
-    HEIGHT: int | None = Field(
-        default=None,
-        description="Height in pixels",
-        examples=[512, 768, 1024, 1536, 2048]
-    )
-    SAMPLERS: list[Sampler] | None = Field(
-        default=None,
-        description="List of supported samplers"
-    )
-    STEPS: int | None = Field(
-        default=None,
-        description="Number of steps for the model to run",
-        examples=[10, 20, 30]
-    )
-    CFG: float | None = Field(
-        default=None,
-        description="Classifier-Free Guidance scale",
-        examples=[1.0,6.0,7.5]
-    )
-    SEED: int | None = Field(
-        default_factory=lambda: random.randint(1, 2**32 - 1),
-        description="Random seed for reproducibility"
-    )
-    MODEL_ID: UUID | None = Field(
-        default=None,
-        description="UUID of the model to be used"
-    )
-
-    @field_validator("POSITIVE_PROMPT")
-    def validate_prompts(cls, value: str) -> str:
-        if value is None or not value.strip():
-            raise ValueError("Positive prompt cannot be empty.")
-        return value
-
-    @field_validator("WIDTH", "HEIGHT")
-    def validate_dimensions(cls, value: int) -> int:
-        if value is not None and value <= 0:
-            raise ValueError("Width and height must be positive integers.")
-        return value
-    
-    @field_validator("SEED")
-    def validate_seed(cls, value: int) -> int:
-        if value < 0:
-            raise ValueError("Seed must be a non-negative integer or 0 for random generation.")
-        if value == 0 or value is None:
-            value = random.randint(1, 2**32 - 1)
-        return value
-
-    @field_validator("SAMPLERS")
-    def validate_samplers(cls, value: list[Sampler]) -> list[Sampler]:
-        if not value:
-            raise ValueError("The list of samplers cannot be empty.")
-        return value
-
-_example_mapping = {
-    model.name: {
-        "ALLOWED": True,
-        "POSITIVE_PROMPT": "A beautiful landscape",
-        "NEGATIVE_PROMPT": "A blurry image",
-        "WIDTH": 1024,
-        "HEIGHT": 1024,
-        "SAMPLERS": [
-            sampler.name for sampler in Sampler
-        ],
-        "STEPS": 20,
-        "CFG": 7.5,
-        "SEED": 0,
-        "MODEL_ID": None
-    }
-    for model in Model
-}
-
-class Parameters(pydantic.RootModel[dict[Model, ParameterDetail]]):
     """
-    Maps model names (e.g., "SDXL", "FLUX") to their parameter definitions.
+    A class to represent the details of a parameter.
     """
-    model_config = {
-        "json_schema_extra": {
-            "example": _example_mapping
-        }
-    }
+    name: str = Field(..., description="Name of the parameter")
+    description: str = Field(default=None, description="Description of the parameter")
+    example: Any = Field(default=None, description="Example value for the parameter")
+    type: ParameterDetailType = Field(
+        default=ParameterDetailType.TEXT,
+        description="Type of the parameter"
+    )
+    default: Any = Field(..., description="Default value of the parameter")
+    required: bool = Field(..., description="Whether the parameter is required")
+    order: int = Field(
+        default=None,
+        description="Order of the parameter in the workflow"
+    )
+    input_or_output: ParameterDetailInputOrOutputType = Field(
+        default=ParameterDetailInputOrOutputType.INPUT,
+        description="Whether the parameter is for input or output"
+    )
+    node_id: str = Field(
+        default=None,
+        description="ID of the node to which the parameter belongs"
+    )
+    min_value: Any = Field(
+        default=None,
+        description="Minimum value for the parameter, if applicable"
+    )
+    max_value: Any = Field(
+        default=None,
+        description="Maximum value for the parameter, if applicable"
+    )
+    randomize: bool = Field(
+        default=False,
+        description="Whether the parameter can be randomized"
+    )
+
+
+    @field_validator("name")
+    def validate_name(cls, v):
+        if not v:
+            raise ValueError("Parameter name cannot be empty")
+        return v
+
+    @field_validator("order")
+    def validate_order(cls, v):
+        if v is not None and v < 0 or v == 0:
+            raise ValueError("Order must be a positive integer")
+
+    @field_validator("randomize")
+    def validate_randomize(cls, v):
+        if not isinstance(v, bool):
+            raise ValueError("Randomize must be a boolean value")
+        return v
+
